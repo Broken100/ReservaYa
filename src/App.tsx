@@ -1,55 +1,79 @@
-import { Navbar, Hero, Features, Pricing, Footer } from "./components/Landing";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import AuthCallback from './pages/auth/AuthCallback';
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import AgendaPage from './pages/dashboard/AgendaPage';
+import ServicesPage from './pages/dashboard/ServicesPage';
+import ProfessionalsPage from './pages/dashboard/ProfessionalsPage';
+import ClientsPage from './pages/dashboard/ClientsPage';
+import SettingsPage from './pages/dashboard/SettingsPage';
+import ProductsPage from './pages/dashboard/ProductsPage';
+import OrdersPage from './pages/dashboard/OrdersPage';
+import BookingPage from './pages/public/BookingPage';
+import ContactPage from './pages/public/ContactPage';
+import ClientLayout from './components/client/ClientLayout';
+import MyBookingsPage from './pages/client/MyBookingsPage';
+import ExplorePage from './pages/client/ExplorePage';
+import ClientProfilePage from './pages/client/ClientProfilePage';
+import OverviewPage from './pages/dashboard/OverviewPage';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-dark-bg selection:bg-blue-600/30 selection:text-white">
-      <Navbar />
-      <main>
-        <Hero />
-        
-        {/* Call to Action Section */}
-        <section className="py-20 lg:py-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-dark-card rounded-[3rem] p-12 lg:p-24 relative overflow-hidden text-center lg:text-left flex flex-col lg:flex-row items-center justify-between gap-12 border border-white/5">
-              <div className="relative z-10 max-w-xl">
-                <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 leading-[1.2]">
-                  Transforma la gestión de tu negocio hoy.
-                </h2>
-                <p className="text-gray-400 text-lg italic max-w-sm">
-                  Únete a cientos de emprendedores en Ecuador que ya optimizaron su tiempo.
-                </p>
-              </div>
-              <div className="relative z-10">
-                <button className="bg-white text-black px-12 py-5 rounded-2xl text-xl font-bold hover:bg-gray-200 transition-all shadow-2xl shadow-blue-500/10 active:scale-95">
-                  Prueba 14 Días Gratis
-                </button>
-              </div>
-              
-              {/* Abstract Background Ornaments */}
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-[100px]" />
-            </div>
-          </div>
-        </section>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/contacto" element={<ContactPage />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/reservar/:businessSlug" element={<BookingPage />} />
 
-        <Features />
-        <Pricing />
-        
-        {/* Simple Business Trust Logo Section */}
-        <section className="py-32 border-t border-white/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 mb-16">Impulsando la diversidad comercial</p>
-            <div className="flex flex-wrap justify-center items-center gap-16 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
-              <div className="flex items-center gap-2 font-bold text-lg text-white">🏥 Consultorios</div>
-              <div className="flex items-center gap-2 font-bold text-lg text-white">💇 Peluquerías</div>
-              <div className="flex items-center gap-2 font-bold text-lg text-white">🍽️ Restaurantes</div>
-              <div className="flex items-center gap-2 font-bold text-lg text-white">🏋️ Gimnasios</div>
-              <div className="flex items-center gap-2 font-bold text-lg text-white">🦷 Dentistas</div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+          {/* Admin dashboard (protected) */}
+           <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<OverviewPage />} />
+            <Route path="agenda" element={<AgendaPage />} />
+            <Route path="servicios" element={<ServicesPage />} />
+            <Route path="profesionales" element={<ProfessionalsPage />} />
+            <Route path="clientes" element={<ClientsPage />} />
+            <Route path="configuracion" element={<SettingsPage />} />
+            <Route path="productos" element={<ProductsPage />} />
+            <Route path="pedidos" element={<OrdersPage />} />
+          </Route>
+
+          {/* Legacy route redirection */}
+          <Route path="/mis-reservas" element={<Navigate to="/cliente/reservas" replace />} />
+
+          {/* Client area (protected) */}
+          <Route
+            path="/cliente"
+            element={
+              <ProtectedRoute requiredRole="client">
+                <ClientLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="reservas" replace />} />
+            <Route path="explorar" element={<ExplorePage />} />
+            <Route path="reservas" element={<MyBookingsPage />} />
+            <Route path="perfil" element={<ClientProfilePage />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
+
 

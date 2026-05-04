@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "features": "Características",
+    "pricing": "Precios",
+    "contact": "Contacto",
+    "freeTrial": "Prueba Gratis",
+    "login": "Iniciar Sesión",
+    "dashboard": "Panel",
+    "myBookings": "Mis Reservas",
+    "logout": "Cerrar Sesión"
+  },
+  "hero": {
+    "badge": "Disponible en Ecuador",
+    "title": "Agiliza tus citas",
+    "titleHighlight": "en segundos.",
+    "subtitle": "La plataforma de reservas más intuitiva para negocios locales. Gestiona tu tiempo sin esfuerzo.",
+    "cta": "Comenzar ahora",
+    "demo": "Ver Demo"
+  },
+  "cta": {
+    "title": "Transforma la gestión de tu negocio hoy.",
+    "subtitle": "Únete a cientos de emprendedores en Ecuador que ya optimizaron su tiempo.",
+    "button": "Prueba 14 Días Gratis"
+  },
+  "features": {
+    "title": "Diseñado para la eficiencia",
+    "subtitle": "Elimina el caos administrativo y permite que la tecnología trabaje por ti.",
+    "realtime": "Tiempo Real",
+    "realtimeDesc": "Confirmaciones al instante para ti y tus clientes.",
+    "sync": "Sincronización",
+    "syncDesc": "Actualización inmediata en todos tus dispositivos.",
+    "secure": "Seguro",
+    "secureDesc": "Tus datos y los de tus clientes están siempre protegidos.",
+    "scalable": "Escalable",
+    "scalableDesc": "Crece sin límites, nuestro sistema se adapta a tu volumen."
+  },
+  "pricing": {
+    "title": "Planes Simples",
+    "subtitle": "Impulsa tu negocio con las herramientas correctas.",
+    "basic": "Versión Básica",
+    "basicDesc": "Ideal para emprendedores locales.",
+    "basicPrice": "$25",
+    "perMonth": "/ mensual",
+    "basicFeature1": "Reservas ilimitadas",
+    "basicFeature2": "Panel de gestión",
+    "basicFeature3": "Confirmación Email",
+    "basicCta": "Comenzar",
+    "pro": "Versión Pro",
+    "proDesc": "Gestiona tu crecimiento como experto.",
+    "proPrice": "$45",
+    "proFeature1": "Notificaciones Real-time",
+    "proFeature2": "Recordatorios WhatsApp/SMS",
+    "proFeature3": "Soporte Prioritario",
+    "proFeature4": "Personalización de marca",
+    "proCta": "Activar Pro",
+    "recommended": "Recomendado"
+  },
+  "trust": {
+    "label": "Impulsando la diversidad comercial",
+    "clinics": "Consultorios",
+    "salons": "Peluquerías",
+    "restaurants": "Restaurantes",
+    "gyms": "Gimnasios",
+    "dentists": "Dentistas"
+  },
+  "footer": {
+    "tagline": "Digitalizando el futuro de los negocios locales en Ecuador.",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "support": "Soporte",
+    "scalability": "Escalabilidad Garantizada",
+    "copyright": "© 2024 ReservaYa Ecuador. Todos los derechos reservados."
+  },
+  "auth": {
+    "loginTitle": "Bienvenido de vuelta",
+    "loginSubtitle": "Inicia sesión para gestionar tus reservas",
+    "registerTitle": "Crea tu cuenta",
+    "registerSubtitle": "Selecciona cómo quieres usar ReservaYa",
+    "googleLogin": "Continuar con Google",
+    "roleAdmin": "Soy dueño de negocio",
+    "roleAdminDesc": "Quiero gestionar mi negocio y recibir reservas",
+    "roleClient": "Quiero reservar",
+    "roleClientDesc": "Busco servicios y quiero agendar citas",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "register": "Regístrate",
+    "login": "Inicia sesión"
+  },
+  "dashboard": {
+    "agenda": "Agenda",
+    "services": "Servicios",
+    "professionals": "Profesionales",
+    "clients": "Clientes",
+    "settings": "Configuración",
+    "welcome": "Bienvenido",
+    "noBookings": "Sin reservas para hoy",
+    "addService": "Agregar Servicio",
+    "addProfessional": "Agregar Profesional"
+  },
+  "booking": {
+    "selectService": "Selecciona un servicio",
+    "selectProfessional": "Selecciona un profesional",
+    "selectDate": "Selecciona fecha y hora",
+    "confirm": "Confirmar Reserva",
+    "cancel": "Cancelar Reserva",
+    "success": "¡Reserva confirmada!",
+    "successMsg": "Tu cita ha sido agendada exitosamente.",
+    "duration": "Duración",
+    "price": "Precio",
+    "available": "Disponible",
+    "unavailable": "No disponible",
+    "minutes": "min"
+  },
+  "client": {
+    "explore": "Explorar",
+    "noBookings": "Aún no tienes reservas.",
+    "cancelConfirm": "¿Estás seguro de que deseas cancelar esta reserva?",
+    "cancelSuccess": "Reserva cancelada correctamente.",
+    "profileTitle": "Mi Perfil",
+    "profileSubtitle": "Actualiza tu información de contacto para tus reservas.",
+    "saveChanges": "Guardar Cambios"
+  }
+}

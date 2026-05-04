@@ -1,28 +1,50 @@
 import { motion } from "motion/react";
 import { Calendar, CheckCircle, Clock, Zap, Phone, Bell, Shield, Rocket } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-export const Navbar = () => (
-  <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-white/5">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center h-20">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tighter text-white">ReservaYa</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Características</a>
-          <a href="#pricing" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Precios</a>
-          <a href="#contact" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Contacto</a>
-          <button className="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all">
-            Prueba Gratis
+export const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogoClick = () => {
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+    }
+  };
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          <button 
+            onClick={handleLogoClick}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer group"
+          >
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold tracking-tighter text-white">ReservaYa</span>
           </button>
+          <div className="hidden md:flex items-center gap-8">
+            {location.pathname === '/' && (
+              <>
+                <a href="#features" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Características</a>
+                <a href="#pricing" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Precios</a>
+                <Link to="/contacto" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Contacto</Link>
+              </>
+            )}
+            <Link to="/register" className="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all">
+              Prueba Gratis
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
-);
+    </nav>
+  );
+};
 
 export const Hero = () => (
   <section className="pt-40 pb-24 overflow-hidden">
@@ -43,12 +65,12 @@ export const Hero = () => (
             La plataforma de reservas más intuitiva para negocios locales. Gestiona tu tiempo sin esfuerzo.
           </p>
           <div className="flex flex-col sm:flex-row gap-5">
-            <button className="bg-blue-600 text-white px-10 py-5 rounded-2xl text-lg font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
+            <Link to="/register" className="bg-blue-600 text-white px-10 py-5 rounded-2xl text-lg font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
               Comenzar ahora <Rocket size={20} />
-            </button>
-            <button className="bg-white/5 text-white border border-white/10 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+            </Link>
+            <Link to="/login" className="bg-white/5 text-white border border-white/10 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
               Ver Demo <Zap size={20} className="text-blue-500" />
-            </button>
+            </Link>
           </div>
         </motion.div>
         
@@ -168,9 +190,9 @@ export const Pricing = () => (
               <CheckCircle size={18} className="text-blue-500" /> Confirmación Email
             </li>
           </ul>
-          <button className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all">
+          <Link to="/register" className="w-full text-center py-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all">
             Comenzar
-          </button>
+          </Link>
         </div>
 
         {/* Pro Plan */}
@@ -201,39 +223,56 @@ export const Pricing = () => (
               <CheckCircle size={18} className="text-blue-500" /> Personalización de marca
             </li>
           </ul>
-          <button className="w-full py-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/30">
+          <Link to="/register" className="w-full text-center py-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/30">
             Activar Pro
-          </button>
+          </Link>
         </div>
       </div>
     </div>
   </section>
 );
 
-export const Footer = () => (
-  <footer className="border-t border-white/5 py-24">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
-        <div className="max-w-xs">
-          <div className="flex items-center justify-center md:justify-start gap-2 text-white mb-6">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">R</div>
-            <span className="text-xl font-bold tracking-tighter">ReservaYa</span>
+export const Footer = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogoClick = () => {
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+    }
+  };
+
+  return (
+    <footer className="border-t border-white/5 py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
+          <div className="max-w-xs">
+            <button 
+              onClick={handleLogoClick}
+              className="flex items-center justify-center md:justify-start gap-2 text-white mb-6 group cursor-pointer"
+            >
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold group-hover:scale-110 transition-transform">R</div>
+              <span className="text-xl font-bold tracking-tighter">ReservaYa</span>
+            </button>
+            <p className="text-sm text-gray-400">
+              Digitalizando el futuro de los negocios locales en Ecuador.
+            </p>
           </div>
-          <p className="text-sm">
-            Digitalizando el futuro de los negocios locales en Ecuador.
-          </p>
+          <div className="flex flex-wrap justify-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
+            <a href="#" className="hover:text-white transition-colors text-gray-500">Privacidad</a>
+            <a href="#" className="hover:text-white transition-colors text-gray-500">Términos</a>
+            <Link to="/contacto" className="hover:text-white transition-colors text-gray-500">Soporte</Link>
+            <span className="text-blue-500">Escalabilidad Garantizada</span>
+          </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
-          <a href="#" className="hover:text-white transition-colors">Privacidad</a>
-          <a href="#" className="hover:text-white transition-colors">Términos</a>
-          <a href="#" className="hover:text-white transition-colors">Soporte</a>
-          <span className="text-blue-500">Escalabilidad Garantizada</span>
+        <div className="mt-20 pt-8 border-t border-white/5 text-[10px] text-gray-600 text-center uppercase tracking-widest font-medium">
+          © 2024 ReservaYa Ecuador. Todos los derechos reservados.
         </div>
       </div>
-      <div className="mt-20 pt-8 border-t border-white/5 text-[10px] text-gray-600 text-center uppercase tracking-widest font-medium">
-        © 2024 ReservaYa Ecuador. Todos los derechos reservados.
-      </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 

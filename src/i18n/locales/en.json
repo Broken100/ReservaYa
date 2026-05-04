@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "freeTrial": "Free Trial",
+    "login": "Sign In",
+    "dashboard": "Dashboard",
+    "myBookings": "My Bookings",
+    "logout": "Sign Out"
+  },
+  "hero": {
+    "badge": "Available in Ecuador",
+    "title": "Speed up your bookings",
+    "titleHighlight": "in seconds.",
+    "subtitle": "The most intuitive booking platform for local businesses. Manage your time effortlessly.",
+    "cta": "Get Started",
+    "demo": "See Demo"
+  },
+  "cta": {
+    "title": "Transform your business management today.",
+    "subtitle": "Join hundreds of entrepreneurs in Ecuador who already optimized their time.",
+    "button": "Try 14 Days Free"
+  },
+  "features": {
+    "title": "Designed for efficiency",
+    "subtitle": "Eliminate administrative chaos and let technology work for you.",
+    "realtime": "Real-Time",
+    "realtimeDesc": "Instant confirmations for you and your clients.",
+    "sync": "Synchronization",
+    "syncDesc": "Immediate updates across all your devices.",
+    "secure": "Secure",
+    "secureDesc": "Your data and your clients' data are always protected.",
+    "scalable": "Scalable",
+    "scalableDesc": "Grow without limits, our system adapts to your volume."
+  },
+  "pricing": {
+    "title": "Simple Plans",
+    "subtitle": "Power your business with the right tools.",
+    "basic": "Basic Plan",
+    "basicDesc": "Ideal for local entrepreneurs.",
+    "basicPrice": "$25",
+    "perMonth": "/ month",
+    "basicFeature1": "Unlimited bookings",
+    "basicFeature2": "Management dashboard",
+    "basicFeature3": "Email confirmation",
+    "basicCta": "Get Started",
+    "pro": "Pro Plan",
+    "proDesc": "Manage your growth like a pro.",
+    "proPrice": "$45",
+    "proFeature1": "Real-time notifications",
+    "proFeature2": "WhatsApp/SMS reminders",
+    "proFeature3": "Priority support",
+    "proFeature4": "Brand customization",
+    "proCta": "Activate Pro",
+    "recommended": "Recommended"
+  },
+  "trust": {
+    "label": "Powering business diversity",
+    "clinics": "Clinics",
+    "salons": "Salons",
+    "restaurants": "Restaurants",
+    "gyms": "Gyms",
+    "dentists": "Dentists"
+  },
+  "footer": {
+    "tagline": "Digitizing the future of local businesses in Ecuador.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "support": "Support",
+    "scalability": "Guaranteed Scalability",
+    "copyright": "© 2024 ReservaYa Ecuador. All rights reserved."
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to manage your bookings",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "Select how you want to use ReservaYa",
+    "googleLogin": "Continue with Google",
+    "roleAdmin": "I'm a business owner",
+    "roleAdminDesc": "I want to manage my business and receive bookings",
+    "roleClient": "I want to book",
+    "roleClientDesc": "I'm looking for services and want to schedule appointments",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "register": "Sign Up",
+    "login": "Sign In"
+  },
+  "dashboard": {
+    "agenda": "Agenda",
+    "services": "Services",
+    "professionals": "Professionals",
+    "clients": "Clients",
+    "settings": "Settings",
+    "welcome": "Welcome",
+    "noBookings": "No bookings for today",
+    "addService": "Add Service",
+    "addProfessional": "Add Professional"
+  },
+  "booking": {
+    "selectService": "Select a service",
+    "selectProfessional": "Select a professional",
+    "selectDate": "Select date and time",
+    "confirm": "Confirm Booking",
+    "cancel": "Cancel Booking",
+    "success": "Booking confirmed!",
+    "successMsg": "Your appointment has been scheduled successfully.",
+    "duration": "Duration",
+    "price": "Price",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "minutes": "min"
+  },
+  "client": {
+    "explore": "Explore",
+    "noBookings": "You don't have any bookings yet.",
+    "cancelConfirm": "Are you sure you want to cancel this booking?",
+    "cancelSuccess": "Booking successfully cancelled.",
+    "profileTitle": "My Profile",
+    "profileSubtitle": "Update your contact information for your bookings.",
+    "saveChanges": "Save Changes"
+  }
+}
