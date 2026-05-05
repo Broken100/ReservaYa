@@ -367,8 +367,6 @@ function DayView({ bookings, confirmBooking, cancelBooking, completeBooking }: {
 
               <p className="text-gray-500 text-sm flex gap-2 items-center">
                 <span className="text-blue-400/80">{booking.services?.name || 'Servicio'}</span>
-                <span>•</span>
-                <span className="font-mono text-xs">#{booking.id.slice(0, 8)}</span>
               </p>
               {booking.notes && (
                 <p className="text-xs text-gray-400 italic mt-2">"{booking.notes}"</p>
@@ -661,7 +659,6 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
                     <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${STATUS_STYLES[booking.status]}`}>
                       {STATUS_LABELS[booking.status]}
                     </span>
-                    <span className="text-gray-500 text-xs font-mono">#{booking.id.slice(0, 8)}</span>
                   </div>
                   
                   <div>

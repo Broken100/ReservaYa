@@ -248,7 +248,6 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${STATUS_STYLES[booking.status]}`}>
                         {STATUS_LABELS[booking.status]}
                       </span>
-                      <span className="text-gray-500 text-xs font-mono">#{booking.id.slice(0, 8)}</span>
                     </div>
                     
                     <div>
@@ -283,7 +282,6 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${STATUS_STYLES[o.status]}`}>
                         {STATUS_LABELS[o.status]}
                       </span>
-                      <span className="text-gray-500 text-xs font-mono">#{o.id.slice(0, 8)}</span>
                     </div>
                     
                     <div className="bg-dark-bg p-3 rounded-xl border border-white/5 space-y-2">

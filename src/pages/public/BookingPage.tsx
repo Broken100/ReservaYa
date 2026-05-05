@@ -157,6 +157,11 @@ export default function BookingPage() {
 
       if (!success) return;
       setStep('success');
+
+      if (business.whatsapp_direct && business.whatsapp_number) {
+        const text = encodeURIComponent(`Hola, agendé una reserva para ${selectedService.name} el ${selectedDate.toLocaleDateString('es-EC')} a las ${selectedTime}. Adjunto el comprobante de pago.`);
+        window.open(`https://wa.me/${business.whatsapp_number}?text=${text}`, '_blank');
+      }
     } catch (err: any) {
       alert('Error al confirmar la reserva: ' + err.message);
     } finally {
@@ -245,6 +250,11 @@ export default function BookingPage() {
       setCart([]);
       setIsCartOpen(false);
       setOrderSuccess(true);
+
+      if (paymentMethod === 'transfer' && business.whatsapp_direct && business.whatsapp_number) {
+        const text = encodeURIComponent(`Hola, acabo de realizar un pedido. Envío el comprobante de transferencia.`);
+        window.open(`https://wa.me/${business.whatsapp_number}?text=${text}`, '_blank');
+      }
     } catch (err: any) {
       alert('Error al procesar la compra: ' + err.message);
     } finally {
@@ -620,8 +630,17 @@ export default function BookingPage() {
                   </label>
                 </div>
                 {paymentMethod === 'transfer' && (
-                  <div className={`mt-3 ${tColor.bgSubtle} border ${tColor.borderSubtle} p-3 rounded-lg text-sm ${tColor.textLight} text-center`}>
-                    Podrás adjuntar el comprobante al retirar tu producto.
+                  <div className={`mt-4 ${tColor.bgSubtle} border ${tColor.borderSubtle} p-4 rounded-xl flex flex-col items-center text-center gap-3`}>
+                    {business.qr_code_url && (
+                      <div className="w-40 h-40 bg-white rounded-xl overflow-hidden p-2 shadow-sm">
+                        <img src={business.qr_code_url} alt="Código QR para pago" className="w-full h-full object-contain" />
+                      </div>
+                    )}
+                    <p className={`text-sm ${tColor.textLight} font-medium`}>
+                      {business.whatsapp_direct 
+                        ? 'Al confirmar, serás redirigido a WhatsApp para enviar el comprobante de pago.' 
+                        : 'Realiza la transferencia y presenta el comprobante al retirar tu producto.'}
+                    </p>
                   </div>
                 )}
               </div>

@@ -233,10 +233,6 @@ export default function MyBookingsPage() {
                           <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">Horario</p>
                           <p className="text-white text-sm font-medium">{b.start_time?.substring(0, 5)} — {b.end_time?.substring(0, 5)}</p>
                         </div>
-                        <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">ID</p>
-                          <p className="text-gray-400 text-sm font-mono">#{b.id.slice(0, 8)}</p>
-                        </div>
                       </div>
 
                       {b.notes && (

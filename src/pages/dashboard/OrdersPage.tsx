@@ -72,7 +72,6 @@ export default function OrdersPage() {
               <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-mono text-gray-500">#{order.id.split('-')[0]}</span>
                     {order.status === 'pending' && <span className="bg-yellow-500/20 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full border border-yellow-500/20">Pendiente</span>}
                     {order.status === 'completed' && <span className="bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full border border-green-500/20">Completado</span>}
                     {order.status === 'cancelled' && <span className="bg-red-500/20 text-red-400 text-xs font-bold px-3 py-1 rounded-full border border-red-500/20">Cancelado</span>}

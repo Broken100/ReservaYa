@@ -1,0 +1,5 @@
+ALTER TABLE businesses 
+ADD COLUMN IF NOT EXISTS description TEXT,
+ADD COLUMN IF NOT EXISTS google_maps_url TEXT,
+ADD COLUMN IF NOT EXISTS whatsapp_number TEXT,
+ADD COLUMN IF NOT EXISTS qr_code_url TEXT;

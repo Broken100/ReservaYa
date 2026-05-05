@@ -60,6 +60,14 @@ export default function OverviewPage() {
       color: 'amber',
       link: '/dashboard/pedidos'
     } : null,
+    { 
+      label: 'Ingresos por Servicios', 
+      value: `$${bookings.filter(b => b.status === 'completed' || b.status === 'confirmed').reduce((sum, b) => sum + (b.services?.price || 0), 0).toFixed(2)}`, 
+      sub: 'Reservas completadas/confirmadas',
+      icon: TrendingUp, 
+      color: 'emerald',
+      link: '/dashboard/agenda'
+    },
   ].filter(Boolean);
 
   // Recent Activity Feed
@@ -119,7 +127,7 @@ export default function OverviewPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-white font-medium truncate">
-                    {act.type === 'booking' ? `Reserva: ${act.services?.name}` : `Pedido #${act.id.slice(0, 8)}`}
+                    {act.type === 'booking' ? `Reserva: ${act.services?.name}` : `Pedido`}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     {act.profiles?.full_name || act.client?.full_name || 'Cliente desconocido'} • {act.date.toLocaleDateString('es-EC')}

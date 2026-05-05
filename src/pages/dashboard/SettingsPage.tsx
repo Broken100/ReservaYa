@@ -12,7 +12,10 @@ export default function SettingsPage() {
   const { hours, loading: hoursLoading, updateHours } = useBusinessHours(business?.id ?? null);
   const { tColor } = useTheme();
   
-  const [form, setForm] = useState({ name: '', category: '', phone: '', address: '', city: '', logo_url: '' });
+  const [form, setForm] = useState({ 
+    name: '', category: '', phone: '', address: '', city: '', logo_url: '',
+    description: '', google_maps_url: '', whatsapp_number: '', qr_code_url: '', whatsapp_direct: false
+  });
   const [settings, setSettings] = useState<{
     enable_products?: boolean;
     theme_color?: string;
@@ -40,6 +43,11 @@ export default function SettingsPage() {
         address: business.address || '',
         city: business.city || '',
         logo_url: business.logo_url || '',
+        description: business.description || '',
+        google_maps_url: business.google_maps_url || '',
+        whatsapp_number: business.whatsapp_number || '',
+        qr_code_url: business.qr_code_url || '',
+        whatsapp_direct: business.whatsapp_direct || false,
       });
       setSettings((business.settings as any) || { 
         enable_products: false, 
@@ -80,6 +88,20 @@ export default function SettingsPage() {
       } else {
         alert('Error al subir el logo');
       }
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleQrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    try {
+      const url = await uploadPublicAsset(file, 'logos');
+      if (url) setForm(p => ({ ...p, qr_code_url: url }));
+      else alert('Error al subir el QR');
     } finally {
       setUploadingLogo(false);
     }
@@ -209,6 +231,67 @@ export default function SettingsPage() {
               onChange={e => setForm(p => ({ ...p, city: e.target.value }))}
               className="w-full bg-dark-bg border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" 
             />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Descripción del Negocio</label>
+            <textarea 
+              value={form.description} 
+              onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+              className="w-full bg-dark-bg border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all min-h-[100px]" 
+              placeholder="Cuenta a tus clientes sobre tu negocio..."
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Ubicación Exacta (Google Maps URL)</label>
+            <input 
+              type="url" 
+              value={form.google_maps_url} 
+              onChange={e => setForm(p => ({ ...p, google_maps_url: e.target.value }))}
+              className="w-full bg-dark-bg border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" 
+              placeholder="https://goo.gl/maps/..."
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">WhatsApp de Contacto Directo</label>
+            <input 
+              type="text" 
+              value={form.whatsapp_number} 
+              onChange={e => setForm(p => ({ ...p, whatsapp_number: e.target.value }))}
+              className="w-full bg-dark-bg border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" 
+              placeholder="Ej: 593987654321"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Pagos y QR */}
+      <section className="bg-dark-card rounded-3xl p-8 border border-white/5 mb-8 shadow-sm">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
+          <div className="relative group">
+            <div className="w-24 h-24 bg-dark-bg border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden shrink-0">
+              {form.qr_code_url ? (
+                <img src={form.qr_code_url} alt="QR Code" className="w-full h-full object-cover" />
+              ) : (
+                <Store size={40} className="text-gray-500" />
+              )}
+            </div>
+            <label className={`absolute -bottom-2 -right-2 p-2 ${tColor.bg} rounded-full text-white cursor-pointer shadow-lg ${tColor.bgHover} transition-colors border border-dark-bg`}>
+              <Camera size={14} />
+              <input type="file" accept="image/*" className="hidden" onChange={handleQrUpload} disabled={uploadingLogo} />
+            </label>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">Métodos de Pago y QR</h2>
+            <p className="text-gray-500 text-sm mb-2">Sube tu código QR para recibir transferencias directas.</p>
+            <label className="flex items-center gap-3 mt-4 cursor-pointer p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={form.whatsapp_direct} 
+                onChange={e => setForm(p => ({ ...p, whatsapp_direct: e.target.checked }))} 
+                className="w-5 h-5 accent-blue-600 rounded" 
+              />
+              <span className="text-white text-sm font-medium">Redirigir a WhatsApp al completar reserva/pedido para adjuntar comprobante</span>
+            </label>
           </div>
         </div>
       </section>

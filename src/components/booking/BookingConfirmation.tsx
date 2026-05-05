@@ -90,6 +90,22 @@ export default function BookingConfirmation({
         </div>
       </div>
 
+      {(business.qr_code_url || business.whatsapp_direct) && (
+        <div className={`mb-8 ${tColor.bgSubtle} border ${tColor.borderSubtle} p-6 rounded-2xl flex flex-col items-center text-center gap-4`}>
+          <h4 className="text-white font-bold">Pago por Transferencia</h4>
+          {business.qr_code_url && (
+            <div className="w-40 h-40 bg-white rounded-xl overflow-hidden p-2 shadow-sm">
+              <img src={business.qr_code_url} alt="Código QR para pago" className="w-full h-full object-contain" />
+            </div>
+          )}
+          <p className={`text-sm ${tColor.text} font-medium max-w-sm`}>
+            {business.whatsapp_direct 
+              ? 'Al confirmar, serás redirigido a WhatsApp para enviar el comprobante de tu pago.' 
+              : 'Si realizaste tu pago por transferencia, recuerda enviar el comprobante por nuestros canales de contacto.'}
+          </p>
+        </div>
+      )}
+
       <button
         onClick={onConfirm}
         disabled={loading}

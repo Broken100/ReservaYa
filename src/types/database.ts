@@ -21,6 +21,10 @@ export interface Business {
   name: string;
   slug: string;
   description: string | null;
+  google_maps_url: string | null;
+  whatsapp_number: string | null;
+  whatsapp_direct: boolean | null;
+  qr_code_url: string | null;
   category: string | null;
   phone: string | null;
   address: string | null;
