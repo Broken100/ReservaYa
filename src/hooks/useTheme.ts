@@ -54,7 +54,6 @@ export const THEME_COLORS: Record<string, any> = {
     bgSubtle: 'bg-orange-600/10',
     bgSubtleHover: 'hover:bg-orange-600/20',
     shadow: 'shadow-orange-500/20',
-    shadow: 'shadow-orange-500/20',
     shadowLg: 'shadow-orange-500/50'
   }
 };
