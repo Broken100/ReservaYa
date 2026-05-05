@@ -5,12 +5,14 @@ import { useBusiness } from '../../hooks/useBusiness';
 import { useBusinessHours } from '../../hooks/useBusinessHours';
 import { uploadPublicAsset } from '../../lib/storage';
 import { useTheme } from '../../hooks/useTheme';
+import { useNavigate } from 'react-router-dom';
 
 export default function SettingsPage() {
   const { t } = useTranslation();
-  const { business, loading: businessLoading, updateBusiness } = useBusiness();
+  const { business, loading: businessLoading, updateBusiness, deleteBusiness } = useBusiness();
   const { hours, loading: hoursLoading, updateHours } = useBusinessHours(business?.id ?? null);
   const { tColor } = useTheme();
+  const navigate = useNavigate();
   
   const [form, setForm] = useState({ 
     name: '', category: '', phone: '', address: '', city: '', logo_url: '',
@@ -33,6 +35,7 @@ export default function SettingsPage() {
   const [localHours, setLocalHours] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingQr, setUploadingQr] = useState(false);
 
   useEffect(() => {
     if (business) {
@@ -97,13 +100,13 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadingLogo(true);
+    setUploadingQr(true);
     try {
-      const url = await uploadPublicAsset(file, 'logos');
+      const url = await uploadPublicAsset(file, 'qrcodes');
       if (url) setForm(p => ({ ...p, qr_code_url: url }));
       else alert('Error al subir el QR');
     } finally {
-      setUploadingLogo(false);
+      setUploadingQr(false);
     }
   };
 
@@ -129,6 +132,22 @@ export default function SettingsPage() {
     setLocalHours(prev => prev.map(h => 
       h.day_of_week === dayIndex ? { ...h, [field]: value } : h
     ));
+  };
+
+  const handleDeleteBusiness = async () => {
+    if (!business || !deleteBusiness) return;
+    const confirmed = window.confirm('¿Estás SEGURO de que deseas eliminar tu negocio? Esta acción es irreversible y se perderán todos tus datos, servicios, productos y reservas.');
+    if (confirmed) {
+      const secondConfirm = window.confirm('Confirmación final: ¿Eliminar negocio permanentemente?');
+      if (secondConfirm) {
+        try {
+          await deleteBusiness(business.id);
+          navigate('/');
+        } catch (e) {
+          alert('Error al eliminar el negocio');
+        }
+      }
+    }
   };
 
   if (businessLoading || hoursLoading) {
@@ -266,31 +285,45 @@ export default function SettingsPage() {
 
       {/* Pagos y QR */}
       <section className="bg-dark-card rounded-3xl p-8 border border-white/5 mb-8 shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
-          <div className="relative group">
-            <div className="w-24 h-24 bg-dark-bg border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden shrink-0">
-              {form.qr_code_url ? (
-                <img src={form.qr_code_url} alt="QR Code" className="w-full h-full object-cover" />
-              ) : (
-                <Store size={40} className="text-gray-500" />
-              )}
-            </div>
-            <label className={`absolute -bottom-2 -right-2 p-2 ${tColor.bg} rounded-full text-white cursor-pointer shadow-lg ${tColor.bgHover} transition-colors border border-dark-bg`}>
-              <Camera size={14} />
-              <input type="file" accept="image/*" className="hidden" onChange={handleQrUpload} disabled={uploadingLogo} />
-            </label>
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">Métodos de Pago y QR</h2>
-            <p className="text-gray-500 text-sm mb-2">Sube tu código QR para recibir transferencias directas.</p>
-            <label className="flex items-center gap-3 mt-4 cursor-pointer p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
+        <div className="flex flex-col md:flex-row items-start gap-8 mb-8">
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-white mb-2">Métodos de Pago y QR</h2>
+            <p className="text-gray-500 text-sm mb-6">Configura cómo recibes los pagos por transferencia.</p>
+            
+            <label className="flex items-center gap-3 cursor-pointer p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
               <input 
                 type="checkbox" 
                 checked={form.whatsapp_direct} 
                 onChange={e => setForm(p => ({ ...p, whatsapp_direct: e.target.checked }))} 
                 className="w-5 h-5 accent-blue-600 rounded" 
               />
-              <span className="text-white text-sm font-medium">Redirigir a WhatsApp al completar reserva/pedido para adjuntar comprobante</span>
+              <div>
+                <span className="text-white text-sm font-bold block">Redirigir a WhatsApp al completar reserva/pedido</span>
+                <span className="text-gray-400 text-xs block mt-1">El cliente será enviado automáticamente a tu WhatsApp para adjuntar el comprobante de pago.</span>
+              </div>
+            </label>
+          </div>
+          
+          <div className="flex flex-col items-center gap-4 bg-dark-bg p-6 rounded-2xl border border-white/5 shrink-0 w-full md:w-64">
+            <div className="w-32 h-32 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-inner p-2 relative">
+              {form.qr_code_url ? (
+                <img src={form.qr_code_url} alt="QR Code" className="w-full h-full object-contain" />
+              ) : (
+                <div className="text-center">
+                  <Store size={32} className="text-gray-300 mx-auto mb-2" />
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Sin QR</span>
+                </div>
+              )}
+              {uploadingQr && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-xl">
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                </div>
+              )}
+            </div>
+            
+            <label className={`w-full py-2 px-4 ${tColor.bgSubtle} ${tColor.text} rounded-lg text-sm font-bold cursor-pointer text-center hover:bg-white/10 transition-colors border ${tColor.borderSubtle}`}>
+              {uploadingQr ? 'Subiendo...' : 'Subir Código QR'}
+              <input type="file" accept="image/*" className="hidden" onChange={handleQrUpload} disabled={uploadingQr} />
             </label>
           </div>
         </div>
@@ -459,6 +492,22 @@ export default function SettingsPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Danger Zone */}
+      <section className="bg-red-500/5 rounded-3xl p-8 border border-red-500/20 mb-10 shadow-sm mt-12">
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-xl font-bold text-red-500">Zona de Peligro</h2>
+        </div>
+        <p className="text-gray-400 text-sm mb-6">
+          Eliminar tu negocio borrará permanentemente todos tus datos, servicios, productos, reservas e historial. Esta acción no se puede deshacer.
+        </p>
+        <button 
+          onClick={handleDeleteBusiness}
+          className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 px-6 py-3 rounded-xl font-bold transition-all"
+        >
+          Eliminar Negocio Permanentemente
+        </button>
       </section>
 
       <button 

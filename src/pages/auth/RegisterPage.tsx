@@ -8,11 +8,11 @@ import type { UserRole } from '../../types/database';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
-  const { signInWithGoogle, user, loading } = useAuth();
+  const { signInWithGoogle, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
 
-  if (user && !loading) {
+  if (user && !loading && role === 'admin') {
     navigate('/dashboard', { replace: true });
     return null;
   }

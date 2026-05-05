@@ -13,6 +13,7 @@ import ClientsPage from './pages/dashboard/ClientsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
 import ProductsPage from './pages/dashboard/ProductsPage';
 import OrdersPage from './pages/dashboard/OrdersPage';
+import PaymentPage from './pages/dashboard/PaymentPage';
 import BookingPage from './pages/public/BookingPage';
 import ContactPage from './pages/public/ContactPage';
 import ClientLayout from './components/client/ClientLayout';
@@ -34,8 +35,18 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/reservar/:businessSlug" element={<BookingPage />} />
 
+          {/* Payment page - accessible to any authenticated user (no role requirement) */}
+          <Route
+            path="/dashboard/pago"
+            element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Admin dashboard (protected) */}
-           <Route
+          <Route
             path="/dashboard"
             element={
               <ProtectedRoute requiredRole="admin">

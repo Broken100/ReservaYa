@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
+import type { UserRole } from '../../types/database';
 
 /**
  * Handles the OAuth callback from Supabase.
@@ -40,15 +41,26 @@ export default function AuthCallback() {
         }
 
         if (mounted) {
-          const pendingRole = localStorage.getItem('pendingRole');
+          const pendingRole = localStorage.getItem('pendingRole') as UserRole | null;
+          let finalRole = role;
+
           if (pendingRole && pendingRole !== role) {
-            const { error: updateError } = await supabase.from('profiles').update({ role: pendingRole }).eq('id', session.user.id);
-            if (updateError) console.error("Error updating role:", updateError);
-            role = pendingRole;
+            console.log(`[AuthCallback] Updating role from ${role} to ${pendingRole}`);
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({ role: pendingRole })
+              .eq('id', session.user.id);
+            
+            if (updateError) {
+              console.error("[AuthCallback] Error updating role:", updateError.message);
+            } else {
+              finalRole = pendingRole;
+            }
           }
+          
           localStorage.removeItem('pendingRole');
 
-          if (role === 'admin') {
+          if (finalRole === 'admin') {
             window.location.replace('/dashboard');
           } else {
             window.location.replace('/cliente');

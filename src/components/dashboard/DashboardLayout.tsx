@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBusiness } from '../../hooks/useBusiness';
@@ -16,6 +16,7 @@ export default function DashboardLayout() {
   const { business, loading: businessLoading, error, createBusiness } = useBusiness();
   const { themeClass, tColor } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -90,8 +91,10 @@ export default function DashboardLayout() {
       </div>
     );
   }
+  const currentPath = location.pathname.replace(/\/$/, '');
+  const isPaymentPage = currentPath === '/dashboard/pago';
 
-  if (!business) {
+  if (!business && !isPaymentPage) {
     return (
       <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
         <div className="bg-dark-card rounded-[2.5rem] p-10 lg:p-16 border border-white/5 w-full max-w-2xl shadow-2xl relative overflow-hidden">

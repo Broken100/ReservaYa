@@ -6,12 +6,13 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const { signInWithGoogle, user, loading } = useAuth();
+  const { signInWithGoogle, user, role, loading } = useAuth();
   const navigate = useNavigate();
 
   // If already logged in, redirect
   if (user && !loading) {
-    navigate('/dashboard', { replace: true });
+    const dest = role === 'admin' ? '/dashboard' : '/cliente';
+    navigate(dest, { replace: true });
     return null;
   }
 

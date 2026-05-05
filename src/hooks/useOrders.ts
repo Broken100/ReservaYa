@@ -23,6 +23,7 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
           product:products(name, image_url)
         )
       `)
+      .eq('is_archived', false)
       .order('created_at', { ascending: false });
 
     if (businessId) query = query.eq('business_id', businessId);
@@ -31,7 +32,18 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
     const { data, error: err } = await query;
 
     if (err) setError(err.message);
-    else setOrders((data as any) || []);
+    else {
+      // Filter out cancelled orders older than 24 hours
+      const now = new Date().getTime();
+      const filtered = (data as any[]).filter(o => {
+        if (o.status === 'cancelled') {
+          const orderTime = new Date(o.created_at).getTime();
+          if (now - orderTime > 24 * 60 * 60 * 1000) return false;
+        }
+        return true;
+      });
+      setOrders(filtered);
+    }
     
     setLoading(false);
   }, [businessId, clientId]);
@@ -50,5 +62,16 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
     return true;
   };
 
-  return { orders, loading, error, updateOrderStatus, refresh: fetchOrders };
+  const archiveOrder = async (id: string) => {
+    const { error: err } = await supabase
+      .from('orders')
+      .update({ is_archived: true })
+      .eq('id', id);
+
+    if (err) { setError(err.message); throw new Error(err.message); }
+    setOrders(prev => prev.filter(o => o.id !== id));
+    return true;
+  };
+
+  return { orders, loading, error, updateOrderStatus, archiveOrder, refresh: fetchOrders };
 }

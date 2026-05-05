@@ -12,6 +12,7 @@ export interface Profile {
   phone: string | null;
   avatar_url: string | null;
   role: UserRole;
+  payment_status: 'pending' | 'active' | 'inactive';
   created_at: string;
 }
 
@@ -102,6 +103,7 @@ export interface Booking {
   notes: string | null;
   rating: number | null;
   review: string | null;
+  is_archived: boolean;
   created_at: string;
 }
 
@@ -114,6 +116,7 @@ export interface Order {
   status: OrderStatus;
   rating: number | null;
   review: string | null;
+  is_archived: boolean;
   created_at: string;
 }
 

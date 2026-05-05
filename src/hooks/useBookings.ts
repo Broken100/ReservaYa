@@ -19,7 +19,8 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
-    let query = supabase.from('bookings').select('*, services(name), businesses(name), professionals(name), client:profiles!bookings_client_id_fkey(id, full_name, email, phone, avatar_url)');
+    let query = supabase.from('bookings').select('*, services(name), businesses(name), professionals(name), client:profiles!bookings_client_id_fkey(id, full_name, email, phone, avatar_url)')
+      .eq('is_archived', false);
 
     if (businessId) query = query.eq('business_id', businessId);
     if (clientId) query = query.eq('client_id', clientId);
@@ -34,7 +35,18 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
     };
 
     if (err) setError(err.message);
-    else setBookings(data || []);
+    else {
+      // Filter out cancelled bookings older than 24 hours
+      const now = new Date().getTime();
+      const filtered = (data as Booking[]).filter(b => {
+        if (b.status === 'cancelled') {
+          const bookingTime = new Date(b.created_at).getTime();
+          if (now - bookingTime > 24 * 60 * 60 * 1000) return false;
+        }
+        return true;
+      });
+      setBookings(filtered);
+    }
     setLoading(false);
   }, [businessId, clientId, date, dateFrom, dateTo, status]);
 
@@ -134,6 +146,17 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
   const confirmBooking = (id: string) => updateBooking(id, { status: 'confirmed' });
   const cancelBooking = (id: string) => updateBooking(id, { status: 'cancelled' });
   const completeBooking = (id: string) => updateBooking(id, { status: 'completed' });
+  
+  const archiveBooking = async (id: string) => {
+    const { error: err } = await supabase
+      .from('bookings')
+      .update({ is_archived: true })
+      .eq('id', id);
+
+    if (err) { setError(err.message); throw new Error(err.message); }
+    setBookings(prev => prev.filter(b => b.id !== id));
+    return true;
+  };
 
   return {
     bookings,
@@ -144,6 +167,7 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
     confirmBooking,
     cancelBooking,
     completeBooking,
+    archiveBooking,
     refresh: fetchBookings,
   };
 }

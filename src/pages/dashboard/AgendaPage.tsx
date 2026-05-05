@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X, User, Phone } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X, User, Phone, Archive } from 'lucide-react';
 import { useBookings } from '../../hooks/useBookings';
 import { useBusiness } from '../../hooks/useBusiness';
 import type { Booking } from '../../types/database';
@@ -93,7 +93,7 @@ export default function AgendaPage() {
 
   // ── Current bookings based on view ────────────────────────
   const current = view === 'day' ? dayBookings : view === 'month' ? monthBookings : yearBookings;
-  const { bookings, loading, confirmBooking, cancelBooking, completeBooking } = current;
+  const { bookings, loading, confirmBooking, cancelBooking, completeBooking, archiveBooking } = current;
 
   // ── Track recently actioned bookings for visual feedback ──
   const [actionedBookings, setActionedBookings] = useState<Record<string, 'confirmed' | 'cancelled'>>({});
@@ -276,7 +276,7 @@ export default function AgendaPage() {
         <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 text-blue-500 animate-spin" /></div>
       ) : (
         <>
-          {view === 'day' && <DayView bookings={bookings} confirmBooking={confirmBooking} cancelBooking={cancelBooking} completeBooking={completeBooking} />}
+          {view === 'day' && <DayView bookings={bookings} confirmBooking={confirmBooking} cancelBooking={cancelBooking} completeBooking={completeBooking} archiveBooking={archiveBooking} />}
           {view === 'month' && (
             <MonthView
               bookings={bookings}
@@ -326,6 +326,7 @@ function DayView({ bookings, confirmBooking, cancelBooking, completeBooking }: {
   confirmBooking: (id: string) => void;
   cancelBooking: (id: string) => void;
   completeBooking: (id: string) => void;
+  archiveBooking: (id: string) => void;
 }) {
   if (bookings.length === 0) {
     return (
@@ -377,23 +378,32 @@ function DayView({ bookings, confirmBooking, cancelBooking, completeBooking }: {
             <span className={`px-3 py-1 rounded-lg text-xs font-medium border ${STATUS_STYLES[booking.status] || ''}`}>
               {STATUS_LABELS[booking.status] || booking.status}
             </span>
-            {(booking.status === 'pending' || booking.status === 'confirmed') && (
-              <div className="flex gap-1">
-                {booking.status === 'pending' && (
-                  <button onClick={() => confirmBooking(booking.id)} className="p-2 rounded-lg hover:bg-green-600/10 text-gray-500 hover:text-green-400 transition-colors" title="Confirmar">
-                    <CheckCircle size={18} />
+            <div className="flex gap-1">
+              <button onClick={async () => {
+                if (window.confirm('¿Archivar esta cita?')) {
+                  try { await archiveBooking(booking.id); } catch(e) {}
+                }
+              }} className="p-2 rounded-lg hover:bg-gray-600/10 text-gray-500 hover:text-gray-400 transition-colors" title="Archivar">
+                <Archive size={18} />
+              </button>
+              {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                <>
+                  {booking.status === 'pending' && (
+                    <button onClick={() => confirmBooking(booking.id)} className="p-2 rounded-lg hover:bg-green-600/10 text-gray-500 hover:text-green-400 transition-colors" title="Confirmar">
+                      <CheckCircle size={18} />
+                    </button>
+                  )}
+                  {booking.status === 'confirmed' && (
+                    <button onClick={() => completeBooking(booking.id)} className="p-2 rounded-lg hover:bg-blue-600/10 text-gray-500 hover:text-blue-400 transition-colors" title="Completar">
+                      <CheckCircle size={18} />
+                    </button>
+                  )}
+                  <button onClick={() => cancelBooking(booking.id)} className="p-2 rounded-lg hover:bg-red-600/10 text-gray-500 hover:text-red-400 transition-colors" title="Cancelar">
+                    <XCircle size={18} />
                   </button>
-                )}
-                {booking.status === 'confirmed' && (
-                  <button onClick={() => completeBooking(booking.id)} className="p-2 rounded-lg hover:bg-blue-600/10 text-gray-500 hover:text-blue-400 transition-colors" title="Completar">
-                    <CheckCircle size={18} />
-                  </button>
-                )}
-                <button onClick={() => cancelBooking(booking.id)} className="p-2 rounded-lg hover:bg-red-600/10 text-gray-500 hover:text-red-400 transition-colors" title="Cancelar">
-                  <XCircle size={18} />
-                </button>
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       ))}
@@ -615,6 +625,8 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
     dateTo
   });
 
+  const { archiveBooking } = useBookings({ businessId }); // for the archive function
+
   const handleAction = async (action: () => Promise<any>, successMsg: string) => {
     try {
       await action();
@@ -682,23 +694,28 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
                     </p>
                   </div>
 
-                  {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                    <div className="flex gap-2 mt-2 pt-3 border-t border-white/5">
-                      {booking.status === 'pending' && (
-                        <button onClick={() => handleAction(() => confirmBooking(booking.id), 'confirmada')} className="flex-1 py-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
-                          <CheckCircle size={14} /> Confirmar
+                  <div className="flex gap-2 mt-2 pt-3 border-t border-white/5">
+                    <button onClick={() => handleAction(() => archiveBooking(booking.id), 'archivada')} className="flex-1 py-2 bg-gray-600/20 hover:bg-gray-600/40 text-gray-400 text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
+                      <Archive size={14} /> Archivar
+                    </button>
+                    {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                      <>
+                        {booking.status === 'pending' && (
+                          <button onClick={() => handleAction(() => confirmBooking(booking.id), 'confirmada')} className="flex-1 py-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
+                            <CheckCircle size={14} /> Confirmar
+                          </button>
+                        )}
+                        {booking.status === 'confirmed' && (
+                          <button onClick={() => handleAction(() => completeBooking(booking.id), 'completada')} className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
+                            <CheckCircle size={14} /> Completar
+                          </button>
+                        )}
+                        <button onClick={() => handleAction(() => cancelBooking(booking.id), 'cancelada')} className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
+                          <XCircle size={14} /> Cancelar
                         </button>
-                      )}
-                      {booking.status === 'confirmed' && (
-                        <button onClick={() => handleAction(() => completeBooking(booking.id), 'completada')} className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
-                          <CheckCircle size={14} /> Completar
-                        </button>
-                      )}
-                      <button onClick={() => handleAction(() => cancelBooking(booking.id), 'cancelada')} className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
-                        <XCircle size={14} /> Cancelar
-                      </button>
-                    </div>
-                  )}
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

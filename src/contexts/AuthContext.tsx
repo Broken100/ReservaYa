@@ -36,7 +36,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return null;
       }
       console.log('[Auth] Profile fetched successfully');
-      return data as Profile;
+      return {
+        ...data,
+        payment_status: data.payment_status || 'pending'
+      } as Profile;
     } catch (err) {
       console.error('[Auth] fetchProfile exception:', err);
       return null;
@@ -64,10 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Start fetching profile in background
-          fetchProfile(session.user.id).then(p => {
-            if (isMounted) setProfile(p);
-          });
+          const p = await fetchProfile(session.user.id);
+          if (isMounted) setProfile(p);
         }
       } catch (err) {
         console.error('[Auth] initAuth exception:', err);

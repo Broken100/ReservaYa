@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { ShoppingBag, Loader2, CheckCircle, XCircle, Search, Package, Calendar } from 'lucide-react';
+import { ShoppingBag, Loader2, CheckCircle, XCircle, Search, Package, Calendar, Archive } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { useBusiness } from '../../hooks/useBusiness';
 
 export default function OrdersPage() {
   const { business } = useBusiness();
-  const { orders, loading, updateOrderStatus } = useOrders({ businessId: business?.id ?? null });
+  const { orders, loading, updateOrderStatus, archiveOrder } = useOrders({ businessId: business?.id ?? null });
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'cancelled'>('all');
 
@@ -118,16 +118,26 @@ export default function OrdersPage() {
                 ))}
               </div>
 
-              {order.status === 'pending' && (
-                <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
-                  <button onClick={() => handleUpdateStatus(order.id, 'cancelled')} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-sm font-bold transition-colors">
-                    Cancelar
-                  </button>
-                  <button onClick={() => handleUpdateStatus(order.id, 'completed')} className="px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
-                    <CheckCircle size={16} /> Marcar como Pagado
-                  </button>
-                </div>
-              )}
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                <button onClick={async () => {
+                  if (window.confirm('¿Archivar este pedido? Ya no aparecerá en esta lista.')) {
+                    try { await archiveOrder(order.id); } 
+                    catch (err: any) { alert(err.message); }
+                  }
+                }} className="px-4 py-2 bg-gray-500/10 hover:bg-gray-500/20 text-gray-400 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                  <Archive size={16} /> Archivar
+                </button>
+                {order.status === 'pending' && (
+                  <>
+                    <button onClick={() => handleUpdateStatus(order.id, 'cancelled')} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-sm font-bold transition-colors">
+                      Cancelar
+                    </button>
+                    <button onClick={() => handleUpdateStatus(order.id, 'completed')} className="px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                      <CheckCircle size={16} /> Marcar como Pagado
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>

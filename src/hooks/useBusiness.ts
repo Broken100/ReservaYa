@@ -80,5 +80,20 @@ export function useBusiness() {
     return data;
   };
 
-  return { business, loading, error, createBusiness, updateBusiness, refresh: fetchBusiness };
+  const deleteBusiness = async (id: string) => {
+    const { error: err } = await supabase
+      .from('businesses')
+      .delete()
+      .eq('id', id);
+
+    if (err) {
+      setError(err.message);
+      throw new Error(err.message);
+    }
+    setBusiness(null);
+    window.dispatchEvent(new Event('business_updated'));
+    return true;
+  };
+
+  return { business, loading, error, createBusiness, updateBusiness, deleteBusiness, refresh: fetchBusiness };
 }
