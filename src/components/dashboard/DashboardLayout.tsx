@@ -5,9 +5,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useBusiness } from '../../hooks/useBusiness';
 import { usePlanGating } from '../../hooks/usePlanGating';
 import { useTheme } from '../../hooks/useTheme';
-import { Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home } from 'lucide-react';
+import { Archive, Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home } from 'lucide-react';
 import { useState } from 'react';
 import { validateForm, businessSetupSchema } from '../../lib/validation';
+import { Archive } from 'lucide-react';
 
 // Dynamic nav items are now built inside the component to respect conditional visibility
 
