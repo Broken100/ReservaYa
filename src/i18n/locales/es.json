@@ -152,6 +152,17 @@
       "payments": "pagos",
       "bookingsUsed": "citas usadas",
       "unlimitedBookings": "Citas ilimitadas"
+    },
+    "plan": {
+      "used": "Usadas",
+      "remaining": "Restantes",
+      "limit": "Límite",
+      "unlimited": "Ilimitadas",
+      "unlimitedDesc": "Plan Pro — Recibe citas sin límite mensual",
+      "limitReached": "Límite alcanzado",
+      "limitReachedDesc": "Actualiza a Pro para recibir más citas este mes.",
+      "almostFull": "Te quedan {{remaining}} citas este mes",
+      "changePlan": "Cambiar plan"
     }
   },
   "agenda": {

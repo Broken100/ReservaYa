@@ -109,20 +109,7 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
         throw new Error('El profesional ya tiene una reserva en este horario');
       }
 
-      // 4. Check booking limit (plan enforcement)
-      const { data: limitCheck, error: limitError } = await supabase.rpc('check_booking_limit', {
-        p_business_id: booking.business_id,
-      });
-      
-      if (limitError) {
-        console.warn('[useBookings] Could not check booking limit:', limitError.message);
-      }
-      
-      if (limitCheck && !limitCheck.can_book) {
-        throw new Error('Has alcanzado el límite de citas mensuales de tu plan. Actualiza tu plan para seguir reservando.');
-      }
-
-      // 5. Proceed with insertion
+      // 4. Proceed with insertion
       const { data, error: err } = await supabase
         .from('bookings')
         .insert(booking as never)

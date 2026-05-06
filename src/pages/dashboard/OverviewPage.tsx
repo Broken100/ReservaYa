@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Calendar, Package, Users, TrendingUp, Clock, ChevronRight, ShoppingBag, Banknote, CreditCard, Crown } from 'lucide-react';
+import { Calendar, Package, Users, TrendingUp, Clock, ChevronRight, ShoppingBag, Banknote, CreditCard, Crown, AlertTriangle, Infinity, ArrowRight } from 'lucide-react';
 import { useBusiness } from '../../hooks/useBusiness';
 import { useBookings } from '../../hooks/useBookings';
 import { useOrders } from '../../hooks/useOrders';
@@ -111,36 +111,114 @@ export default function OverviewPage() {
         <p className="text-gray-400">{t('overview.subtitle')}</p>
       </div>
 
-      {/* Plan info bar */}
-      {plan && (
-        <div className="bg-dark-card border border-white/5 rounded-2xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${plan.max_bookings_per_month ? 'bg-blue-600/10 text-blue-400' : 'bg-amber-600/10 text-amber-400'}`}>
-              <Calendar size={20} />
+      {/* Plan info card */}
+      {plan && (() => {
+        const used = bookings.length;
+        const limit = plan.max_bookings_per_month;
+        const remaining = limit ? Math.max(0, limit - used) : null;
+        const pct = limit ? Math.min((used / limit) * 100, 100) : 0;
+        const isLimitReached = limit !== null && used >= limit;
+        const isAlmostFull = limit !== null && used >= limit * 0.8 && !isLimitReached;
+
+        return (
+          <div className={`rounded-2xl border p-5 ${
+            isLimitReached ? 'bg-red-500/5 border-red-500/20' :
+            isAlmostFull ? 'bg-amber-500/5 border-amber-500/20' :
+            'bg-dark-card border-white/5'
+          }`}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                  limit === null ? 'bg-emerald-600/10' :
+                  isLimitReached ? 'bg-red-600/10' :
+                  isAlmostFull ? 'bg-amber-600/10' : 'bg-blue-600/10'
+                }`}>
+                  {limit === null ? (
+                    <Infinity size={24} className="text-emerald-400" />
+                  ) : (
+                    <Calendar size={24} className={
+                      isLimitReached ? 'text-red-400' :
+                      isAlmostFull ? 'text-amber-400' : 'text-blue-400'
+                    } />
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Crown size={14} className="text-amber-400" />
+                    <p className="text-white font-bold">{plan.name}</p>
+                    {limit !== null && (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        isLimitReached ? 'bg-red-500/10 text-red-400' :
+                        isAlmostFull ? 'bg-amber-500/10 text-amber-400' :
+                        'bg-blue-500/10 text-blue-400'
+                      }`}>
+                        {isLimitReached ? t('overview.plan.limitReached') : `${remaining} ${t('overview.plan.remaining')}`}
+                      </span>
+                    )}
+                    {limit === null && (
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">
+                        {t('overview.plan.unlimited')}
+                      </span>
+                    )}
+                  </div>
+                  {limit !== null ? (
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-gray-400 text-sm">{t('overview.plan.used')}: <span className="text-white font-semibold">{used}</span></span>
+                      <span className="text-gray-600">·</span>
+                      <span className="text-gray-400 text-sm">{t('overview.plan.remaining')}: <span className={`font-semibold ${
+                        isLimitReached ? 'text-red-400' : isAlmostFull ? 'text-amber-400' : 'text-white'
+                      }`}>{remaining}</span></span>
+                      <span className="text-gray-600">·</span>
+                      <span className="text-gray-400 text-sm">{t('overview.plan.limit')}: <span className="text-white font-semibold">{limit}</span></span>
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-sm mt-1">{t('overview.plan.unlimitedDesc')}</p>
+                  )}
+                </div>
+              </div>
+
+              {limit !== null && (
+                <div className="flex flex-col items-end gap-2 min-w-[140px]">
+                  <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        isLimitReached ? 'bg-red-500' :
+                        isAlmostFull ? 'bg-amber-500' : 'bg-blue-500'
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-500">{Math.round(pct)}% {t('overview.plan.used').toLowerCase()}</span>
+                </div>
+              )}
             </div>
-            <div>
-              <p className="text-white font-medium">{plan.name}</p>
-              <p className="text-gray-500 text-xs">
-                {plan.max_bookings_per_month
-                  ? `${bookings.length}/${plan.max_bookings_per_month} ${t('overview.stats.bookingsUsed')}`
-                  : t('overview.stats.unlimitedBookings')
-                }
-              </p>
-            </div>
+
+            {/* Limit reached / almost full banner */}
+            {isLimitReached && (
+              <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle size={18} className="text-red-400 shrink-0" />
+                  <div>
+                    <p className="text-red-400 font-semibold text-sm">{t('overview.plan.limitReached')}</p>
+                    <p className="text-red-300/70 text-xs mt-0.5">{t('overview.plan.limitReachedDesc')}</p>
+                  </div>
+                </div>
+                <Link to="/dashboard/pago" className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shrink-0">
+                  {t('overview.plan.changePlan')} <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
+            {isAlmostFull && !isLimitReached && (
+              <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-3">
+                <AlertTriangle size={18} className="text-amber-400 shrink-0" />
+                <p className="text-amber-300 text-sm">
+                  {t('overview.plan.almostFull', { remaining: String(remaining) })}
+                </p>
+              </div>
+            )}
           </div>
-          {plan.max_bookings_per_month && (
-            <div className="w-32 h-2 bg-white/5 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  bookings.length >= plan.max_bookings_per_month ? 'bg-red-500' :
-                  bookings.length >= plan.max_bookings_per_month * 0.8 ? 'bg-amber-500' : 'bg-blue-500'
-                }`}
-                style={{ width: `${Math.min((bookings.length / plan.max_bookings_per_month) * 100, 100)}%` }}
-              />
-            </div>
-          )}
-        </div>
-      )}
+        );
+      })()}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

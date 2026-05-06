@@ -152,6 +152,17 @@
       "payments": "payments",
       "bookingsUsed": "bookings used",
       "unlimitedBookings": "Unlimited bookings"
+    },
+    "plan": {
+      "used": "Used",
+      "remaining": "Remaining",
+      "limit": "Limit",
+      "unlimited": "Unlimited",
+      "unlimitedDesc": "Pro Plan — Receive unlimited monthly bookings",
+      "limitReached": "Limit reached",
+      "limitReachedDesc": "Upgrade to Pro to receive more bookings this month.",
+      "almostFull": "{{remaining}} bookings left this month",
+      "changePlan": "Change plan"
     }
   },
   "agenda": {
