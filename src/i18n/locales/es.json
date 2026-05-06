@@ -104,6 +104,11 @@
     "selectService": "Selecciona un servicio",
     "selectProfessional": "Selecciona un profesional",
     "selectDate": "Selecciona fecha y hora",
+    "selectDateTime": "Selecciona fecha y hora",
+    "availableTimes": "Horarios Disponibles",
+    "searchingAvailability": "Buscando disponibilidad...",
+    "loadError": "Error al cargar disponibilidad",
+    "noAvailabilityForDate": "No hay horarios disponibles para esta fecha",
     "confirm": "Confirmar Reserva",
     "cancel": "Cancelar Reserva",
     "success": "¡Reserva confirmada!",
@@ -112,7 +117,34 @@
     "price": "Precio",
     "available": "Disponible",
     "unavailable": "No disponible",
-    "minutes": "min"
+    "minutes": "min",
+    "add": "Agregar",
+    "soldOut": "Agotado",
+    "anyProfessional": "Cualquier profesional",
+    "back": "Atrás",
+    "maxAvailability": "Máxima disponibilidad",
+    "noServices": "No hay servicios disponibles",
+    "services": "Servicios",
+    "store": "Tienda",
+    "errorConfirmReserva": "Error al confirmar la reserva",
+    "errorProcessOrder": "Error al procesar el pedido",
+    "orderSuccess": {
+      "title": "¡Pedido Realizado!",
+      "detail": "Te contactaremos pronto para confirmar.",
+      "back": "Volver al inicio"
+    },
+    "cart": {
+      "title": "Tu Carrito",
+      "viewCart": "Ver Carrito",
+      "noProducts": "No hay productos en el carrito",
+      "paymentMethod": "Método de Pago",
+      "cash": "Efectivo",
+      "transfer": "Transferencia",
+      "transferWhatsApp": "Enviar comprobante por WhatsApp",
+      "transferNote": "Realiza la transferencia y envía el comprobante para confirmar tu pedido.",
+      "totalToPay": "Total a Pagar",
+      "confirmOrder": "Confirmar Pedido"
+    }
   },
   "client": {
     "explore": "Explorar",
@@ -121,12 +153,31 @@
     "cancelSuccess": "Reserva cancelada correctamente.",
     "profileTitle": "Mi Perfil",
     "profileSubtitle": "Actualiza tu información de contacto para tus reservas.",
-    "saveChanges": "Guardar Cambios"
+    "saveChanges": "Guardar Cambios",
+    "welcome": "Completa tu Perfil",
+    "welcomeDesc": "Para recibir notificaciones de tus reservas, completa tus datos.",
+    "fullName": "Nombre Completo",
+    "whatsappPhone": "WhatsApp / Teléfono",
+    "phonePlaceholder": "Ej: +593 99 999 9999",
+    "saving": "Guardando...",
+    "completeRegistration": "Completar Registro",
+    "signOut": "Cerrar Sesión",
+    "errorPhoneRequired": "El teléfono es obligatorio",
+    "errorSave": "Error al guardar perfil",
+    "reservaYaClient": "Cliente ReservaYa",
+    "avatarRecommendation": "Agrega una foto de perfil",
+    "namePlaceholder": "Ej: María Gómez",
+    "phoneHelp": "Usaremos este número para notificarte sobre tus reservas",
+    "savedSuccess": "Perfil actualizado",
+    "errorAllFields": "Completa todos los campos",
+    "errorUploadImage": "Error al subir imagen"
   },
   "overview": {
     "greeting": "¡Hola, {{name}}!",
     "subtitle": "Aquí tienes un resumen de lo que está pasando en tu negocio hoy.",
     "recentActivity": "Actividad Reciente",
+    "pending": "pendientes",
+    "pendingPayment": "pendientes de pago",
     "viewAll": "Ver todo",
     "bookingPrefix": "Reserva:",
     "orderLabel": "Pedido",
@@ -162,7 +213,10 @@
       "limitReached": "Límite alcanzado",
       "limitReachedDesc": "Actualiza a Pro para recibir más citas este mes.",
       "almostFull": "Te quedan {{remaining}} citas este mes",
-      "changePlan": "Cambiar plan"
+      "changePlan": "Cambiar plan",
+      "legacyTitle": "Plan heredado",
+      "legacyDesc": "No tienes un plan asignado. Elige uno para activar el contador y límites de tu cuenta.",
+      "choosePlan": "Elegir plan"
     }
   },
   "agenda": {
@@ -325,6 +379,7 @@
     },
     "client": "Cliente",
     "totalToCharge": "Total a cobrar",
+    "paymentLabel": "Método de pago",
     "payment": {
       "cash": "Efectivo",
       "transfer": "Transferencia"
@@ -508,6 +563,8 @@
     "processing": "Procesando...",
     "secureNote": "Pago seguro encriptado. Cancela en cualquier momento.",
     "errorPayment": "Error al procesar el pago. Inténtalo de nuevo.",
+    "errorLoadingPlans": "Error al cargar los planes",
+    "successSubscription": "¡Suscripción activada con éxito!",
     "loadingPlans": "Cargando planes..."
   },
   "chat": {
@@ -519,5 +576,89 @@
     "whatsappDefault": "Hola, necesito información.",
     "whatsappContact": "Contactar por WhatsApp",
     "openAI": "Abrir chat con IA"
+  },
+  "layout": {
+    "dashboard": {
+      "loading": "Cargando tu negocio...",
+      "retry": "Reintentar",
+      "setupTitle": "Configura tu Negocio",
+      "setupSubtitle": "Completa los datos básicos para empezar a recibir reservas.",
+      "businessName": "Nombre del Negocio",
+      "businessNamePlaceholder": "Ej: Barbería El Estilo",
+      "category": "Categoría",
+      "categories": {
+        "0": "Belleza",
+        "1": "Salud",
+        "2": "Gastronomía",
+        "3": "Otra"
+      },
+      "otherCategory": "Otra categoría",
+      "categoryCustom": "Especifica la categoría",
+      "categoryCustomPlaceholder": "Ej: Veterinaria",
+      "phone": "WhatsApp / Teléfono",
+      "phonePlaceholder": "Ej: +593 99 999 9999",
+      "city": "Ciudad",
+      "cityPlaceholder": "Ej: Quito",
+      "startNow": "Comenzar Ahora",
+      "signOut": "Cerrar Sesión"
+    }
+  },
+  "myBookings": {
+    "title": "Mis Reservas",
+    "tabs": {
+      "bookings": "Citas",
+      "orders": "Pedidos"
+    },
+    "filter": {
+      "all": "Todas"
+    },
+    "sort": {
+      "priority": "Prioridad",
+      "dateDesc": "Más recientes",
+      "dateAsc": "Más antiguas"
+    },
+    "service": "Servicio",
+    "business": "Negocio",
+    "professional": "Profesional",
+    "unassigned": "No asignado",
+    "schedule": "Horario",
+    "cancelBooking": "Cancelar Reserva",
+    "leaveReview": "Dejar Reseña",
+    "store": "Tienda",
+    "cancelOrder": "Cancelar Pedido",
+    "noBookings": "No tienes reservas aún",
+    "noBookingsWithStatus": "No tienes reservas en este estado",
+    "noOrders": "No tienes pedidos aún",
+    "noOrdersWithStatus": "No tienes pedidos en este estado",
+    "exploreStores": "Explorar Tiendas",
+    "errorCancel": "Error al cancelar",
+    "cancelOrderConfirm": "¿Cancelar este pedido?",
+    "cancelOrderSuccess": "Pedido cancelado",
+    "status": {
+      "pending": "Pendiente",
+      "confirmed": "Confirmada",
+      "cancelled": "Cancelada",
+      "completed": "Completada"
+    },
+    "payment": {
+      "cash": "Efectivo",
+      "transfer": "Transferencia"
+    },
+    "feedback": {
+      "title": "Califica tu experiencia",
+      "subtitle": "¿Cómo fue el servicio?",
+      "rating": {
+        "1": "Muy malo",
+        "2": "Malo",
+        "3": "Regular",
+        "4": "Bueno",
+        "5": "Excelente"
+      },
+      "placeholder": "Cuéntanos más sobre tu experiencia...",
+      "cancel": "Cancelar",
+      "send": "Enviar",
+      "thanks": "¡Gracias por tu reseña!",
+      "error": "Error al enviar reseña"
+    }
   }
 }

@@ -12,13 +12,14 @@ import { Card, SkeletonCard } from '../../components/ui';
 export default function OverviewPage() {
   const { t } = useTranslation();
   const { business } = useBusiness();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const activeProducts = business?.settings?.enable_products;
 
   const { bookings, loading: bookingsLoading } = useBookings({ businessId: business?.id ?? null });
   const { orders, loading: ordersLoading } = useOrders({ businessId: business?.id ?? null });
   const { clients, loading: clientsLoading } = useClients(business?.id ?? null);
   const { plan, loading: planLoading } = useActiveSubscription(user?.id ?? null);
+  const isLegacyAdmin = profile?.role === 'admin' && profile?.payment_status === 'active' && !plan;
 
   if (bookingsLoading || (activeProducts && ordersLoading) || clientsLoading) {
     return (
@@ -105,6 +106,12 @@ export default function OverviewPage() {
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
               <Crown size={12} />
               {plan.name}
+            </span>
+          )}
+          {isLegacyAdmin && !plan && (
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1">
+              <AlertTriangle size={12} />
+              {t('overview.plan.legacyTitle')}
             </span>
           )}
         </div>
@@ -219,6 +226,31 @@ export default function OverviewPage() {
           </div>
         );
       })()}
+
+      {/* Fallback card for admins without a subscription record */}
+      {isLegacyAdmin && (
+        <div className="rounded-2xl border bg-dark-card border-white/5 p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-600/10 flex items-center justify-center">
+                <Crown size={24} className="text-amber-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="text-white font-bold">{t('overview.plan.legacyTitle')}</p>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">
+                    {t('overview.plan.legacyTitle')}
+                  </span>
+                </div>
+                <p className="text-gray-400 text-sm mt-1">{t('overview.plan.legacyDesc')}</p>
+              </div>
+            </div>
+            <Link to="/dashboard/pago" className="flex items-center gap-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shrink-0">
+              {t('overview.plan.choosePlan')} <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

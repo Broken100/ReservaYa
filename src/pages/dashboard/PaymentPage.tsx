@@ -74,12 +74,12 @@ export default function PaymentPage() {
 
   const formatBookings = (max: number | null) => {
     if (max === null || max === 0) return t('payment.unlimitedBookings');
-    return t('payment.upToBookings', { count: max });
+    return t('payment.upToBookings', { max });
   };
 
   const formatProfessionals = (max: number | null) => {
     if (max === null || max === 0) return t('payment.unlimitedProfessionals');
-    return t('payment.maxProfessionals', { count: max });
+    return t('payment.maxProfessionals', { max });
   };
 
   const handlePayment = async () => {
@@ -232,7 +232,7 @@ export default function PaymentPage() {
                         </div>
                         {hasAnnualDiscount && (
                           <div className="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-green-500/15 text-green-400 text-xs font-semibold border border-green-500/20">
-                            {t('payment.savePercent', { percent: plan.annual_discount_pct })}
+                            {t('payment.savePercent', { pct: plan.annual_discount_pct })}
                           </div>
                         )}
                       </>

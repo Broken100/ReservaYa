@@ -104,6 +104,11 @@
     "selectService": "Select a service",
     "selectProfessional": "Select a professional",
     "selectDate": "Select date and time",
+    "selectDateTime": "Select date and time",
+    "availableTimes": "Available Times",
+    "searchingAvailability": "Searching availability...",
+    "loadError": "Error loading availability",
+    "noAvailabilityForDate": "No availability for this date",
     "confirm": "Confirm Booking",
     "cancel": "Cancel Booking",
     "success": "Booking confirmed!",
@@ -112,7 +117,34 @@
     "price": "Price",
     "available": "Available",
     "unavailable": "Unavailable",
-    "minutes": "min"
+    "minutes": "min",
+    "add": "Add",
+    "soldOut": "Sold out",
+    "anyProfessional": "Any professional",
+    "back": "Back",
+    "maxAvailability": "Maximum availability",
+    "noServices": "No services available",
+    "services": "Services",
+    "store": "Store",
+    "errorConfirmReserva": "Error confirming booking",
+    "errorProcessOrder": "Error processing order",
+    "orderSuccess": {
+      "title": "Order Placed!",
+      "detail": "We'll contact you soon to confirm.",
+      "back": "Back to home"
+    },
+    "cart": {
+      "title": "Your Cart",
+      "viewCart": "View Cart",
+      "noProducts": "No products in cart",
+      "paymentMethod": "Payment Method",
+      "cash": "Cash",
+      "transfer": "Transfer",
+      "transferWhatsApp": "Send receipt via WhatsApp",
+      "transferNote": "Make the transfer and send the receipt to confirm your order.",
+      "totalToPay": "Total to Pay",
+      "confirmOrder": "Confirm Order"
+    }
   },
   "client": {
     "explore": "Explore",
@@ -121,12 +153,31 @@
     "cancelSuccess": "Booking successfully cancelled.",
     "profileTitle": "My Profile",
     "profileSubtitle": "Update your contact information for your bookings.",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "welcome": "Complete Your Profile",
+    "welcomeDesc": "To receive booking notifications, complete your details.",
+    "fullName": "Full Name",
+    "whatsappPhone": "WhatsApp / Phone",
+    "phonePlaceholder": "E.g.: +593 99 999 9999",
+    "saving": "Saving...",
+    "completeRegistration": "Complete Registration",
+    "signOut": "Sign Out",
+    "errorPhoneRequired": "Phone is required",
+    "errorSave": "Error saving profile",
+    "reservaYaClient": "ReservaYa Client",
+    "avatarRecommendation": "Add a profile photo",
+    "namePlaceholder": "E.g.: Maria Gomez",
+    "phoneHelp": "We'll use this number to notify you about your bookings",
+    "savedSuccess": "Profile updated",
+    "errorAllFields": "Complete all fields",
+    "errorUploadImage": "Error uploading image"
   },
   "overview": {
     "greeting": "Hello, {{name}}!",
     "subtitle": "Here's a summary of what's happening in your business today.",
     "recentActivity": "Recent Activity",
+    "pending": "pending",
+    "pendingPayment": "pending payment",
     "viewAll": "View all",
     "bookingPrefix": "Booking:",
     "orderLabel": "Order",
@@ -162,7 +213,10 @@
       "limitReached": "Limit reached",
       "limitReachedDesc": "Upgrade to Pro to receive more bookings this month.",
       "almostFull": "{{remaining}} bookings left this month",
-      "changePlan": "Change plan"
+      "changePlan": "Change plan",
+      "legacyTitle": "Legacy plan",
+      "legacyDesc": "You don't have a plan assigned. Choose one to activate your booking counter and account limits.",
+      "choosePlan": "Choose plan"
     }
   },
   "agenda": {
@@ -311,6 +365,7 @@
     "status": { "pending": "Pending", "completed": "Completed", "cancelled": "Cancelled" },
     "client": "Client",
     "totalToCharge": "Total to charge",
+    "paymentLabel": "Payment method",
     "payment": { "cash": "Cash", "transfer": "Transfer" },
     "unknownProduct": "Unknown Product",
     "archiveConfirm": "Archive this order? It will no longer appear in this list.",
@@ -469,6 +524,8 @@
     "processing": "Processing...",
     "secureNote": "Secure encrypted payment. Cancel anytime.",
     "errorPayment": "Error processing payment. Please try again.",
+    "errorLoadingPlans": "Error loading plans",
+    "successSubscription": "Subscription activated successfully!",
     "loadingPlans": "Loading plans..."
   },
   "chat": {
@@ -480,5 +537,89 @@
     "whatsappDefault": "Hello, I need information.",
     "whatsappContact": "Contact via WhatsApp",
     "openAI": "Open AI chat"
+  },
+  "layout": {
+    "dashboard": {
+      "loading": "Loading your business...",
+      "retry": "Retry",
+      "setupTitle": "Set Up Your Business",
+      "setupSubtitle": "Complete the basic details to start receiving bookings.",
+      "businessName": "Business Name",
+      "businessNamePlaceholder": "E.g.: The Style Barbershop",
+      "category": "Category",
+      "categories": {
+        "0": "Beauty",
+        "1": "Health",
+        "2": "Gastronomy",
+        "3": "Other"
+      },
+      "otherCategory": "Other category",
+      "categoryCustom": "Specify the category",
+      "categoryCustomPlaceholder": "E.g.: Veterinary",
+      "phone": "WhatsApp / Phone",
+      "phonePlaceholder": "E.g.: +593 99 999 9999",
+      "city": "City",
+      "cityPlaceholder": "E.g.: Quito",
+      "startNow": "Start Now",
+      "signOut": "Sign Out"
+    }
+  },
+  "myBookings": {
+    "title": "My Bookings",
+    "tabs": {
+      "bookings": "Bookings",
+      "orders": "Orders"
+    },
+    "filter": {
+      "all": "All"
+    },
+    "sort": {
+      "priority": "Priority",
+      "dateDesc": "Most recent",
+      "dateAsc": "Oldest"
+    },
+    "service": "Service",
+    "business": "Business",
+    "professional": "Professional",
+    "unassigned": "Unassigned",
+    "schedule": "Schedule",
+    "cancelBooking": "Cancel Booking",
+    "leaveReview": "Leave a Review",
+    "store": "Store",
+    "cancelOrder": "Cancel Order",
+    "noBookings": "You don't have any bookings yet",
+    "noBookingsWithStatus": "No bookings with this status",
+    "noOrders": "You don't have any orders yet",
+    "noOrdersWithStatus": "No orders with this status",
+    "exploreStores": "Explore Stores",
+    "errorCancel": "Error cancelling",
+    "cancelOrderConfirm": "Cancel this order?",
+    "cancelOrderSuccess": "Order cancelled",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "payment": {
+      "cash": "Cash",
+      "transfer": "Transfer"
+    },
+    "feedback": {
+      "title": "Rate your experience",
+      "subtitle": "How was the service?",
+      "rating": {
+        "1": "Very bad",
+        "2": "Bad",
+        "3": "Average",
+        "4": "Good",
+        "5": "Excellent"
+      },
+      "placeholder": "Tell us more about your experience...",
+      "cancel": "Cancel",
+      "send": "Send",
+      "thanks": "Thanks for your review!",
+      "error": "Error sending review"
+    }
   }
 }
