@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 import { Calendar, Search, User, LogOut, CalendarCheck } from 'lucide-react';
@@ -31,7 +32,7 @@ export default function ClientLayout() {
   };
 
   const handleSetup = async () => {
-    if (!setupForm.phone) return alert(t('client.errorPhoneRequired'));
+    if (!setupForm.phone) return toast.error(t('client.errorPhoneRequired'));
     setSaving(true);
     try {
       const { error } = await supabase
@@ -45,7 +46,7 @@ export default function ClientLayout() {
       if (error) throw error;
       window.location.reload();
     } catch (err) {
-      alert(t('client.errorSave'));
+      toast.error(t('client.errorSave'));
     } finally {
       setSaving(false);
     }

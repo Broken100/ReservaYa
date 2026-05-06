@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBookings } from '../../hooks/useBookings';
@@ -157,7 +158,8 @@ export default function BookingPage() {
         booking_date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
         start_time: selectedTime + ':00',
         end_time: endTime,
-        status: 'pending'
+        status: 'pending',
+        payment_method: paymentMethod
       });
 
       if (!success) return;
@@ -168,7 +170,7 @@ export default function BookingPage() {
         window.open(`https://wa.me/${business.whatsapp_number}?text=${text}`, '_blank');
       }
     } catch (err: unknown) {
-      alert(t('booking.errorConfirmReserva') + ': ' + (err instanceof Error ? err.message : 'Error desconocido'));
+      toast.error(t('booking.errorConfirmReserva') + ': ' + (err instanceof Error ? err.message : 'Error desconocido'));
     } finally {
       setConfirming(false);
     }
@@ -260,7 +262,7 @@ export default function BookingPage() {
         window.open(`https://wa.me/${business.whatsapp_number}?text=${text}`, '_blank');
       }
     } catch (err: unknown) {
-      alert(t('booking.errorProcessOrder') + ': ' + (err instanceof Error ? err.message : 'Error desconocido'));
+      toast.error(t('booking.errorProcessOrder') + ': ' + (err instanceof Error ? err.message : 'Error desconocido'));
     } finally {
       setCheckoutLoading(false);
     }
@@ -380,6 +382,8 @@ export default function BookingPage() {
                 professional={selectedProfessional}
                 date={selectedDate}
                 time={selectedTime}
+                paymentMethod={paymentMethod}
+                onPaymentMethodChange={setPaymentMethod}
                 onConfirm={confirmBooking}
                 onBack={() => setStep('datetime')}
                 loading={confirming}

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { useBookings } from '../../hooks/useBookings';
 import { useBusiness } from '../../hooks/useBusiness';
 import DayView from './agenda/DayView';
@@ -108,7 +109,7 @@ export default function AgendaPage() {
       await confirmPending(id);
       setTimeout(() => setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; }), 1500);
     } catch (err) {
-      alert(t('agenda.errorConfirm'));
+      toast.error(t('agenda.errorConfirm'));
       setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; });
     }
   };
@@ -119,7 +120,7 @@ export default function AgendaPage() {
       await cancelPending(id);
       setTimeout(() => setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; }), 1500);
     } catch (err) {
-      alert(t('agenda.errorReject'));
+      toast.error(t('agenda.errorReject'));
       setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; });
     }
   };
@@ -312,7 +313,7 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
     try {
       await action();
     } catch (err: unknown) {
-      alert(`Error: ${err instanceof Error ? err.message : t('agenda.errorAction')}`);
+      toast.error(`Error: ${err instanceof Error ? err.message : t('agenda.errorAction')}`);
     }
   };
 

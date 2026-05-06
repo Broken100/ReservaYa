@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Save, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useBusiness } from '../../hooks/useBusiness';
 import { useBusinessHours } from '../../hooks/useBusinessHours';
 import { uploadPublicAsset } from '../../lib/storage';
@@ -110,7 +111,7 @@ export default function SettingsPage() {
       if (url) {
         setForm(p => ({ ...p, logo_url: url }));
       } else {
-        alert(t('settings.errorUploadLogo'));
+        toast.error(t('settings.errorUploadLogo'));
       }
     } finally {
       setUploadingLogo(false);
@@ -125,7 +126,7 @@ export default function SettingsPage() {
     try {
       const url = await uploadPublicAsset(file, 'qrcodes');
       if (url) setForm(p => ({ ...p, qr_code_url: url }));
-      else alert(t('settings.errorUploadQr'));
+      else toast.error(t('settings.errorUploadQr'));
     } finally {
       setUploadingQr(false);
     }
@@ -141,9 +142,9 @@ export default function SettingsPage() {
         close_time: close_time.length === 5 ? `${close_time}:00` : close_time,
         is_closed
       })));
-      alert(t('settings.savedSuccess'));
+      toast.success(t('settings.savedSuccess'));
     } catch (err) {
-      alert(t('settings.errorSave'));
+      toast.error(t('settings.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -165,7 +166,7 @@ export default function SettingsPage() {
           await deleteBusiness(business.id);
           navigate('/');
         } catch (e) {
-          alert(t('settings.errorDelete'));
+          toast.error(t('settings.errorDelete'));
         }
       }
     }

@@ -146,7 +146,12 @@
       "storeRevenue": "Revenue (Store)",
       "completedSales": "Completed sales",
       "serviceRevenue": "Service Revenue",
-      "completedBookings": "Completed/Confirmed bookings"
+      "completedBookings": "Completed/Confirmed bookings",
+      "cash": "Cash",
+      "transfer": "Transfer",
+      "payments": "payments",
+      "bookingsUsed": "bookings used",
+      "unlimitedBookings": "Unlimited bookings"
     }
   },
   "agenda": {
@@ -205,7 +210,15 @@
       "price": "Price ($)",
       "active": "Active Service",
       "activeHelp": "If inactive, clients won't be able to book it.",
-      "imageHint": "Recommended: 16:9 (JPG, PNG)"
+      "imageHint": "Recommended: 16:9 (JPG, PNG)",
+      "category": "Category",
+      "categoryPlaceholder": "E.g.: Hair, Nails, Spa...",
+      "durationDisplay": "Duration (display format)",
+      "durationDisplayPlaceholder": "E.g.: 45-60 min",
+      "whatsIncluded": "What's Included",
+      "whatsIncludedPlaceholder": "Wash, cut, blow-dry...",
+      "recommendations": "Recommendations",
+      "recommendationsPlaceholder": "Wear comfortable clothes, avoid sun..."
     }
   },
   "professionals": {
@@ -224,14 +237,28 @@
     "saveChanges": "Save Changes",
     "create": "Create Professional",
     "form": {
-      "name": "Full Name",
+      "fullName": "Full Name (Displayed)",
+      "fullNamePlaceholder": "Full name",
+      "name": "Short Name",
       "namePlaceholder": "E.g.: Ana Gomez",
       "specialty": "Specialty",
       "specialtyPlaceholder": "E.g.: Senior Stylist, Masseuse...",
       "active": "Active Professional",
       "activeHelp": "If inactive, they won't receive bookings.",
-      "imageHint": "Recommended: 512x512px (JPG, PNG)"
-    }
+      "imageHint": "Recommended: 512x512px (JPG, PNG)",
+      "position": "Position / Specialty",
+      "positionPlaceholder": "E.g.: Senior Stylist, Therapeutic Masseuse",
+      "yearsExperience": "Years of Experience",
+      "bio": "Personal Biography",
+      "bioPlaceholder": "Tell a bit about your background and experience...",
+      "slogan": "Personal Slogan",
+      "sloganPlaceholder": "E.g.: Your well-being is my priority",
+      "availabilityNotes": "Availability Notes",
+      "availabilityNotesPlaceholder": "E.g.: Mon-Fri, 9am - 5pm",
+      "socialLinks": "Social Media"
+    },
+    "errorSave": "Error saving professional",
+    "errorDelete": "Error deleting professional"
   },
   "products": {
     "title": "Product Inventory",
@@ -254,7 +281,13 @@
       "stock": "Stock",
       "active": "Active Product",
       "activeHelp": "Deactivate to hide without deleting.",
-      "imageHint": "Formats: JPG, PNG. Square 1:1."
+      "imageHint": "Formats: JPG, PNG. Square 1:1.",
+      "category": "Category",
+      "categoryPlaceholder": "e.g. Personal Care, Accessories...",
+      "keyFeatures": "Key Features",
+      "keyFeaturesPlaceholder": "Separate with commas: Organic, Vegan, Gluten-free...",
+      "instructions": "Usage Instructions",
+      "instructionsPlaceholder": "How to use, recommendations..."
     },
     "errorSave": "Error saving product",
     "errorDelete": "Error deleting"
@@ -359,7 +392,16 @@
     "all": "All",
     "noResults": "We couldn't find businesses matching your search.",
     "cityUnspecified": "City not specified",
-    "reserve": "Reserve"
+    "reserve": "Reserve",
+    "filters": "Filters",
+    "clearFilters": "Clear",
+    "city": "City",
+    "allCities": "All cities",
+    "sortBy": "Sort by",
+    "sortByName": "Name (A-Z)",
+    "sortByRecent": "Most recent",
+    "result": "result",
+    "results": "results"
   },
   "contact": {
     "title": "We're here to help.",
@@ -389,9 +431,9 @@
     "title": "Activate your ReservaYa account",
     "subtitle": "You're one step away from digitizing your business. Choose the plan that best fits your needs and start today.",
     "secureAccess": "Secure Admin Access",
-    "plans": { "starter": "Starter", "premium": "Premium" },
+    "plans": { "starter": "Basic Plan", "premium": "Pro Plan" },
     "features": {
-      "upTo100": "Up to 100 bookings/month",
+      "upTo100": "Up to 50 bookings/month",
       "1Professional": "1 Professional",
       "emailSupport": "Email support",
       "basicPanel": "Basic dashboard",
@@ -403,11 +445,20 @@
     },
     "recommended": "RECOMMENDED",
     "perMonth": "/month",
+    "perYear": "/year",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "savePercent": "Save {{pct}}%",
+    "unlimitedBookings": "Unlimited bookings",
+    "upToBookings": "Up to {{max}} bookings/month",
+    "maxProfessionals": "{{max}} professional",
+    "unlimitedProfessionals": "Unlimited professionals",
     "trustBadge": "Over 500 businesses already trust us",
     "confirmSubscription": "Confirm Subscription",
     "processing": "Processing...",
     "secureNote": "Secure encrypted payment. Cancel anytime.",
-    "errorPayment": "Error processing payment. Please try again."
+    "errorPayment": "Error processing payment. Please try again.",
+    "loadingPlans": "Loading plans..."
   },
   "chat": {
     "assistant": "Virtual assistant",

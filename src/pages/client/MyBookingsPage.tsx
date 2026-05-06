@@ -6,6 +6,7 @@ import { useOrders } from '../../hooks/useOrders';
 import { supabase } from '../../lib/supabaseClient';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const STATUS_PRIORITY: Record<string, number> = { pending: 0, confirmed: 1, completed: 2, cancelled: 3 };
 
@@ -46,9 +47,9 @@ export default function MyBookingsPage() {
     if (window.confirm(t('client.cancelConfirm') || '¿Estás seguro de que deseas cancelar esta reserva?')) {
       try {
         await cancelBooking(id);
-        alert(t('client.cancelSuccess') || 'Reserva cancelada correctamente.');
+        toast.success(t('client.cancelSuccess') || 'Reserva cancelada correctamente.');
       } catch (err: any) {
-        alert(t('myBookings.errorCancel') + ': ' + (err.message || 'Inténtelo de nuevo'));
+        toast.error(t('myBookings.errorCancel') + ': ' + (err.message || 'Inténtelo de nuevo'));
       }
     }
   };
@@ -57,9 +58,9 @@ export default function MyBookingsPage() {
     if (window.confirm(t('myBookings.cancelOrderConfirm'))) {
       try {
         await updateOrderStatus(id, 'cancelled');
-        alert(t('myBookings.cancelOrderSuccess'));
+        toast.success(t('myBookings.cancelOrderSuccess'));
       } catch (err: any) {
-        alert(t('myBookings.errorCancel') + ': ' + (err.message || 'Inténtelo de nuevo'));
+        toast.error(t('myBookings.errorCancel') + ': ' + (err.message || 'Inténtelo de nuevo'));
       }
     }
   };
@@ -80,12 +81,12 @@ export default function MyBookingsPage() {
         .update({ rating: feedbackRating, review: feedbackText || null })
         .eq('id', feedbackTarget.id);
       if (error) throw error;
-      alert(t('myBookings.feedback.thanks'));
+      toast.success(t('myBookings.feedback.thanks'));
       setFeedbackTarget(null);
       // Force re-fetch by reloading — in production you'd update local state
       window.location.reload();
     } catch (err: any) {
-      alert(t('myBookings.feedback.error') + ': ' + (err.message || 'Inténtelo de nuevo'));
+      toast.error(t('myBookings.feedback.error') + ': ' + (err.message || 'Inténtelo de nuevo'));
     } finally {
       setFeedbackSaving(false);
     }

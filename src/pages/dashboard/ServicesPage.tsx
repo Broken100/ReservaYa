@@ -12,12 +12,12 @@ export default function ServicesPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '' });
+  const [form, setForm] = useState({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '', category: '', duration_display: '', whats_included: '', recommendations: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [serviceFilter, setServiceFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const resetForm = () => {
-    setForm({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '' });
+    setForm({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '', category: '', duration_display: '', whats_included: '', recommendations: '' });
     setShowForm(false);
     setEditingId(null);
   };
@@ -33,7 +33,7 @@ export default function ServicesPage() {
   };
 
   const handleEdit = (svc: typeof services[0]) => {
-    setForm({ name: svc.name, description: svc.description || '', duration_minutes: svc.duration_minutes, price: svc.price, currency: svc.currency, is_active: svc.is_active, image_url: svc.image_url || '' });
+    setForm({ name: svc.name, description: svc.description || '', duration_minutes: svc.duration_minutes, price: svc.price, currency: svc.currency, is_active: svc.is_active, image_url: svc.image_url || '', category: svc.category || '', duration_display: svc.duration_display || '', whats_included: svc.whats_included || '', recommendations: svc.recommendations || '' });
     setEditingId(svc.id);
     setShowForm(true);
   };
@@ -118,7 +118,15 @@ export default function ServicesPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-white mb-1 line-clamp-1">{service.name}</h3>
+                    {service.category && (
+                      <span className="inline-block text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20 mb-1">
+                        {service.category}
+                      </span>
+                    )}
                     <p className="text-gray-400 text-sm line-clamp-2 h-10">{service.description || t('services.noDescription')}</p>
+                    {service.whats_included && (
+                      <p className="text-gray-500 text-xs line-clamp-1 mt-1">{service.whats_included}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 bg-dark-bg p-1 rounded-xl border border-white/5 shrink-0 ml-4">
                   <button onClick={() => toggleActive(service.id, !service.is_active)} className="p-2 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title={service.is_active ? t('services.deactivate') : t('services.activate')}>
@@ -130,7 +138,7 @@ export default function ServicesPage() {
 
               <div className="flex items-center gap-3 mt-auto">
                 <span className="text-xs font-bold text-gray-400 bg-white/5 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-white/5">
-                  {service.duration_minutes} min
+                  {service.duration_display || `${service.duration_minutes} min`}
                 </span>
                  <span className="text-xs font-bold text-gray-300 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
                   ${Number(service.price).toFixed(2)}
@@ -208,6 +216,23 @@ export default function ServicesPage() {
                   </div>
                 </div>
                 
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.category')}</label>
+                  <input type="text" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" placeholder={t('services.form.categoryPlaceholder')} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.durationDisplay')}</label>
+                  <input type="text" value={form.duration_display} onChange={e => setForm(p => ({ ...p, duration_display: e.target.value }))} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" placeholder="Ej: 45-60 min" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.whatsIncluded')}</label>
+                  <textarea value={form.whats_included} onChange={e => setForm(p => ({ ...p, whats_included: e.target.value }))} rows={3} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none" placeholder={t('services.form.whatsIncludedPlaceholder')} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.recommendations')}</label>
+                  <textarea value={form.recommendations} onChange={e => setForm(p => ({ ...p, recommendations: e.target.value }))} rows={3} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none" placeholder={t('services.form.recommendationsPlaceholder')} />
+                </div>
+
                 <label className="flex items-center gap-3 bg-dark-card p-5 rounded-2xl border border-white/5 cursor-pointer hover:border-white/10 transition-colors">
                   <input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({...f, is_active: e.target.checked}))} className="w-5 h-5 accent-blue-600 rounded" />
                   <div>

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { FloatingChatButton } from './components/floating';
+import { ToastProvider } from './components/ui/Toast';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -84,6 +85,7 @@ export default function App() {
           </Route>
         </Routes>
         <FloatingChatButton />
+        <ToastProvider />
       </AuthProvider>
     </BrowserRouter>
   );

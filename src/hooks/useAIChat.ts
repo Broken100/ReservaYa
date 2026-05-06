@@ -6,13 +6,15 @@ interface ChatMessage {
   content: string;
 }
 
-export function useAIChat() {
+export function useAIChat(businessName?: string, mode: 'general' | 'booking_assistant' = 'general') {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: '¡Hola! Soy tu asistente virtual de ReservaYa. ¿En qué puedo ayudarte?' },
   ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
@@ -24,6 +26,17 @@ export function useAIChat() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  useEffect(() => {
+    if (businessName && mode === 'booking_assistant') {
+      setMessages(prev => {
+        if (prev.length > 1) return prev;
+        return [
+          { role: 'assistant', content: `¡Hola! Soy el asistente de ${businessName}. ¿Te puedo ayudar a agendar una cita o resolver dudas sobre nuestros servicios?` },
+        ];
+      });
+    }
+  }, [businessName, mode]);
+
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
     setError(null);
@@ -33,7 +46,7 @@ export function useAIChat() {
     setLoading(true);
 
     try {
-      const result = await sendChatMessage([...messages, userMsg], 'general');
+      const result = await sendChatMessage([...messagesRef.current, userMsg], mode);
       if (result.error) {
         setError(result.error);
       } else if (result.text) {
@@ -44,7 +57,17 @@ export function useAIChat() {
     } finally {
       setLoading(false);
     }
-  }, [messages]);
+  }, [mode]);
 
-  return { messages, loading, error, sendMessage, containerRef };
+  const clearChat = useCallback(() => {
+    setMessages([
+      { role: 'assistant', content: businessName && mode === 'booking_assistant' 
+        ? `¡Hola! Soy el asistente de ${businessName}. ¿Te puedo ayudar?` 
+        : '¡Hola! Soy tu asistente virtual de ReservaYa. ¿En qué puedo ayudarte?' 
+      },
+    ]);
+    setError(null);
+  }, [businessName, mode]);
+
+  return { messages, loading, error, sendMessage, clearChat, containerRef };
 }

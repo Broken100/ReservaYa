@@ -146,7 +146,12 @@
       "storeRevenue": "Ingresos (Tienda)",
       "completedSales": "Ventas completadas",
       "serviceRevenue": "Ingresos por Servicios",
-      "completedBookings": "Reservas completadas/confirmadas"
+      "completedBookings": "Reservas completadas/confirmadas",
+      "cash": "Efectivo",
+      "transfer": "Transferencia",
+      "payments": "pagos",
+      "bookingsUsed": "citas usadas",
+      "unlimitedBookings": "Citas ilimitadas"
     }
   },
   "agenda": {
@@ -210,7 +215,15 @@
       "price": "Precio ($)",
       "active": "Servicio Activo",
       "activeHelp": "Si está inactivo, los clientes no podrán reservarlo.",
-      "imageHint": "Recomendado: 16:9 (JPG, PNG)"
+      "imageHint": "Recomendado: 16:9 (JPG, PNG)",
+      "category": "Categoría",
+      "categoryPlaceholder": "Ej: Cabello, Uñas, Spa...",
+      "durationDisplay": "Duración (formato visible)",
+      "durationDisplayPlaceholder": "Ej: 45-60 min",
+      "whatsIncluded": "Qué incluye",
+      "whatsIncludedPlaceholder": "Lavado, corte, secado...",
+      "recommendations": "Recomendaciones",
+      "recommendationsPlaceholder": "Traer ropa cómoda, evitar sol..."
     }
   },
   "professionals": {
@@ -229,14 +242,28 @@
     "saveChanges": "Guardar Cambios",
     "create": "Crear Profesional",
     "form": {
-      "name": "Nombre Completo",
+      "fullName": "Nombre Completo (Mostrado)",
+      "fullNamePlaceholder": "Nombre completo",
+      "name": "Nombre Corto",
       "namePlaceholder": "Ej: Ana Gómez",
       "specialty": "Especialidad",
       "specialtyPlaceholder": "Ej: Estilista Senior, Masajista...",
       "active": "Profesional Activo",
       "activeHelp": "Si está inactivo, no podrá recibir reservas.",
-      "imageHint": "Recomendado: 512x512px (JPG, PNG)"
-    }
+      "imageHint": "Recomendado: 512x512px (JPG, PNG)",
+      "position": "Cargo / Especialidad",
+      "positionPlaceholder": "Ej: Estilista Senior, Masajista Terapéutico",
+      "yearsExperience": "Años de Experiencia",
+      "bio": "Biografía Personal",
+      "bioPlaceholder": "Cuento un poco sobre tu formación y experiencia...",
+      "slogan": "Eslogan Personal",
+      "sloganPlaceholder": "Ej: Tu bienestar es mi prioridad",
+      "availabilityNotes": "Notas de Disponibilidad",
+      "availabilityNotesPlaceholder": "Ej: Lunes a Viernes, 9am - 5pm",
+      "socialLinks": "Redes Sociales"
+    },
+    "errorSave": "Error al guardar el profesional",
+    "errorDelete": "Error al eliminar"
   },
   "products": {
     "title": "Inventario de Productos",
@@ -259,7 +286,13 @@
       "stock": "Stock",
       "active": "Producto Activo",
       "activeHelp": "Desactiva para ocultarlo sin eliminarlo.",
-      "imageHint": "Formatos: JPG, PNG. Cuadrada 1:1."
+      "imageHint": "Formatos: JPG, PNG. Cuadrada 1:1.",
+      "category": "Categoría",
+      "categoryPlaceholder": "Ej: Cuidado Personal, Accesorios...",
+      "keyFeatures": "Características Principales",
+      "keyFeaturesPlaceholder": "Separa características con comas",
+      "instructions": "Instrucciones de Uso",
+      "instructionsPlaceholder": "Modo de empleo, recomendaciones..."
     },
     "errorSave": "Error al guardar el producto",
     "errorDelete": "Error al eliminar"
@@ -390,7 +423,16 @@
     "all": "Todos",
     "noResults": "No encontramos negocios que coincidan con tu búsqueda.",
     "cityUnspecified": "Ciudad no especificada",
-    "reserve": "Reservar"
+    "reserve": "Reservar",
+    "filters": "Filtros",
+    "clearFilters": "Limpiar",
+    "city": "Ciudad",
+    "allCities": "Todas las ciudades",
+    "sortBy": "Ordenar por",
+    "sortByName": "Nombre (A-Z)",
+    "sortByRecent": "Más recientes",
+    "result": "resultado",
+    "results": "resultados"
   },
   "contact": {
     "title": "Estamos aquí para ayudarte.",
@@ -426,15 +468,15 @@
     "subtitle": "Estás a un paso de digitalizar tu negocio. Elige el plan que mejor se adapte a tus necesidades y comienza hoy mismo.",
     "secureAccess": "Acceso Administrativo Seguro",
     "plans": {
-      "starter": "Starter",
-      "premium": "Premium"
+      "starter": "Plan Básico",
+      "premium": "Plan Pro"
     },
     "features": {
-      "upTo100": "Hasta 100 reservas/mes",
+      "upTo100": "Hasta 50 citas/mes",
       "1Professional": "1 Profesional",
       "emailSupport": "Soporte por email",
       "basicPanel": "Panel básico",
-      "unlimited": "Reservas ilimitadas",
+      "unlimited": "Citas ilimitadas",
       "unlimitedProfessionals": "Profesionales ilimitados",
       "prioritySupport": "Soporte prioritario",
       "advancedPanel": "Panel avanzado",
@@ -442,11 +484,20 @@
     },
     "recommended": "RECOMENDADO",
     "perMonth": "/mes",
+    "perYear": "/año",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "savePercent": "Ahorra {{pct}}%",
+    "unlimitedBookings": "Citas ilimitadas",
+    "upToBookings": "Hasta {{max}} citas/mes",
+    "maxProfessionals": "{{max}} profesional",
+    "unlimitedProfessionals": "Profesionales ilimitados",
     "trustBadge": "Más de 500 negocios ya confían en nosotros",
     "confirmSubscription": "Confirmar Suscripción",
     "processing": "Procesando...",
     "secureNote": "Pago seguro encriptado. Cancela en cualquier momento.",
-    "errorPayment": "Error al procesar el pago. Inténtalo de nuevo."
+    "errorPayment": "Error al procesar el pago. Inténtalo de nuevo.",
+    "loadingPlans": "Cargando planes..."
   },
   "chat": {
     "assistant": "Asistente virtual",

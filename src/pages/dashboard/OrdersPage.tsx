@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShoppingBag, Loader2, CheckCircle, XCircle, Search, Package, Calendar, Archive } from 'lucide-react';
+import { toast } from 'sonner';
 import { useOrders } from '../../hooks/useOrders';
 import { useBusiness } from '../../hooks/useBusiness';
 
@@ -15,7 +16,7 @@ export default function OrdersPage() {
     try {
       await updateOrderStatus(id, status);
     } catch (err: any) {
-      alert(t('orders.errorUpdate', { message: err.message || 'Inténtelo de nuevo' }));
+      toast.error(t('orders.errorUpdate', { message: err.message || 'Inténtelo de nuevo' }));
     }
   };
 
@@ -124,7 +125,7 @@ export default function OrdersPage() {
                 <button onClick={async () => {
                   if (window.confirm(t('orders.archiveConfirm'))) {
                     try { await archiveOrder(order.id); } 
-                    catch (err: any) { alert(err.message); }
+                    catch (err: any) { toast.error(err.message); }
                   }
                 }} className="px-4 py-2 bg-gray-500/10 hover:bg-gray-500/20 text-gray-400 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
                   <Archive size={16} /> {t('orders.archive')}

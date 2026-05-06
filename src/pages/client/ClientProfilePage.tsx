@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { User, Phone, CheckCircle2, Loader2, Camera } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 import { uploadPublicAsset } from '../../lib/storage';
@@ -37,7 +38,7 @@ export default function ClientProfilePage() {
       if (url) {
         setForm(p => ({ ...p, avatar_url: url }));
       } else {
-        alert(t('client.errorUploadImage'));
+        toast.error(t('client.errorUploadImage'));
       }
     } finally {
       setUploadingImage(false);
@@ -45,7 +46,7 @@ export default function ClientProfilePage() {
   };
 
   const handleSave = async () => {
-    if (!form.full_name || !form.phone) return alert(t('client.errorAllFields'));
+    if (!form.full_name || !form.phone) return toast.error(t('client.errorAllFields'));
     
     setSaving(true);
     setSuccess(false);
@@ -67,7 +68,7 @@ export default function ClientProfilePage() {
       window.location.reload(); 
     } catch (err) {
       console.error('Error saving profile:', err);
-      alert(t('client.errorSave'));
+      toast.error(t('client.errorSave'));
     } finally {
       setSaving(false);
     }

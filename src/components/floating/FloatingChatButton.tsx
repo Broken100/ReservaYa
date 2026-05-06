@@ -1,19 +1,31 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageCircle, X, Send, Loader2, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Sparkles, Trash2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAIChat } from '../../hooks/useAIChat';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
-export function FloatingChatButton() {
+interface FloatingChatButtonProps {
+  businessName?: string;
+  mode?: 'general' | 'booking_assistant';
+}
+
+export function FloatingChatButton({ businessName, mode }: FloatingChatButtonProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const { messages, loading, error, sendMessage, containerRef } = useAIChat();
+  const { messages, loading, error, sendMessage, clearChat, containerRef } = useAIChat(businessName, mode);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleSend = () => {
     if (loading || !input.trim()) return;
@@ -23,7 +35,6 @@ export function FloatingChatButton() {
 
   return (
     <>
-      {/* Chat Panel */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -41,17 +52,29 @@ export function FloatingChatButton() {
                     <Sparkles size={18} className="text-white" />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold text-sm">ReservaYa IA</h3>
+                    <h3 className="text-white font-semibold text-sm">
+                      {businessName ? `${businessName} IA` : 'ReservaYa IA'}
+                    </h3>
                     <p className="text-gray-500 text-xs">{t('chat.assistant')}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-500 hover:text-white transition-colors p-1"
-                  aria-label={t('chat.close')}
-                >
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={clearChat}
+                    className="text-gray-500 hover:text-white transition-colors p-1"
+                    aria-label="Limpiar chat"
+                    title="Limpiar chat"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="text-gray-500 hover:text-white transition-colors p-1"
+                    aria-label={t('chat.close')}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
 
               {/* Messages */}
@@ -65,7 +88,7 @@ export function FloatingChatButton() {
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm ${
+                      className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm whitespace-pre-wrap ${
                         msg.role === 'user'
                           ? 'bg-blue-600 text-white rounded-br-md'
                           : 'bg-white/5 text-gray-200 rounded-bl-md'
@@ -81,9 +104,6 @@ export function FloatingChatButton() {
                       <Loader2 size={16} className="animate-spin text-gray-400" />
                     </div>
                   </div>
-                )}
-                {error && (
-                  <div className="text-center text-red-400 text-xs py-2">{error}</div>
                 )}
               </div>
 

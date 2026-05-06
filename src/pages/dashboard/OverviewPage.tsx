@@ -1,21 +1,24 @@
 import { useTranslation } from 'react-i18next';
-import { Calendar, Package, Users, TrendingUp, Clock, ChevronRight, ShoppingBag } from 'lucide-react';
+import { Calendar, Package, Users, TrendingUp, Clock, ChevronRight, ShoppingBag, Banknote, CreditCard, Crown } from 'lucide-react';
 import { useBusiness } from '../../hooks/useBusiness';
 import { useBookings } from '../../hooks/useBookings';
 import { useOrders } from '../../hooks/useOrders';
 import { useClients } from '../../hooks/useClients';
+import { useActiveSubscription } from '../../hooks/usePlans';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Card, SkeletonCard } from '../../components/ui';
 
 export default function OverviewPage() {
   const { t } = useTranslation();
   const { business } = useBusiness();
+  const { user } = useAuth();
   const activeProducts = business?.settings?.enable_products;
 
-  // Data fetching
   const { bookings, loading: bookingsLoading } = useBookings({ businessId: business?.id ?? null });
   const { orders, loading: ordersLoading } = useOrders({ businessId: business?.id ?? null });
   const { clients, loading: clientsLoading } = useClients(business?.id ?? null);
+  const { plan, loading: planLoading } = useActiveSubscription(user?.id ?? null);
 
   if (bookingsLoading || (activeProducts && ordersLoading) || clientsLoading) {
     return (
@@ -33,7 +36,13 @@ export default function OverviewPage() {
   const pendingBookings = bookings.filter(b => b.status === 'pending');
   const pendingOrders = orders.filter(o => o.status === 'pending');
   
-  const totalRevenue = orders
+  const completedBookings = bookings.filter(b => b.status === 'completed' || b.status === 'confirmed');
+
+  const totalServiceRevenue = completedBookings.reduce((sum, b) => sum + (b.services?.price || 0), 0);
+  const cashRevenue = completedBookings.filter(b => b.payment_method === 'cash').reduce((sum, b) => sum + (b.services?.price || 0), 0);
+  const transferRevenue = completedBookings.filter(b => b.payment_method === 'transfer').reduce((sum, b) => sum + (b.services?.price || 0), 0);
+
+  const totalStoreRevenue = orders
     .filter(o => o.status === 'completed')
     .reduce((sum, o) => sum + o.total_amount, 0);
 
@@ -64,7 +73,7 @@ export default function OverviewPage() {
     },
     activeProducts ? { 
       label: t('overview.stats.storeRevenue'), 
-      value: `$${totalRevenue.toFixed(2)}`, 
+      value: `$${totalStoreRevenue.toFixed(2)}`, 
       sub: t('overview.stats.completedSales'),
       icon: TrendingUp, 
       color: 'amber',
@@ -72,7 +81,7 @@ export default function OverviewPage() {
     } : null,
     { 
       label: t('overview.stats.serviceRevenue'), 
-      value: `$${bookings.filter(b => b.status === 'completed' || b.status === 'confirmed').reduce((sum, b) => sum + (b.services?.price || 0), 0).toFixed(2)}`, 
+      value: `$${totalServiceRevenue.toFixed(2)}`, 
       sub: t('overview.stats.completedBookings'),
       icon: TrendingUp, 
       color: 'emerald',
@@ -80,20 +89,58 @@ export default function OverviewPage() {
     },
   ].filter(Boolean);
 
-  // Recent Activity Feed
   const recentActivity = [
-    ...bookings.map(b => ({ ...b, type: 'booking', date: new Date(b.created_at) })),
-    ...orders.map(o => ({ ...o, type: 'order', date: new Date(o.created_at) }))
+    ...bookings.map(b => ({ ...b, type: 'booking' as const, date: new Date(b.created_at) })),
+    ...orders.map(o => ({ ...o, type: 'order' as const, date: new Date(o.created_at) }))
   ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5);
 
   return (
     <div className="space-y-10">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-white tracking-tight">
-          ¡Hola, {business?.name}!
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            ¡Hola, {business?.name}!
+          </h1>
+          {plan && (
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
+              <Crown size={12} />
+              {plan.name}
+            </span>
+          )}
+        </div>
         <p className="text-gray-400">{t('overview.subtitle')}</p>
       </div>
+
+      {/* Plan info bar */}
+      {plan && (
+        <div className="bg-dark-card border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${plan.max_bookings_per_month ? 'bg-blue-600/10 text-blue-400' : 'bg-amber-600/10 text-amber-400'}`}>
+              <Calendar size={20} />
+            </div>
+            <div>
+              <p className="text-white font-medium">{plan.name}</p>
+              <p className="text-gray-500 text-xs">
+                {plan.max_bookings_per_month
+                  ? `${bookings.length}/${plan.max_bookings_per_month} ${t('overview.stats.bookingsUsed')}`
+                  : t('overview.stats.unlimitedBookings')
+                }
+              </p>
+            </div>
+          </div>
+          {plan.max_bookings_per_month && (
+            <div className="w-32 h-2 bg-white/5 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  bookings.length >= plan.max_bookings_per_month ? 'bg-red-500' :
+                  bookings.length >= plan.max_bookings_per_month * 0.8 ? 'bg-amber-500' : 'bg-blue-500'
+                }`}
+                style={{ width: `${Math.min((bookings.length / plan.max_bookings_per_month) * 100, 100)}%` }}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -117,6 +164,41 @@ export default function OverviewPage() {
           </Link>
         ))}
       </div>
+
+      {/* Payment Method Breakdown */}
+      {totalServiceRevenue > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-dark-card border border-white/5 p-5 rounded-2xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600/10 flex items-center justify-center">
+                <TrendingUp size={16} className="text-emerald-400" />
+              </div>
+              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{t('overview.stats.serviceRevenue')}</p>
+            </div>
+            <p className="text-xl font-bold text-white">${totalServiceRevenue.toFixed(2)}</p>
+          </div>
+          <div className="bg-dark-card border border-white/5 p-5 rounded-2xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center">
+                <Banknote size={16} className="text-blue-400" />
+              </div>
+              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{t('overview.stats.cash')}</p>
+            </div>
+            <p className="text-xl font-bold text-white">${cashRevenue.toFixed(2)}</p>
+            <p className="text-gray-500 text-xs mt-1">{completedBookings.filter(b => b.payment_method === 'cash').length} {t('overview.stats.payments')}</p>
+          </div>
+          <div className="bg-dark-card border border-white/5 p-5 rounded-2xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-purple-600/10 flex items-center justify-center">
+                <CreditCard size={16} className="text-purple-400" />
+              </div>
+              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{t('overview.stats.transfer')}</p>
+            </div>
+            <p className="text-xl font-bold text-white">${transferRevenue.toFixed(2)}</p>
+            <p className="text-gray-500 text-xs mt-1">{completedBookings.filter(b => b.payment_method === 'transfer').length} {t('overview.stats.payments')}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Recent Activity */}

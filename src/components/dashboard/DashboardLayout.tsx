@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBusiness } from '../../hooks/useBusiness';
 import { useTheme } from '../../hooks/useTheme';
@@ -50,7 +51,7 @@ export default function DashboardLayout() {
     const validation = validateForm(businessSetupSchema, setupForm);
     if (!validation.success) {
       const firstError = Object.values(validation.errors!)[0];
-      alert(firstError);
+      toast.error(firstError);
       return;
     }
     

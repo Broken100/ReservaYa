@@ -57,6 +57,9 @@ export interface Product {
   image_url: string | null;
   is_active: boolean;
   stock: number;
+  category: string | null;
+  key_features: string[] | null;
+  instructions: string | null;
   created_at: string;
 }
 
@@ -70,15 +73,32 @@ export interface Service {
   currency: string;
   image_url: string | null;
   is_active: boolean;
+  category: string | null;
+  duration_display: string | null;
+  whats_included: string | null;
+  recommendations: string | null;
 }
 
 export interface Professional {
   id: string;
   business_id: string;
   name: string;
+  full_name: string | null;
   specialty: string | null;
+  position: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  years_experience: number | null;
+  bio: string | null;
+  featured_services: string[] | null;
+  slogan: string | null;
+  availability_notes: string | null;
+  social_links: {
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+    twitter?: string;
+  } | null;
 }
 
 export interface BusinessHours {
@@ -100,6 +120,7 @@ export interface Booking {
   start_time: string;      // HH:MM:SS
   end_time: string;        // HH:MM:SS
   status: BookingStatus;
+  payment_method: PaymentMethod;
   notes: string | null;
   rating: number | null;
   review: string | null;
@@ -140,6 +161,7 @@ export interface BookingWithClient extends Booking {
   } | null;
   services?: {
     name: string;
+    price: number;
   } | null;
   businesses?: {
     name: string;
@@ -175,6 +197,29 @@ export interface ClientInfo {
   last_activity: string;
 }
 
+export interface Plan {
+  id: string;
+  name: string;
+  price_monthly: number;
+  max_bookings_per_month: number | null;
+  max_professionals: number | null;
+  annual_discount_pct: number;
+  features: string[];
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Subscription {
+  id: string;
+  profile_id: string;
+  plan_id: string;
+  billing_period: 'monthly' | 'annual';
+  status: 'active' | 'cancelled' | 'expired';
+  starts_at: string;
+  ends_at: string | null;
+  created_at: string;
+}
+
 export type BusinessSettings = NonNullable<Business['settings']>;
 
 // ─── Insert types (omit auto-generated fields) ───────────
@@ -198,6 +243,10 @@ export type BusinessHoursUpdate = Partial<Omit<BusinessHours, 'id' | 'business_i
 export type BookingUpdate = Partial<Omit<Booking, 'id' | 'business_id' | 'created_at'>>;
 export type OrderUpdate = Partial<Omit<Order, 'id' | 'business_id' | 'client_id' | 'created_at'>>;
 export type OrderItemUpdate = Partial<Omit<OrderItem, 'id' | 'order_id' | 'created_at'>>;
+export type PlanInsert = Omit<Plan, 'created_at'>;
+export type SubscriptionInsert = Omit<Subscription, 'id' | 'created_at'>;
+export type PlanUpdate = Partial<Omit<Plan, 'id' | 'created_at'>>;
+export type SubscriptionUpdate = Partial<Omit<Subscription, 'id' | 'profile_id' | 'created_at'>>;
 
 // ─── Supabase Database type (for typed client) ───────────
 export interface Database {
@@ -248,6 +297,16 @@ export interface Database {
         Insert: OrderItemInsert;
         Update: OrderItemUpdate;
       };
+      plans: {
+        Row: Plan;
+        Insert: PlanInsert;
+        Update: PlanUpdate;
+      };
+      subscriptions: {
+        Row: Subscription;
+        Insert: SubscriptionInsert;
+        Update: SubscriptionUpdate;
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -259,6 +318,20 @@ export interface Database {
           p_items: any; // jsonb array
         };
         Returns: string;
+      };
+      activate_subscription: {
+        Args: {
+          p_profile_id: string;
+          p_plan_id: string;
+          p_billing_period: string;
+        };
+        Returns: string;
+      };
+      check_booking_limit: {
+        Args: {
+          p_business_id: string;
+        };
+        Returns: { can_book: boolean; remaining: number; limit_type: string };
       };
     };
     Enums: {
