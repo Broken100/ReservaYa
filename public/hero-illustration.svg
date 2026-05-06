@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <!-- Background -->
+  <rect width="800" height="600" rx="24" fill="#0B1120"/>
+  
+  <!-- Decorative glow -->
+  <circle cx="400" cy="300" r="280" fill="url(#glow)" opacity="0.15"/>
+  
+  <!-- Calendar card -->
+  <rect x="120" y="80" width="320" height="400" rx="20" fill="#151D2E" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  
+  <!-- Calendar header -->
+  <rect x="120" y="80" width="320" height="64" rx="20" fill="#1E293B"/>
+  <rect x="120" y="120" width="320" height="24" fill="#1E293B"/>
+  
+  <!-- Month dots -->
+  <circle cx="156" cy="112" r="6" fill="#3B82F6"/>
+  <circle cx="180" cy="112" r="6" fill="#60A5FA" opacity="0.5"/>
+  <circle cx="204" cy="112" r="6" fill="#60A5FA" opacity="0.5"/>
+  
+  <!-- Calendar grid -->
+  <g opacity="0.4">
+    <rect x="148" y="168" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="200" y="168" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="252" y="168" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="304" y="168" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="356" y="168" width="36" height="36" rx="8" fill="#1E293B"/>
+    
+    <rect x="148" y="220" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="200" y="220" width="36" height="36" rx="8" fill="#3B82F6"/>
+    <rect x="252" y="220" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="304" y="220" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="356" y="220" width="36" height="36" rx="8" fill="#1E293B"/>
+    
+    <rect x="148" y="272" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="200" y="272" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="252" y="272" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="304" y="272" width="36" height="36" rx="8" fill="#10B981"/>
+    <rect x="356" y="272" width="36" height="36" rx="8" fill="#1E293B"/>
+    
+    <rect x="148" y="324" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="200" y="324" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="252" y="324" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="304" y="324" width="36" height="36" rx="8" fill="#1E293B"/>
+    <rect x="356" y="324" width="36" height="36" rx="8" fill="#1E293B"/>
+  </g>
+  
+  <!-- Checkmark on green date -->
+  <path d="M316 284l6 6 10-10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Clock card -->
+  <rect x="480" y="120" width="220" height="160" rx="16" fill="#151D2E" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <circle cx="590" cy="200" r="44" stroke="#3B82F6" stroke-width="3" fill="none"/>
+  <circle cx="590" cy="200" r="4" fill="#3B82F6"/>
+  <line x1="590" y1="200" x2="590" y2="172" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+  <line x1="590" y1="200" x2="610" y2="200" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+  <rect x="520" y="152" width="48" height="8" rx="4" fill="#1E293B"/>
+  <rect x="520" y="168" width="72" height="6" rx="3" fill="#1E293B" opacity="0.5"/>
+  
+  <!-- Notification card -->
+  <rect x="480" y="310" width="220" height="140" rx="16" fill="#151D2E" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <rect x="510" y="340" width="160" height="40" rx="10" fill="#1E293B"/>
+  <circle cx="534" cy="360" r="10" fill="#10B981"/>
+  <path d="M530 360l3 3 6-6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="554" y="354" width="96" height="6" rx="3" fill="#3B82F6" opacity="0.3"/>
+  <rect x="554" y="366" width="72" height="4" rx="2" fill="#1E293B"/>
+  
+  <rect x="510" y="394" width="160" height="40" rx="10" fill="#1E293B"/>
+  <circle cx="534" cy="414" r="10" fill="#F59E0B"/>
+  <rect x="528" y="410" width="4" height="8" rx="2" fill="white"/>
+  <rect x="536" y="408" width="4" height="12" rx="2" fill="white"/>
+  <rect x="554" y="408" width="96" height="6" rx="3" fill="#F59E0B" opacity="0.3"/>
+  <rect x="554" y="420" width="72" height="4" rx="2" fill="#1E293B"/>
+  
+  <!-- Floating elements -->
+  <rect x="380" y="420" width="140" height="52" rx="12" fill="#151D2E" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <circle cx="410" cy="446" r="14" fill="#3B82F6" opacity="0.15"/>
+  <path d="M404 446l4 4 8-8" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="436" y="438" width="64" height="6" rx="3" fill="#3B82F6" opacity="0.3"/>
+  <rect x="436" y="450" width="48" height="4" rx="2" fill="#1E293B"/>
+  
+  <!-- Bottom bar chart -->
+  <rect x="120" y="460" width="200" height="80" rx="12" fill="#151D2E" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <rect x="144" y="500" width="16" height="24" rx="4" fill="#3B82F6" opacity="0.4"/>
+  <rect x="172" y="488" width="16" height="36" rx="4" fill="#3B82F6" opacity="0.6"/>
+  <rect x="200" y="476" width="16" height="48" rx="4" fill="#3B82F6"/>
+  <rect x="228" y="492" width="16" height="32" rx="4" fill="#3B82F6" opacity="0.5"/>
+  <rect x="256" y="484" width="16" height="40" rx="4" fill="#3B82F6" opacity="0.7"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#0B1120"/>
+    </radialGradient>
+  </defs>
+</svg>

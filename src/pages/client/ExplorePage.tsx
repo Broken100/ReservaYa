@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabaseClient';
 import { Search, MapPin, Building2, ChevronRight, Loader2, SlidersHorizontal, X, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { useFavorites } from '../../hooks/useFavorites';
+import FavoriteButton from '../../components/ui/FavoriteButton';
 
 type Business = {
   id: string;
@@ -16,6 +19,8 @@ type Business = {
 
 export default function ExplorePage() {
   const { t } = useTranslation();
+  const { profile } = useAuth();
+  const { isFavorited, toggleFavorite } = useFavorites(profile?.id ?? null);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -224,7 +229,12 @@ export default function ExplorePage() {
               to={`/reservar/${business.slug}`}
               className="group bg-dark-card border border-white/5 hover:border-blue-500/50 rounded-3xl p-6 transition-all hover:shadow-xl hover:shadow-blue-500/10 flex flex-col h-full relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
+              <div className="absolute top-0 right-0 p-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
+                <FavoriteButton
+                  isFavorited={isFavorited({ businessId: business.id })}
+                  onToggle={() => toggleFavorite({ businessId: business.id })}
+                  size={18}
+                />
                 <ChevronRight className="text-blue-400" />
               </div>
               

@@ -98,7 +98,8 @@
     "addProfessional": "Agregar Profesional",
     "home": "Inicio",
     "orders": "Pedidos",
-    "products": "Productos"
+    "products": "Productos",
+    "archive": "Archivados"
   },
   "booking": {
     "selectService": "Selecciona un servicio",
@@ -128,6 +129,18 @@
     "store": "Tienda",
     "errorConfirmReserva": "Error al confirmar la reserva",
     "errorProcessOrder": "Error al procesar el pedido",
+    "backToHome": "Volver al inicio",
+    "select": "Seleccionar",
+    "includes": "Incluye",
+    "recommendationsTitle": "Recomendaciones",
+    "experience": "Experiencia",
+    "years": "años",
+    "availability": "Disponibilidad",
+    "chooseProfessional": "Elegir profesional",
+    "reviews": "Reseñas",
+    "noReviews": "Aún no hay reseñas",
+    "averageRating": "{{rating}} de 5",
+    "reviewCount": "{{count}} reseñas",
     "orderSuccess": {
       "title": "¡Pedido Realizado!",
       "detail": "Te contactaremos pronto para confirmar.",
@@ -216,7 +229,17 @@
       "changePlan": "Cambiar plan",
       "legacyTitle": "Plan heredado",
       "legacyDesc": "No tienes un plan asignado. Elige uno para activar el contador y límites de tu cuenta.",
-      "choosePlan": "Elegir plan"
+      "choosePlan": "Elegir plan",
+      "upgradeProfessional": "Actualiza a Pro para agregar más profesionales",
+      "upgradeBookings": "Has alcanzado el límite de citas mensuales. Actualiza a Pro para citas ilimitadas."
+    },
+    "planGating": {
+      "professionalLimit": "Límite de profesionales alcanzado",
+      "professionalLimitDesc": "Tu plan actual permite {{max}} profesional. Actualiza para agregar más.",
+      "bookingLimit": "Límite de citas alcanzado",
+      "bookingLimitDesc": "Tu plan permite {{max}} citas al mes. Actualiza a Pro para citas ilimitadas.",
+      "upgradeToPro": "Actualizar a Pro",
+      "proFeature": "Pro"
     }
   },
   "agenda": {
@@ -482,6 +505,22 @@
     "errorUploadLogo": "Error al subir el logo",
     "errorUploadQr": "Error al subir el QR"
   },
+  "favorites": {
+    "title": "Favoritos",
+    "empty": "Aún no tienes favoritos",
+    "emptyBusinesses": "No tienes negocios favoritos",
+    "emptyServices": "No tienes servicios favoritos",
+    "emptyProfessionals": "No tienes profesionales favoritos",
+    "emptyProducts": "No tienes productos favoritos",
+    "all": "Todos",
+    "businesses": "Negocios",
+    "services": "Servicios",
+    "professionals": "Profesionales",
+    "products": "Productos",
+    "added": "Agregado a favoritos",
+    "removed": "Eliminado de favoritos",
+    "loginRequired": "Inicia sesión para guardar favoritos"
+  },
   "explore": {
     "title": "Explorar Negocios",
     "subtitle": "Encuentra y reserva en los mejores lugares de tu ciudad.",
@@ -576,6 +615,30 @@
     "whatsappDefault": "Hola, necesito información.",
     "whatsappContact": "Contactar por WhatsApp",
     "openAI": "Abrir chat con IA"
+  },
+  "archive": {
+    "title": "Archivados",
+    "tabs": {
+      "bookings": "Reservas",
+      "orders": "Pedidos"
+    },
+    "empty": "No hay reservas archivadas",
+    "emptyOrders": "No hay pedidos archivados",
+    "restore": "Restaurar",
+    "restoreSuccess": "Reserva restaurada",
+    "deletePermanent": "Eliminar permanentemente",
+    "deleteConfirm": "¿Eliminar permanentemente? Esta acción no se puede deshacer.",
+    "deleteSuccess": "Eliminado permanentemente",
+    "select": "Seleccionar",
+    "selectAll": "Seleccionar todos",
+    "selected": "{{count}} seleccionados",
+    "restoreSelected": "Restaurar seleccionados",
+    "deleteSelected": "Eliminar seleccionados",
+    "export": "Exportar",
+    "exportCSV": "Exportar CSV",
+    "noSelection": "Selecciona al menos un elemento",
+    "restoring": "Restaurando...",
+    "deleting": "Eliminando..."
   },
   "layout": {
     "dashboard": {

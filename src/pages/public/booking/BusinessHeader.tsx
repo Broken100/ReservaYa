@@ -1,4 +1,7 @@
-import { MapPin, Instagram, Facebook, Globe, MessageCircle } from 'lucide-react';
+import { MapPin, Instagram, Facebook, Globe, MessageCircle, ChevronLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../../contexts/AuthContext';
 import type { Business } from '../../../types/database';
 
 interface ThemeColor {
@@ -23,8 +26,19 @@ interface BusinessHeaderProps {
 }
 
 export default function BusinessHeader({ business, settings, textClass, textMutedClass, tColor }: BusinessHeaderProps) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { role } = useAuth();
+
   return (
     <div className="text-center mb-10">
+      <button
+        onClick={() => navigate(role === 'client' ? '/cliente/explorar' : '/')}
+        className={`flex items-center gap-1 ${textMutedClass} hover:${textClass} transition-colors mb-6`}
+      >
+        <ChevronLeft size={18} />
+        {t('booking.backToHome')}
+      </button>
       {business.logo_url ? (
         <img src={business.logo_url} alt={business.name} className={`w-24 h-24 rounded-3xl mx-auto mb-5 object-cover shadow-2xl ${tColor.shadow}`} />
       ) : (

@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBookings } from '../../hooks/useBookings';
 import { useBusiness } from '../../hooks/useBusiness';
+import { generateCSV, downloadCSV } from '../../hooks/useExport';
 import DayView from './agenda/DayView';
 import MonthView from './agenda/MonthView';
 import YearView from './agenda/YearView';
@@ -189,6 +190,36 @@ export default function AgendaPage() {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-white">{t('dashboard.agenda')}</h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (bookings.length === 0) return;
+                  const csv = generateCSV(
+                    bookings.map(b => ({
+                      client_name: b.client?.full_name || '',
+                      service_name: b.services?.name || '',
+                      booking_date: b.booking_date,
+                      start_time: b.start_time?.slice(0, 5) || '',
+                      status: b.status,
+                      payment_method: b.payment_method,
+                    })),
+                    [
+                      { key: 'client_name', label: 'Cliente' },
+                      { key: 'service_name', label: 'Servicio' },
+                      { key: 'booking_date', label: 'Fecha' },
+                      { key: 'start_time', label: 'Hora' },
+                      { key: 'status', label: 'Estado' },
+                      { key: 'payment_method', label: 'Método de Pago' },
+                    ]
+                  );
+                  downloadCSV(csv, `reservas-${new Date().toISOString().slice(0, 10)}.csv`);
+                }}
+                className="p-2 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
+                title="Exportar CSV"
+              >
+                <Download size={18} />
+              </button>
+            </div>
           <div className="flex items-center gap-2 bg-dark-card rounded-xl border border-white/5 p-1">
             {(['day', 'month', 'year'] as ViewMode[]).map(v => (
               <button

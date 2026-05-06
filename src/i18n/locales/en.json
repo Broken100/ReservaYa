@@ -98,7 +98,8 @@
     "addProfessional": "Add Professional",
     "home": "Home",
     "orders": "Orders",
-    "products": "Products"
+    "products": "Products",
+    "archive": "Archive"
   },
   "booking": {
     "selectService": "Select a service",
@@ -128,6 +129,18 @@
     "store": "Store",
     "errorConfirmReserva": "Error confirming booking",
     "errorProcessOrder": "Error processing order",
+    "backToHome": "Back to home",
+    "select": "Select",
+    "includes": "Includes",
+    "recommendationsTitle": "Recommendations",
+    "experience": "Experience",
+    "years": "years",
+    "availability": "Availability",
+    "chooseProfessional": "Choose professional",
+    "reviews": "Reviews",
+    "noReviews": "No reviews yet",
+    "averageRating": "{{rating}} out of 5",
+    "reviewCount": "{{count}} reviews",
     "orderSuccess": {
       "title": "Order Placed!",
       "detail": "We'll contact you soon to confirm.",
@@ -216,7 +229,17 @@
       "changePlan": "Change plan",
       "legacyTitle": "Legacy plan",
       "legacyDesc": "You don't have a plan assigned. Choose one to activate your booking counter and account limits.",
-      "choosePlan": "Choose plan"
+      "choosePlan": "Choose plan",
+      "upgradeProfessional": "Upgrade to Pro to add more professionals",
+      "upgradeBookings": "You've reached the monthly booking limit. Upgrade to Pro for unlimited bookings."
+    },
+    "planGating": {
+      "professionalLimit": "Professional limit reached",
+      "professionalLimitDesc": "Your current plan allows {{max}} professional. Upgrade to add more.",
+      "bookingLimit": "Booking limit reached",
+      "bookingLimitDesc": "Your plan allows {{max}} bookings per month. Upgrade to Pro for unlimited bookings.",
+      "upgradeToPro": "Upgrade to Pro",
+      "proFeature": "Pro"
     }
   },
   "agenda": {
@@ -451,6 +474,22 @@
     "errorUploadLogo": "Error uploading logo",
     "errorUploadQr": "Error uploading QR"
   },
+  "favorites": {
+    "title": "Favorites",
+    "empty": "You don't have any favorites yet",
+    "emptyBusinesses": "No favorite businesses",
+    "emptyServices": "No favorite services",
+    "emptyProfessionals": "No favorite professionals",
+    "emptyProducts": "No favorite products",
+    "all": "All",
+    "businesses": "Businesses",
+    "services": "Services",
+    "professionals": "Professionals",
+    "products": "Products",
+    "added": "Added to favorites",
+    "removed": "Removed from favorites",
+    "loginRequired": "Sign in to save favorites"
+  },
   "explore": {
     "title": "Explore Businesses",
     "subtitle": "Find and book at the best places in your city.",
@@ -537,6 +576,30 @@
     "whatsappDefault": "Hello, I need information.",
     "whatsappContact": "Contact via WhatsApp",
     "openAI": "Open AI chat"
+  },
+  "archive": {
+    "title": "Archive",
+    "tabs": {
+      "bookings": "Bookings",
+      "orders": "Orders"
+    },
+    "empty": "No archived bookings",
+    "emptyOrders": "No archived orders",
+    "restore": "Restore",
+    "restoreSuccess": "Restored successfully",
+    "deletePermanent": "Delete permanently",
+    "deleteConfirm": "Delete permanently? This action cannot be undone.",
+    "deleteSuccess": "Deleted permanently",
+    "select": "Select",
+    "selectAll": "Select all",
+    "selected": "{{count}} selected",
+    "restoreSelected": "Restore selected",
+    "deleteSelected": "Delete selected",
+    "export": "Export",
+    "exportCSV": "Export CSV",
+    "noSelection": "Select at least one item",
+    "restoring": "Restoring...",
+    "deleting": "Deleting..."
   },
   "layout": {
     "dashboard": {

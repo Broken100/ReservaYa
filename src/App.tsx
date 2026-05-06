@@ -15,6 +15,7 @@ import ClientsPage from './pages/dashboard/ClientsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
 import ProductsPage from './pages/dashboard/ProductsPage';
 import OrdersPage from './pages/dashboard/OrdersPage';
+import ArchivePage from './pages/dashboard/ArchivePage';
 import PaymentPage from './pages/dashboard/PaymentPage';
 import BookingPage from './pages/public/BookingPage';
 import ContactPage from './pages/public/ContactPage';
@@ -22,6 +23,7 @@ import ClientLayout from './components/client/ClientLayout';
 import MyBookingsPage from './pages/client/MyBookingsPage';
 import ExplorePage from './pages/client/ExplorePage';
 import ClientProfilePage from './pages/client/ClientProfilePage';
+import FavoritesPage from './pages/client/FavoritesPage';
 import OverviewPage from './pages/dashboard/OverviewPage';
 
 export default function App() {
@@ -64,6 +66,7 @@ export default function App() {
             <Route path="configuracion" element={<SettingsPage />} />
             <Route path="productos" element={<ProductsPage />} />
             <Route path="pedidos" element={<OrdersPage />} />
+            <Route path="archivados" element={<ArchivePage />} />
           </Route>
 
           {/* Legacy route redirection */}
@@ -81,6 +84,7 @@ export default function App() {
             <Route index element={<Navigate to="reservas" replace />} />
             <Route path="explorar" element={<ExplorePage />} />
             <Route path="reservas" element={<MyBookingsPage />} />
+            <Route path="favoritos" element={<FavoritesPage />} />
             <Route path="perfil" element={<ClientProfilePage />} />
           </Route>
         </Routes>

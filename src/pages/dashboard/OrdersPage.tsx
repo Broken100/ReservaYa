@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShoppingBag, Loader2, CheckCircle, XCircle, Search, Package, Calendar, Archive } from 'lucide-react';
+import { ShoppingBag, Loader2, CheckCircle, XCircle, Search, Package, Calendar, Archive, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOrders } from '../../hooks/useOrders';
 import { useBusiness } from '../../hooks/useBusiness';
+import { generateCSV, downloadCSV } from '../../hooks/useExport';
 
 export default function OrdersPage() {
   const { t } = useTranslation();
@@ -38,6 +39,32 @@ export default function OrdersPage() {
           </h1>
           <p className="text-gray-400 text-sm mt-1">{t('orders.subtitle')}</p>
         </div>
+        <button
+          onClick={() => {
+            if (orders.length === 0) return;
+            const csv = generateCSV(
+              orders.map(o => ({
+                client_name: o.client?.full_name || '',
+                total_amount: o.total_amount,
+                status: o.status,
+                payment_method: o.payment_method,
+                created_at: new Date(o.created_at).toLocaleDateString(),
+              })),
+              [
+                { key: 'client_name', label: 'Cliente' },
+                { key: 'total_amount', label: 'Total' },
+                { key: 'status', label: 'Estado' },
+                { key: 'payment_method', label: 'Método de Pago' },
+                { key: 'created_at', label: 'Fecha' },
+              ]
+            );
+            downloadCSV(csv, `pedidos-${new Date().toISOString().slice(0, 10)}.csv`);
+          }}
+          className="p-2 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
+          title="Exportar CSV"
+        >
+          <Download size={18} />
+        </button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">

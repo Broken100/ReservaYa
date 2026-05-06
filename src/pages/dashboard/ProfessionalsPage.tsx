@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit3, Trash2, ToggleLeft, ToggleRight, Loader2, XCircle, UserCheck, Camera, User, Instagram, Facebook, Twitter, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Edit3, Trash2, ToggleLeft, ToggleRight, Loader2, XCircle, UserCheck, Camera, User, Instagram, Facebook, Twitter, Globe, AlertTriangle, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProfessionals } from '../../hooks/useProfessionals';
 import { useBusiness } from '../../hooks/useBusiness';
+import { useAuth } from '../../contexts/AuthContext';
+import { usePlanGating } from '../../hooks/usePlanGating';
 import { uploadPublicAsset } from '../../lib/storage';
 
 export default function ProfessionalsPage() {
   const { t } = useTranslation();
   const { business } = useBusiness();
+  const { user } = useAuth();
+  const { canAddProfessional, limitReached, plan } = usePlanGating(user?.id ?? null);
   const { professionals, loading, addProfessional, updateProfessional, deleteProfessional, toggleActive } = useProfessionals(business?.id ?? null);
 
   const [showForm, setShowForm] = useState(false);
@@ -50,6 +55,10 @@ export default function ProfessionalsPage() {
 
   const handleSubmit = async () => {
     if (!form.name.trim() && !form.full_name.trim()) return;
+    if (!canAddProfessional) {
+      toast.error(t('planGating.professionalLimit'));
+      return;
+    }
     try {
       if (editingId) await updateProfessional(editingId, form);
       else await addProfessional(form);
@@ -106,17 +115,54 @@ export default function ProfessionalsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-white">{t('dashboard.professionals')}</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-500 transition-all active:scale-95">
+        <button
+          onClick={() => {
+            if (!canAddProfessional) {
+              toast.error(t('planGating.professionalLimit'));
+              return;
+            }
+            resetForm();
+            setShowForm(true);
+          }}
+          disabled={!canAddProfessional}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 ${
+            canAddProfessional
+              ? 'bg-blue-600 text-white hover:bg-blue-500'
+              : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
+          }`}
+          title={!canAddProfessional ? t('planGating.professionalLimitDesc', { max: String(plan?.max_professionals ?? 1) }) : undefined}
+        >
           <Plus size={16} />
-          {t('dashboard.addProfessional')}
+          {canAddProfessional ? t('dashboard.addProfessional') : <span className="flex items-center gap-1"><Crown size={14} /> {t('planGating.upgradeToPro')}</span>}
         </button>
       </div>
+
+      {limitReached.professionals && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertTriangle size={18} className="text-red-400 shrink-0" />
+            <div>
+              <p className="text-red-400 font-semibold text-sm">{t('planGating.professionalLimit')}</p>
+              <p className="text-red-300/70 text-xs mt-0.5">{t('planGating.professionalLimitDesc', { max: String(plan?.max_professionals ?? 1) })}</p>
+            </div>
+          </div>
+          <Link to="/dashboard/pago" className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shrink-0">
+            <Crown size={14} /> {t('planGating.upgradeToPro')}
+          </Link>
+        </div>
+      )}
 
       {professionals.length === 0 ? (
         <div className="text-center py-20 bg-dark-card border border-white/5 rounded-3xl">
           <UserCheck className="w-12 h-12 text-gray-600 mx-auto mb-4" />
           <p className="text-gray-500 mb-4">{t('professionals.empty')}</p>
-          <button onClick={() => setShowForm(true)} className="text-blue-400 hover:text-blue-300 text-sm font-medium">+ {t('professionals.createFirst')}</button>
+          <button onClick={() => {
+            if (!canAddProfessional) {
+              toast.error(t('planGating.professionalLimit'));
+              return;
+            }
+            setShowForm(true);
+          }} className="text-blue-400 hover:text-blue-300 text-sm font-medium">+ {canAddProfessional ? t('professionals.createFirst') : t('planGating.upgradeToPro')}</button>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -206,6 +206,7 @@ export interface Plan {
   annual_discount_pct: number;
   features: string[];
   is_active: boolean;
+  is_recommended: boolean;
   created_at: string;
 }
 
@@ -217,6 +218,16 @@ export interface Subscription {
   status: 'active' | 'cancelled' | 'expired';
   starts_at: string;
   ends_at: string | null;
+  created_at: string;
+}
+
+export interface Favorite {
+  id: string;
+  profile_id: string;
+  business_id: string | null;
+  service_id: string | null;
+  professional_id: string | null;
+  product_id: string | null;
   created_at: string;
 }
 
@@ -306,6 +317,11 @@ export interface Database {
         Row: Subscription;
         Insert: SubscriptionInsert;
         Update: SubscriptionUpdate;
+      };
+      favorites: {
+        Row: Favorite;
+        Insert: Omit<Favorite, 'id' | 'created_at'>;
+        Update: Partial<Omit<Favorite, 'id' | 'profile_id' | 'created_at'>>;
       };
     };
     Views: Record<string, never>;

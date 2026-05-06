@@ -14,6 +14,7 @@ import DateTimeStep from './booking/DateTimeStep';
 import ConfirmationStep from './booking/ConfirmationStep';
 import SuccessStep from './booking/SuccessStep';
 import ProductCart from './booking/ProductCart';
+import PublicReviewList from './booking/PublicReviewList';
 import type { Service, Product, Professional, Business } from '../../types/database';
 
 type BookingStep = 'service' | 'professional' | 'datetime' | 'confirmation' | 'success';
@@ -170,7 +171,12 @@ export default function BookingPage() {
         window.open(`https://wa.me/${business.whatsapp_number}?text=${text}`, '_blank');
       }
     } catch (err: unknown) {
-      toast.error(t('booking.errorConfirmReserva') + ': ' + (err instanceof Error ? err.message : 'Error desconocido'));
+      const msg = err instanceof Error ? err.message : 'Error desconocido';
+      if (msg === 'PLAN_BOOKING_LIMIT') {
+        toast.error(t('planGating.bookingLimitDesc', { max: '?' }));
+      } else {
+        toast.error(t('booking.errorConfirmReserva') + ': ' + msg);
+      }
     } finally {
       setConfirming(false);
     }
@@ -312,6 +318,15 @@ export default function BookingPage() {
           settings={settings}
           textClass={textClass}
           textMutedClass={textMutedClass}
+          tColor={tColor}
+        />
+
+        <PublicReviewList
+          businessId={business.id}
+          textClass={textClass}
+          textMutedClass={textMutedClass}
+          cardClass={cardClass}
+          isMinimal={isMinimal}
           tColor={tColor}
         />
 

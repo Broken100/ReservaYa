@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBusiness } from '../../hooks/useBusiness';
+import { usePlanGating } from '../../hooks/usePlanGating';
 import { useTheme } from '../../hooks/useTheme';
 import { Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home } from 'lucide-react';
 import { useState } from 'react';
@@ -14,8 +15,9 @@ import { validateForm, businessSetupSchema } from '../../lib/validation';
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, user } = useAuth();
   const { business, loading: businessLoading, error, createBusiness } = useBusiness();
+  const { isPro } = usePlanGating(user?.id ?? null);
   const { themeClass, tColor } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,6 +33,7 @@ export default function DashboardLayout() {
     { to: '/dashboard/agenda', icon: Calendar, labelKey: 'dashboard.agenda' },
     activeProducts ? { to: '/dashboard/pedidos', icon: () => <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>, labelKey: 'dashboard.orders' } : null,
     { to: '/dashboard/clientes', icon: Users, labelKey: 'dashboard.clients' },
+    { to: '/dashboard/archivados', icon: Archive, labelKey: 'dashboard.archive' },
     { to: '/dashboard/servicios', icon: LayoutList, labelKey: 'dashboard.services' },
     activeProducts ? { to: '/dashboard/productos', icon: Package, labelKey: 'dashboard.products' } : null,
     { to: '/dashboard/profesionales', icon: UserCheck, labelKey: 'dashboard.professionals' },
@@ -224,24 +227,32 @@ export default function DashboardLayout() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {fullNavItems.map(({ to, icon: Icon, labelKey, label, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? `${tColor.bgSubtle} ${tColor.text} border ${tColor.borderSubtle}`
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`
-              }
-            >
-              <Icon size={18} />
-              {label || t(labelKey)}
-            </NavLink>
-          ))}
+          {fullNavItems.map(({ to, icon: Icon, labelKey, label, end }) => {
+            const isProOnly = to === '/dashboard/productos' || to === '/dashboard/pedidos';
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    isActive
+                      ? `${tColor.bgSubtle} ${tColor.text} border ${tColor.borderSubtle}`
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <Icon size={18} />
+                {label || t(labelKey)}
+                {isProOnly && !isPro && (
+                  <span className="text-[10px] uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded-full ml-auto">
+                    {t('planGating.proFeature')}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* User section */}

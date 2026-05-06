@@ -5,13 +5,14 @@ import type { Booking, BookingInsert, BookingUpdate, BookingWithClient } from '.
 interface UseBookingsOptions {
   businessId?: string | null;
   clientId?: string | null;
-  date?: string | null; // YYYY-MM-DD (exact match)
-  dateFrom?: string | null; // YYYY-MM-DD (range start, inclusive)
-  dateTo?: string | null; // YYYY-MM-DD (range end, inclusive)
+  date?: string | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
   status?: string | null;
+  archived?: boolean;
 }
 
-export function useBookings({ businessId, clientId, date, dateFrom, dateTo, status }: UseBookingsOptions = {}) {
+export function useBookings({ businessId, clientId, date, dateFrom, dateTo, status, archived }: UseBookingsOptions = {}) {
   const hookId = useId();
   const [bookings, setBookings] = useState<BookingWithClient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
   const fetchBookings = useCallback(async () => {
     setLoading(true);
     let query = supabase.from('bookings').select('*, services(name, price), businesses(name), professionals(name), client:profiles!bookings_client_id_fkey(id, full_name, email, phone, avatar_url)')
-      .eq('is_archived', false);
+      .eq('is_archived', archived ? true : false);
 
     if (businessId) query = query.eq('business_id', businessId);
     if (clientId) query = query.eq('client_id', clientId);
@@ -47,7 +48,7 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
       setBookings(filtered);
     }
     setLoading(false);
-  }, [businessId, clientId, date, dateFrom, dateTo, status]);
+  }, [businessId, clientId, date, dateFrom, dateTo, status, archived]);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
 
@@ -71,6 +72,15 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
   const createBooking = async (booking: BookingInsert) => {
     setError(null);
     try {
+      const { data: limitCheck, error: limitErr } = await supabase
+        .rpc('check_booking_limit', { p_business_id: booking.business_id });
+
+      if (limitErr) {
+        console.warn('[useBookings] Limit check error, proceeding:', limitErr.message);
+      } else if (limitCheck && !limitCheck.can_book) {
+        throw new Error('PLAN_BOOKING_LIMIT');
+      }
+
       // 1. Basic validation: cannot book in the past
       const bookingStart = new Date(`${booking.booking_date}T${booking.start_time}`);
       if (bookingStart < new Date()) {
@@ -157,6 +167,17 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
     return true;
   };
 
+  const restoreBooking = async (id: string) => {
+    const { error: err } = await supabase
+      .from('bookings')
+      .update({ is_archived: false })
+      .eq('id', id);
+
+    if (err) { setError(err.message); throw new Error(err.message); }
+    setBookings(prev => prev.filter(b => b.id !== id));
+    return true;
+  };
+
   return {
     bookings,
     loading,
@@ -167,6 +188,7 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
     cancelBooking,
     completeBooking,
     archiveBooking,
+    restoreBooking,
     refresh: fetchBookings,
   };
 }

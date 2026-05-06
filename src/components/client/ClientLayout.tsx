@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
-import { Calendar, Search, User, LogOut, CalendarCheck } from 'lucide-react';
+import { Calendar, Search, User, LogOut, CalendarCheck, Heart } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
   { to: '/cliente/explorar', icon: Search, labelKey: 'client.explore', fallbackLabel: 'Explorar' },
   { to: '/cliente/reservas', icon: Calendar, labelKey: 'nav.myBookings', fallbackLabel: 'Mis Reservas' },
+  { to: '/cliente/favoritos', icon: Heart, labelKey: 'favorites.title', fallbackLabel: 'Favoritos' },
   { to: '/cliente/perfil', icon: User, labelKey: 'client.profileTitle', fallbackLabel: 'Mi Perfil' },
 ];
 

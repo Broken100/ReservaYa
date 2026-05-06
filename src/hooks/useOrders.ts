@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { OrderWithClient } from '../types/database';
 
-export function useOrders({ businessId, clientId }: { businessId?: string | null, clientId?: string | null } = {}) {
+export function useOrders({ businessId, clientId, archived }: { businessId?: string | null, clientId?: string | null, archived?: boolean } = {}) {
   const [orders, setOrders] = useState<OrderWithClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +23,7 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
           product:products(name, image_url)
         )
       `)
-      .eq('is_archived', false)
+      .eq('is_archived', archived ? true : false)
       .order('created_at', { ascending: false });
 
     if (businessId) query = query.eq('business_id', businessId);
@@ -46,7 +46,7 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
     }
     
     setLoading(false);
-  }, [businessId, clientId]);
+  }, [businessId, clientId, archived]);
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
@@ -73,5 +73,27 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
     return true;
   };
 
-  return { orders, loading, error, updateOrderStatus, archiveOrder, refresh: fetchOrders };
+  const restoreOrder = async (id: string) => {
+    const { error: err } = await supabase
+      .from('orders')
+      .update({ is_archived: false })
+      .eq('id', id);
+
+    if (err) { setError(err.message); throw new Error(err.message); }
+    setOrders(prev => prev.filter(o => o.id !== id));
+    return true;
+  };
+
+  const deleteOrder = async (id: string) => {
+    const { error: err } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', id);
+
+    if (err) { setError(err.message); throw new Error(err.message); }
+    setOrders(prev => prev.filter(o => o.id !== id));
+    return true;
+  };
+
+  return { orders, loading, error, updateOrderStatus, archiveOrder, restoreOrder, deleteOrder, refresh: fetchOrders };
 }

@@ -28,7 +28,7 @@ export default function LandingPage() {
                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   className="inline-block bg-white text-black px-12 py-5 rounded-2xl text-xl font-bold hover:bg-gray-200 transition-all shadow-2xl shadow-blue-500/10 active:scale-95 cursor-pointer"
                 >
-                  Reserva Ya
+                  {t('cta.button')}
                 </button>
               </div>
               
