@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { motion } from "motion/react";
 import { Mail, Phone, MapPin, Send, MessageSquare } from "lucide-react";
 import { Navbar, Footer } from "../../components/Landing";
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-dark-bg text-white selection:bg-blue-600/30">
       <Navbar />
@@ -16,10 +18,10 @@ export default function ContactPage() {
             className="text-center mb-20"
           >
             <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-              Estamos aquí para <span className="text-blue-500">ayudarte.</span>
+              {t('contact.title')}
             </h1>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              ¿Tienes preguntas sobre ReservaYa? Nuestro equipo está listo para potenciar tu negocio.
+              {t('contact.subtitle')}
             </p>
           </motion.div>
 
@@ -37,9 +39,9 @@ export default function ContactPage() {
                     <Mail size={24} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-2">Email</h3>
+                    <h3 className="text-xl font-bold mb-2">{t('contact.email')}</h3>
                     <p className="text-gray-400">soporte@reservaya.ec</p>
-                    <p className="text-gray-500 text-sm mt-1">Respondemos en menos de 24h.</p>
+                    <p className="text-gray-500 text-sm mt-1">{t('contact.emailResponse')}</p>
                   </div>
                 </div>
 
@@ -48,9 +50,9 @@ export default function ContactPage() {
                     <Phone size={24} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-2">Teléfono</h3>
+                    <h3 className="text-xl font-bold mb-2">{t('contact.phone')}</h3>
                     <p className="text-gray-400">+593 99 999 9999</p>
-                    <p className="text-gray-500 text-sm mt-1">Lun - Vie, 9am - 6pm (ECT).</p>
+                    <p className="text-gray-500 text-sm mt-1">{t('contact.phoneHours')}</p>
                   </div>
                 </div>
 
@@ -59,9 +61,9 @@ export default function ContactPage() {
                     <MapPin size={24} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-2">Oficina</h3>
-                    <p className="text-gray-400">Quito, Ecuador</p>
-                    <p className="text-gray-500 text-sm mt-1">Sector La Carolina.</p>
+                    <h3 className="text-xl font-bold mb-2">{t('contact.office')}</h3>
+                    <p className="text-gray-400">{t('contact.officeLocation')}</p>
+                    <p className="text-gray-500 text-sm mt-1">{t('contact.officeSector')}</p>
                   </div>
                 </div>
               </div>
@@ -70,10 +72,10 @@ export default function ContactPage() {
               <div className="p-8 rounded-3xl bg-blue-600/5 border border-blue-500/10">
                 <div className="flex items-center gap-3 mb-4 text-blue-400">
                   <MessageSquare size={20} />
-                  <span className="font-bold text-sm uppercase tracking-widest">Soporte rápido</span>
+                  <span className="font-bold text-sm uppercase tracking-widest">{t('contact.supportLabel')}</span>
                 </div>
                 <p className="text-sm text-gray-300 leading-relaxed italic">
-                  "ReservaYa ha transformado la forma en que mis clientes agendan sus citas. El soporte técnico en Ecuador es excepcional."
+                  {t('contact.testimonial')}
                 </p>
               </div>
             </motion.div>
@@ -88,44 +90,44 @@ export default function ContactPage() {
               <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Nombre</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('contact.form.name')}</label>
                     <input 
                       type="text" 
-                      placeholder="Juan Pérez" 
+                      placeholder={t('contact.form.namePlaceholder')} 
                       className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 focus:bg-white/10 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Email</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('contact.form.email')}</label>
                     <input 
                       type="email" 
-                      placeholder="juan@ejemplo.com" 
+                      placeholder={t('contact.form.emailPlaceholder')} 
                       className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 focus:bg-white/10 transition-all"
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Asunto</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('contact.form.subject')}</label>
                   <select className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 focus:bg-white/10 transition-all appearance-none">
-                    <option className="bg-dark-bg">Información sobre planes</option>
-                    <option className="bg-dark-bg">Soporte técnico</option>
-                    <option className="bg-dark-bg">Ventas / Demo</option>
-                    <option className="bg-dark-bg">Otro</option>
+                    <option className="bg-dark-bg">{t('contact.form.subjects.plans')}</option>
+                    <option className="bg-dark-bg">{t('contact.form.subjects.support')}</option>
+                    <option className="bg-dark-bg">{t('contact.form.subjects.sales')}</option>
+                    <option className="bg-dark-bg">{t('contact.form.subjects.other')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Mensaje</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('contact.form.message')}</label>
                   <textarea 
                     rows={4}
-                    placeholder="¿Cómo podemos ayudarte?" 
+                    placeholder={t('contact.form.messagePlaceholder')} 
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 focus:bg-white/10 transition-all resize-none"
                   ></textarea>
                 </div>
 
                 <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-3 active:scale-[0.98]">
-                  Enviar mensaje <Send size={20} />
+                  {t('contact.form.submit')} <Send size={20} />
                 </button>
               </form>
             </motion.div>

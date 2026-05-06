@@ -39,7 +39,7 @@ export default function ServicesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('¿Eliminar este servicio?')) await deleteService(id);
+    if (confirm(t('services.deleteConfirm'))) await deleteService(id);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +79,7 @@ export default function ServicesPage() {
                     : 'bg-dark-card text-gray-400 border-white/5 hover:border-white/20'
                 }`}
               >
-                {f === 'all' ? 'Todos' : f === 'active' ? 'Activos' : 'Inactivos'}
+                {f === 'all' ? t('services.filter.all') : f === 'active' ? t('services.filter.active') : t('services.filter.inactive')}
               </button>
             ))}
           </div>
@@ -96,8 +96,8 @@ export default function ServicesPage() {
       {services.length === 0 ? (
         <div className="text-center py-20 bg-dark-card border border-white/5 rounded-3xl">
           <LayoutList className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-500 mb-4">No tienes servicios aún</p>
-          <button onClick={() => setShowForm(true)} className="text-blue-400 hover:text-blue-300 text-sm font-medium">+ Crear tu primer servicio</button>
+          <p className="text-gray-500 mb-4">{t('services.empty')}</p>
+          <button onClick={() => setShowForm(true)} className="text-blue-400 hover:text-blue-300 text-sm font-medium">+ {t('services.createFirst')}</button>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -118,13 +118,13 @@ export default function ServicesPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-white mb-1 line-clamp-1">{service.name}</h3>
-                    <p className="text-gray-400 text-sm line-clamp-2 h-10">{service.description || 'Sin descripción'}</p>
+                    <p className="text-gray-400 text-sm line-clamp-2 h-10">{service.description || t('services.noDescription')}</p>
                   </div>
                   <div className="flex items-center gap-1 bg-dark-bg p-1 rounded-xl border border-white/5 shrink-0 ml-4">
-                  <button onClick={() => toggleActive(service.id, !service.is_active)} className="p-2 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title={service.is_active ? 'Desactivar' : 'Activar'}>
+                  <button onClick={() => toggleActive(service.id, !service.is_active)} className="p-2 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title={service.is_active ? t('services.deactivate') : t('services.activate')}>
                     {service.is_active ? <ToggleRight size={18} className="text-green-400" /> : <ToggleLeft size={18} />}
                   </button>
-                  <button onClick={() => { if (confirm('¿Eliminar este servicio?')) deleteService(service.id); }} className="p-2 rounded-lg hover:bg-red-600/10 text-gray-500 hover:text-red-400 transition-colors" title="Eliminar"><Trash2 size={16} /></button>
+                  <button onClick={() => { if (confirm(t('services.deleteConfirm'))) deleteService(service.id); }} className="p-2 rounded-lg hover:bg-red-600/10 text-gray-500 hover:text-red-400 transition-colors" title={t('services.delete')}><Trash2 size={16} /></button>
                 </div>
               </div>
 
@@ -139,13 +139,13 @@ export default function ServicesPage() {
 
               <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
                 {!service.is_active ? (
-                  <span className="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded-lg border border-red-500/20 font-bold uppercase tracking-wider">Inactivo</span>
+                  <span className="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded-lg border border-red-500/20 font-bold uppercase tracking-wider">{t('services.inactive')}</span>
                 ) : (
-                  <span className="text-xs text-gray-500 font-medium flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Disponible</span>
+                  <span className="text-xs text-gray-500 font-medium flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> {t('services.available')}</span>
                 )}
                 
                 <button onClick={() => handleEdit(service)} className="text-sm font-bold text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  Ver Detalles <Edit3 size={14} />
+                  {t('services.viewDetails')} <Edit3 size={14} />
                 </button>
               </div>
               </div>
@@ -160,7 +160,7 @@ export default function ServicesPage() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity" onClick={resetForm} />
           <div className="fixed inset-y-0 right-0 w-full max-w-md bg-dark-bg border-l border-white/10 z-50 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             <div className="p-6 border-b border-white/10 flex items-center justify-between bg-dark-card">
-              <h2 className="text-xl font-bold text-white">{editingId ? 'Detalles del Servicio' : 'Nuevo Servicio'}</h2>
+              <h2 className="text-xl font-bold text-white">{editingId ? t('services.editTitle') : t('services.createTitle')}</h2>
               <button onClick={resetForm} className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors">
                 <XCircle size={24} />
               </button>
@@ -185,25 +185,25 @@ export default function ServicesPage() {
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
                   </label>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Recomendado: 16:9 (JPG, PNG)</p>
+                <p className="text-xs text-gray-500 mt-2">{t('services.form.imageHint')}</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">Nombre del Servicio</label>
-                  <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" placeholder="Ej: Corte de cabello" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.name')}</label>
+                  <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" placeholder={t('services.form.namePlaceholder')} />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">Descripción</label>
-                  <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} rows={3} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none" placeholder="Breve descripción..." />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.description')}</label>
+                  <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} rows={3} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none" placeholder={t('services.form.descriptionPlaceholder')} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">Duración (min)</label>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.duration')}</label>
                     <input type="number" value={form.duration_minutes} onChange={e => setForm(p => ({ ...p, duration_minutes: Number(e.target.value) }))} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">Precio ($)</label>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1">{t('services.form.price')}</label>
                     <input type="number" step="0.01" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} className="w-full bg-dark-card border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all" />
                   </div>
                 </div>
@@ -211,8 +211,8 @@ export default function ServicesPage() {
                 <label className="flex items-center gap-3 bg-dark-card p-5 rounded-2xl border border-white/5 cursor-pointer hover:border-white/10 transition-colors">
                   <input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({...f, is_active: e.target.checked}))} className="w-5 h-5 accent-blue-600 rounded" />
                   <div>
-                    <p className="text-white font-medium text-sm">Servicio Activo</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Si está inactivo, los clientes no podrán reservarlo.</p>
+                    <p className="text-white font-medium text-sm">{t('services.form.active')}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t('services.form.activeHelp')}</p>
                   </div>
                 </label>
               </div>
@@ -220,7 +220,7 @@ export default function ServicesPage() {
 
             <div className="p-6 border-t border-white/10 bg-dark-card flex gap-3">
               <button onClick={handleSubmit} disabled={!form.name.trim()} className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-500 transition-colors disabled:opacity-50">
-                {editingId ? 'Guardar Cambios' : 'Crear Servicio'}
+                {editingId ? t('services.saveChanges') : t('services.create')}
               </button>
             </div>
           </div>

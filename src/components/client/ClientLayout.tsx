@@ -31,7 +31,7 @@ export default function ClientLayout() {
   };
 
   const handleSetup = async () => {
-    if (!setupForm.phone) return alert('El teléfono es obligatorio');
+    if (!setupForm.phone) return alert(t('client.errorPhoneRequired'));
     setSaving(true);
     try {
       const { error } = await supabase
@@ -45,7 +45,7 @@ export default function ClientLayout() {
       if (error) throw error;
       window.location.reload();
     } catch (err) {
-      alert('Error al guardar datos');
+      alert(t('client.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -59,12 +59,12 @@ export default function ClientLayout() {
           <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-8 mx-auto">
             <CalendarCheck size={32} className="text-blue-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white text-center mb-2">¡Bienvenido a ReservaYa!</h1>
-          <p className="text-gray-400 text-center mb-10">Completa tu perfil para que los negocios puedan contactarte.</p>
+          <h1 className="text-2xl font-bold text-white text-center mb-2">{t('client.welcome')}</h1>
+          <p className="text-gray-400 text-center mb-10">{t('client.welcomeDesc')}</p>
           
           <div className="space-y-4 mb-8">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Nombre Completo</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('client.fullName')}</label>
               <input 
                 type="text" 
                 value={setupForm.full_name}
@@ -73,10 +73,10 @@ export default function ClientLayout() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">WhatsApp / Teléfono</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('client.whatsappPhone')}</label>
               <input 
                 type="tel" 
-                placeholder="Ej: 0990000000"
+                placeholder={t('client.phonePlaceholder')}
                 value={setupForm.phone}
                 onChange={e => setSetupForm(p => ({ ...p, phone: e.target.value }))}
                 className="w-full bg-dark-bg border border-white/5 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
@@ -89,14 +89,14 @@ export default function ClientLayout() {
             disabled={saving}
             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98] disabled:opacity-50"
           >
-            {saving ? 'Guardando...' : 'Completar Registro'}
+            {saving ? t('client.saving') : t('client.completeRegistration')}
           </button>
           
           <button 
             onClick={handleSignOut}
             className="w-full mt-4 text-gray-500 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
           >
-            Cerrar Sesión
+            {t('client.signOut')}
           </button>
         </div>
       </div>

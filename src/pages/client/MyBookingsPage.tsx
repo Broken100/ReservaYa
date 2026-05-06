@@ -16,13 +16,6 @@ const statusStyles: Record<string, string> = {
   completed: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
 };
 
-const statusLabels: Record<string, string> = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmada',
-  cancelled: 'Cancelada',
-  completed: 'Completada',
-};
-
 type SortMode = 'priority' | 'date_asc' | 'date_desc';
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
@@ -36,6 +29,13 @@ export default function MyBookingsPage() {
   const [sortMode, setSortMode] = useState<SortMode>('priority');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
+  const statusLabels: Record<string, string> = {
+    pending: t('myBookings.status.pending'),
+    confirmed: t('myBookings.status.confirmed'),
+    cancelled: t('myBookings.status.cancelled'),
+    completed: t('myBookings.status.completed'),
+  };
+
   // Feedback state
   const [feedbackTarget, setFeedbackTarget] = useState<{ id: string; type: 'booking' | 'order'; currentRating?: number; currentReview?: string } | null>(null);
   const [feedbackRating, setFeedbackRating] = useState(0);
@@ -48,18 +48,18 @@ export default function MyBookingsPage() {
         await cancelBooking(id);
         alert(t('client.cancelSuccess') || 'Reserva cancelada correctamente.');
       } catch (err: any) {
-        alert('Error al cancelar: ' + (err.message || 'Inténtelo de nuevo'));
+        alert(t('myBookings.errorCancel') + ': ' + (err.message || 'Inténtelo de nuevo'));
       }
     }
   };
 
   const handleCancelOrder = async (id: string) => {
-    if (window.confirm('¿Estás seguro de que deseas cancelar este pedido?')) {
+    if (window.confirm(t('myBookings.cancelOrderConfirm'))) {
       try {
         await updateOrderStatus(id, 'cancelled');
-        alert('Pedido cancelado correctamente.');
+        alert(t('myBookings.cancelOrderSuccess'));
       } catch (err: any) {
-        alert('Error al cancelar pedido: ' + (err.message || 'Inténtelo de nuevo'));
+        alert(t('myBookings.errorCancel') + ': ' + (err.message || 'Inténtelo de nuevo'));
       }
     }
   };
@@ -80,12 +80,12 @@ export default function MyBookingsPage() {
         .update({ rating: feedbackRating, review: feedbackText || null })
         .eq('id', feedbackTarget.id);
       if (error) throw error;
-      alert('¡Gracias por tu feedback!');
+      alert(t('myBookings.feedback.thanks'));
       setFeedbackTarget(null);
       // Force re-fetch by reloading — in production you'd update local state
       window.location.reload();
     } catch (err: any) {
-      alert('Error al enviar feedback: ' + (err.message || 'Inténtelo de nuevo'));
+      alert(t('myBookings.feedback.error') + ': ' + (err.message || 'Inténtelo de nuevo'));
     } finally {
       setFeedbackSaving(false);
     }
@@ -120,19 +120,19 @@ export default function MyBookingsPage() {
     <div className="animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-white">Mi Actividad</h1>
+        <h1 className="text-2xl font-bold text-white">{t('myBookings.title')}</h1>
         <div className="flex bg-black/20 p-1 rounded-2xl border border-white/5">
           <button 
             onClick={() => { setActiveTab('bookings'); setStatusFilter('all'); }}
             className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'bookings' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
           >
-            Reservas
+            {t('myBookings.tabs.bookings')}
           </button>
           <button 
             onClick={() => { setActiveTab('orders'); setStatusFilter('all'); }}
             className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
           >
-            Pedidos
+            {t('myBookings.tabs.orders')}
           </button>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function MyBookingsPage() {
                   : 'bg-dark-card text-gray-400 border-white/5 hover:border-white/20'
               }`}
             >
-              {s === 'all' ? 'Todos' : statusLabels[s]}
+              {s === 'all' ? t('myBookings.filter.all') : statusLabels[s]}
             </button>
           ))}
         </div>
@@ -159,9 +159,9 @@ export default function MyBookingsPage() {
           onChange={e => setSortMode(e.target.value as SortMode)}
           className="bg-dark-card border border-white/10 rounded-xl px-3 py-2 text-white text-xs font-medium focus:outline-none focus:border-blue-500/50"
         >
-          <option value="priority">Ordenar: Prioridad</option>
-          <option value="date_desc">Ordenar: Más reciente</option>
-          <option value="date_asc">Ordenar: Más antiguo</option>
+          <option value="priority">{t('myBookings.sort.priority')}</option>
+          <option value="date_desc">{t('myBookings.sort.dateDesc')}</option>
+          <option value="date_asc">{t('myBookings.sort.dateAsc')}</option>
         </select>
       </div>
 
@@ -172,7 +172,7 @@ export default function MyBookingsPage() {
             <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Calendar className="w-8 h-8 text-blue-500" />
             </div>
-            <p className="text-gray-400 text-lg mb-6">{statusFilter !== 'all' ? 'No hay reservas con este estado.' : (t('client.noBookings') || 'No tienes reservas.')}</p>
+            <p className="text-gray-400 text-lg mb-6">{statusFilter !== 'all' ? t('myBookings.noBookingsWithStatus') : (t('client.noBookings') || 'No tienes reservas.')}</p>
             <Link 
               to="/cliente/explorar" 
               className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/20"
@@ -196,8 +196,8 @@ export default function MyBookingsPage() {
                         <Clock size={18} className="text-blue-400" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-white font-semibold truncate">{b.services?.name || 'Servicio'}</p>
-                        <p className="text-blue-400 text-sm font-medium">{b.businesses?.name || 'Negocio'}</p>
+                        <p className="text-white font-semibold truncate">{b.services?.name || t('myBookings.service')}</p>
+                        <p className="text-blue-400 text-sm font-medium">{b.businesses?.name || t('myBookings.business')}</p>
                         <p className="text-gray-500 text-xs flex items-center gap-1 mt-1">
                           <Calendar size={12} />
                           {new Date(`${b.booking_date}T12:00:00`).toLocaleDateString('es-EC', { weekday: 'short', month: 'short', day: 'numeric' })} · {b.start_time.substring(0, 5)}
@@ -222,15 +222,15 @@ export default function MyBookingsPage() {
                     <div className="px-5 pb-5 pt-0 space-y-4 border-t border-white/5 animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="grid grid-cols-2 gap-3 mt-4">
                         <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">Servicio</p>
+                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('myBookings.service')}</p>
                           <p className="text-white text-sm font-medium">{b.services?.name || '—'}</p>
                         </div>
                         <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">Profesional</p>
-                          <p className="text-white text-sm font-medium">{b.professionals?.name || 'Sin asignar'}</p>
+                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('myBookings.professional')}</p>
+                          <p className="text-white text-sm font-medium">{b.professionals?.name || t('myBookings.unassigned')}</p>
                         </div>
                         <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">Horario</p>
+                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('myBookings.schedule')}</p>
                           <p className="text-white text-sm font-medium">{b.start_time?.substring(0, 5)} — {b.end_time?.substring(0, 5)}</p>
                         </div>
                       </div>
@@ -260,7 +260,7 @@ export default function MyBookingsPage() {
                             onClick={() => handleCancel(b.id)}
                             className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                           >
-                            <X size={14} /> Cancelar Reserva
+                            <X size={14} /> {t('myBookings.cancelBooking')}
                           </button>
                         )}
                         {b.status === 'completed' && !b.rating && (
@@ -268,7 +268,7 @@ export default function MyBookingsPage() {
                             onClick={() => openFeedback(b.id, 'booking', b.rating, b.review)}
                             className="px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                           >
-                            <Star size={14} /> Dejar Reseña
+                            <Star size={14} /> {t('myBookings.leaveReview')}
                           </button>
                         )}
                       </div>
@@ -288,12 +288,12 @@ export default function MyBookingsPage() {
             <div className="w-16 h-16 bg-purple-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Package className="w-8 h-8 text-purple-500" />
             </div>
-            <p className="text-gray-400 text-lg mb-6">{statusFilter !== 'all' ? 'No hay pedidos con este estado.' : 'No has realizado ninguna compra.'}</p>
+            <p className="text-gray-400 text-lg mb-6">{statusFilter !== 'all' ? t('myBookings.noOrdersWithStatus') : t('myBookings.noOrders')}</p>
             <Link 
               to="/cliente/explorar" 
               className="inline-flex items-center justify-center px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-medium transition-colors shadow-lg shadow-purple-500/20"
             >
-              Explorar Tiendas
+              {t('myBookings.exploreStores')}
             </Link>
           </div>
         ) : (
@@ -312,7 +312,7 @@ export default function MyBookingsPage() {
                         <Package size={18} className="text-purple-400" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-blue-400 font-medium text-sm">{o.business?.name || 'Tienda'}</p>
+                        <p className="text-blue-400 font-medium text-sm">{o.business?.name || t('myBookings.store')}</p>
                         <p className="text-white font-semibold">{o.items.length} producto{o.items.length !== 1 ? 's' : ''} · <span className="text-blue-400">${o.total_amount.toFixed(2)}</span></p>
                         <p className="text-gray-500 text-xs flex items-center gap-1 mt-1">
                           <Calendar size={12} />
@@ -321,9 +321,9 @@ export default function MyBookingsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      {(o as any).rating && (
+                      {o.rating && (
                         <span className="flex items-center gap-1 text-yellow-400 text-xs font-bold">
-                          <Star size={12} fill="currentColor" />{(o as any).rating}
+                          <Star size={12} fill="currentColor" />{o.rating}
                         </span>
                       )}
                       <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide uppercase border ${statusStyles[o.status]}`}>
@@ -357,24 +357,24 @@ export default function MyBookingsPage() {
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">Método de Pago</p>
-                          <p className="text-white text-sm font-medium">{o.payment_method === 'cash' ? 'Efectivo' : 'Transferencia'}</p>
+                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('booking.cart.paymentMethod')}</p>
+                          <p className="text-white text-sm font-medium">{o.payment_method === 'cash' ? t('myBookings.payment.cash') : t('myBookings.payment.transfer')}</p>
                         </div>
                         <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">Total</p>
+                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('booking.price')}</p>
                           <p className="text-blue-400 text-sm font-bold">${o.total_amount.toFixed(2)}</p>
                         </div>
                       </div>
 
                       {/* Existing review */}
-                      {(o as any).rating && (
+                      {o.rating && (
                         <div className="bg-yellow-500/5 border border-yellow-500/10 p-3 rounded-xl">
                           <div className="flex items-center gap-1 mb-1">
                             {[1,2,3,4,5].map(s => (
-                              <Star key={s} size={14} className={s <= (o as any).rating ? 'text-yellow-400' : 'text-gray-600'} fill={s <= (o as any).rating ? 'currentColor' : 'none'} />
+                              <Star key={s} size={14} className={s <= o.rating! ? 'text-yellow-400' : 'text-gray-600'} fill={s <= o.rating! ? 'currentColor' : 'none'} />
                             ))}
                           </div>
-                          {(o as any).review && <p className="text-gray-400 text-xs mt-1">"{(o as any).review}"</p>}
+                          {o.review && <p className="text-gray-400 text-xs mt-1">"{o.review}"</p>}
                         </div>
                       )}
 
@@ -385,15 +385,15 @@ export default function MyBookingsPage() {
                             onClick={() => handleCancelOrder(o.id)}
                             className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                           >
-                            <X size={14} /> Cancelar Pedido
+                            <X size={14} /> {t('myBookings.cancelOrder')}
                           </button>
                         )}
-                        {o.status === 'completed' && !(o as any).rating && (
+                        {o.status === 'completed' && !o.rating && (
                           <button
-                            onClick={() => openFeedback(o.id, 'order', (o as any).rating, (o as any).review)}
+                            onClick={() => openFeedback(o.id, 'order', o.rating, o.review)}
                             className="px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                           >
-                            <Star size={14} /> Dejar Reseña
+                            <Star size={14} /> {t('myBookings.leaveReview')}
                           </button>
                         )}
                       </div>
@@ -417,8 +417,8 @@ export default function MyBookingsPage() {
                   <MessageSquare size={20} className="text-yellow-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg">Deja tu reseña</h3>
-                  <p className="text-gray-500 text-sm">¿Cómo fue tu experiencia?</p>
+                  <h3 className="text-white font-bold text-lg">{t('myBookings.feedback.title')}</h3>
+                  <p className="text-gray-500 text-sm">{t('myBookings.feedback.subtitle')}</p>
                 </div>
               </div>
 
@@ -440,7 +440,7 @@ export default function MyBookingsPage() {
               </div>
               {feedbackRating > 0 && (
                 <p className="text-center text-yellow-400 text-sm font-medium mb-4">
-                  {feedbackRating === 1 ? 'Malo' : feedbackRating === 2 ? 'Regular' : feedbackRating === 3 ? 'Bueno' : feedbackRating === 4 ? 'Muy Bueno' : '¡Excelente!'}
+                  {feedbackRating === 1 ? t('myBookings.feedback.rating.1') : feedbackRating === 2 ? t('myBookings.feedback.rating.2') : feedbackRating === 3 ? t('myBookings.feedback.rating.3') : feedbackRating === 4 ? t('myBookings.feedback.rating.4') : t('myBookings.feedback.rating.5')}
                 </p>
               )}
 
@@ -449,7 +449,7 @@ export default function MyBookingsPage() {
                 value={feedbackText}
                 onChange={e => setFeedbackText(e.target.value)}
                 rows={3}
-                placeholder="Cuéntanos más sobre tu experiencia... (opcional)"
+                placeholder={t('myBookings.feedback.placeholder')}
                 className="w-full bg-dark-bg border border-white/10 rounded-2xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500/50 resize-none mb-6"
               />
 
@@ -458,7 +458,7 @@ export default function MyBookingsPage() {
                   onClick={() => setFeedbackTarget(null)}
                   className="flex-1 py-3 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5 transition-colors"
                 >
-                  Cancelar
+                  {t('myBookings.feedback.cancel')}
                 </button>
                 <button
                   onClick={submitFeedback}
@@ -466,7 +466,7 @@ export default function MyBookingsPage() {
                   className="flex-1 py-3 rounded-xl bg-yellow-500 text-black font-bold text-sm hover:bg-yellow-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {feedbackSaving ? <Loader2 size={16} className="animate-spin" /> : <Star size={16} />}
-                  Enviar
+                  {t('myBookings.feedback.send')}
                 </button>
               </div>
             </div>

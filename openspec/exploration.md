@@ -1,61 +1,64 @@
-## Exploration: ReservaYa
+## Exploration: ReservaYa — Estado Actual (Mayo 2026)
 
 ### Current State
-El software **ReservaYa** es actualmente una plataforma de aterrizaje (Landing Page) de alta fidelidad técnica y visual, diseñada para el mercado ecuatoriano. 
+ReservaYa es una plataforma de reservas para negocios ecuatorianos con frontend React 19 SPA, backend Supabase, y Google OAuth.
 
 **Características Técnicas:**
-- **Frontend**: React 19 con Vite 6.
-- **Estilos**: Tailwind CSS 4 (utilizando el nuevo plugin `@tailwindcss/vite`).
-- **Animaciones**: Motion (Framer Motion) para micro-interacciones y transiciones suaves.
-- **Iconografía**: Lucide React.
-- **IA**: Integración lista con `@google/genai` (Gemini API) configurada a nivel de compilación en `vite.config.ts`.
-- **Diseño**: Estética premium con modo oscuro, glassmorphism (backdrop-blur) y una paleta de colores azul/oscuro coherente.
+- **Frontend**: React 19.0.1, Vite 6.2.3, Tailwind CSS 4.1.14, Motion 12.23.24, Lucide React 0.546.0
+- **Routing**: React Router DOM 7.14.2 con rutas anidadas y `<Outlet />`
+- **Backend**: Supabase (auth Google OAuth, PostgreSQL, RLS, Storage, Realtime)
+- **IA**: `@google/genai` 1.29.0 instalado pero **sin uso real** — API key expuesta en bundle frontend
+- **i18n**: i18next 26.0.8 (ES + EN, cobertura ~60%)
+- **Pagos**: **Simulado** (PaymentPage.tsx usa setTimeout 2s)
+- **Testing**: CERO tests — sin framework configurado
+- **Build**: Vite con `@vitejs/plugin-react` y `@tailwindcss/vite`
 
 **Estado Funcional:**
-- La interfaz es responsiva y está bien estructurada en componentes (`Navbar`, `Hero`, `Features`, `Pricing`, `Footer`).
-- Los botones de acción ("Prueba Gratis", "Ver Demo") son estáticos.
-- No hay persistencia de datos visible ni un flujo de reserva real implementado todavía.
+- 17 páginas, 43 archivos fuente
+- Auth: Google OAuth con roles admin/client, payment_status gating
+- Admin Dashboard: Overview, Agenda (day/month/year views), CRUD Services/Professionals/Products, Orders, Clients, Settings, Payment (simulado)
+- Client Area: Explore businesses, MyBookings/Orders with ratings, Profile
+- Public: Landing page, Booking micro-site per business slug, Contact page (form no funcional)
+- 10 migraciones Supabase, 19 políticas RLS, RPC checkout para órdenes
 
 ### Affected Areas
-- `src/components/Landing.tsx` — Contiene toda la lógica de la UI y las secciones de la página principal.
-- `src/App.tsx` — Organiza el layout general y las secciones de la landing.
-- `vite.config.ts` — Define la inyección de la clave de API de Gemini y la configuración de Tailwind 4.
-- `package.json` — Gestiona las dependencias clave como `@google/genai`, `motion`, y `express`.
-- `.env` (si existe) — Almacenará la `GEMINI_API_KEY` necesaria para las funciones de IA.
+- `src/` — 43 archivos: components (6), contexts (1), hooks (10), pages (17), lib (2), i18n (3), types (1)
+- `supabase/migrations/` — 10 migraciones con esquema completo
+- `vite.config.ts` — Expone GEMINI_API_KEY en el bundle (RIESGO CRÍTICO)
+- `package.json` — 14 dependencias, sin testing, sin form validation
 
-### Approaches
-1. **Implementación de Asistente de Reservas Inteligente (IA)**:
-   - **Descripción**: Utilizar el SDK de Gemini ya configurado para crear un chatbot o un formulario asistido que facilite a los clientes agendar citas en lenguaje natural.
-   - **Pros**: Diferenciación competitiva fuerte, facilidad de uso.
-   - **Cons**: Requiere manejo cuidadoso de prompts y seguridad de la API key.
-   - **Esfuerzo**: Medio.
+### Security Risks (Auditados)
+1. **CRÍTICO**: GEMINI_API_KEY expuesta en vite.config.ts → bundle frontend
+2. **ALTO**: Pagos simulados — sin procesador real
+3. **ALTO**: RPC `checkout` acepta `unit_price` del cliente sin validar contra DB
+4. **MEDIO**: `as any` usado extensivamente (supabase queries, form data)
+5. **MEDIO**: Sin rate limiting en creación de bookings
+6. **MEDIO**: Slugs pueden ser vacíos/duplicados
+7. **BAJO**: Storage RLS permite upload a cualquier authenticated user sin validación tipo/tamaño
+8. **BAJO**: Sin CSRF tokens custom (Supabase lo maneja)
 
-2. **Creación del Dashboard de Gestión para Negocios**:
-   - **Descripción**: Desarrollar la parte administrativa donde el dueño del negocio puede ver y gestionar las citas.
-   - **Pros**: Esencial para que el producto sea útil para el "emprendedor ecuatoriano" mencionado.
-   - **Cons**: Requiere un sistema de autenticación y base de datos (ej. Supabase).
-   - **Esfuerzo**: Alto.
+### Code Quality Issues
+- Archivos grandes: BookingPage (667L), AgendaPage (727L), SettingsPage (523L)
+- Sin Error Boundary → crash de un componente = pantalla blanca
+- Sin form validation library (validaciones manuales con if/alert)
+- Sin skeletons (solo spinners genéricos)
+- Cobertura i18n parcial — muchos strings hardcodeados en español
+- `window.location.reload()` para refrescar estado (patrón frágil)
 
-3. **Backend y Seguridad con Supabase**:
-   - **Descripción**: Implementar Supabase como backend completo: autenticación (Google OAuth + email/password), base de datos PostgreSQL con Row Level Security (RLS), y Supabase Edge Functions para proxear las llamadas a Gemini de forma segura.
-   - **Pros**: Arquitectura serverless, autenticación integrada, RLS para seguridad a nivel de fila, tiempo real con Realtime subscriptions, sin necesidad de mantener un servidor Express.
-   - **Cons**: Dependencia de un proveedor externo (Supabase), curva de aprendizaje de RLS y políticas de seguridad.
-   - **Esfuerzo**: Medio.
-
-4. **Capa de Seguridad por Roles (Usuario / Administrador)**:
-   - **Descripción**: Implementar un sistema de roles diferenciado donde el **Usuario** (cliente) puede ver disponibilidad y crear/cancelar sus reservas, mientras que el **Administrador** (dueño del negocio) tiene acceso completo al dashboard de gestión, servicios, profesionales, clientes y reportes.
-   - **Pros**: Cada actor solo ve y modifica lo que le corresponde, cumplimiento con principio de mínimo privilegio.
-   - **Cons**: Requiere diseño cuidadoso de políticas RLS y middleware de autorización en el frontend.
-   - **Esfuerzo**: Medio.
+### Design Patterns
+- Custom hooks como data stores (useBookings, useServices, etc.)
+- Slide-over panels consistentes (overlay + animación desde derecha)
+- Theme tokens centralizados en useTheme.ts
+- Nested routes + Outlet para layouts
+- Step-based wizard en BookingPage
+- Custom events (window.dispatchEvent) para cross-component communication
 
 ### Recommendation
-Se recomienda comenzar por la **Opción 3** (Supabase) + **Opción 4** (Seguridad por Roles) como base fundacional, seguida de la **Opción 2** (Dashboard) y finalmente la **Opción 1** (IA). La razón es que sin autenticación, base de datos y seguridad, ninguna otra funcionalidad puede operar de forma real. Supabase reemplaza a Express como backend, eliminando la necesidad de mantener un servidor propio.
-
-### Risks
-- **Exposición de API Key**: Actualmente la clave de Gemini se inyecta en el frontend — debe moverse a Supabase Edge Functions.
-- **Diseño de RLS**: Políticas mal configuradas pueden exponer datos entre negocios/clientes. Requiere testing exhaustivo.
-- **Complejidad de Tailwind 4**: Al ser una versión reciente, algunas herramientas de terceros podrían tener problemas de compatibilidad.
-- **Migración de datos**: Cualquier dato de prueba existente deberá migrarse al esquema nuevo de Supabase.
+Ejecutar plan de mejora en 4 fases secuenciales:
+- **Fase A**: Seguridad + Buenas Prácticas (API key, tipado, tests, validación)
+- **Fase B**: Rediseño UI/UX (design system, i18n completa, a11y, refactors)
+- **Fase C**: Agentes IA + Botones Flotantes (chatbot, asistente de reserva)
+- **Fase D**: Diversificación (PayPhone, verticales de negocio, notificaciones)
 
 ### Ready for Proposal
-**Yes** — El sistema tiene una base visual sólida y la infraestructura técnica necesaria para evolucionar a un producto funcional rápidamente.
+**Yes** — El diagnóstico está completo y los riesgos están identificados.

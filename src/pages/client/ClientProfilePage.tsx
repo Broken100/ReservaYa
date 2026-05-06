@@ -37,7 +37,7 @@ export default function ClientProfilePage() {
       if (url) {
         setForm(p => ({ ...p, avatar_url: url }));
       } else {
-        alert('Error al subir la imagen');
+        alert(t('client.errorUploadImage'));
       }
     } finally {
       setUploadingImage(false);
@@ -45,7 +45,7 @@ export default function ClientProfilePage() {
   };
 
   const handleSave = async () => {
-    if (!form.full_name || !form.phone) return alert('Todos los campos son obligatorios');
+    if (!form.full_name || !form.phone) return alert(t('client.errorAllFields'));
     
     setSaving(true);
     setSuccess(false);
@@ -67,7 +67,7 @@ export default function ClientProfilePage() {
       window.location.reload(); 
     } catch (err) {
       console.error('Error saving profile:', err);
-      alert('Error al guardar datos');
+      alert(t('client.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -102,16 +102,16 @@ export default function ClientProfilePage() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">{profile?.email}</h2>
-            <p className="text-gray-500 text-sm mt-1">Cliente de ReservaYa</p>
+            <p className="text-gray-500 text-sm mt-1">{t('client.reservaYaClient')}</p>
             <p className="text-gray-600 text-xs mt-2 bg-white/5 p-2 rounded-lg border border-white/5">
-              💡 <strong>Recomendado:</strong> Imagen cuadrada, min. 256x256px, PNG/JPG, máx 2MB.
+              {t('client.avatarRecommendation')}
             </p>
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Nombre Completo</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('client.fullName')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <User className="h-5 w-5 text-gray-500" />
@@ -121,13 +121,13 @@ export default function ClientProfilePage() {
                 value={form.full_name}
                 onChange={(e) => setForm(p => ({ ...p, full_name: e.target.value }))}
                 className="w-full bg-dark-bg border border-white/10 rounded-2xl pl-11 pr-4 py-4 text-white focus:outline-none focus:border-blue-500/50 transition-all"
-                placeholder="Tu nombre completo"
+                placeholder={t('client.namePlaceholder')}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Teléfono / WhatsApp</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('client.whatsappPhone')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Phone className="h-5 w-5 text-gray-500" />
@@ -137,10 +137,10 @@ export default function ClientProfilePage() {
                 value={form.phone}
                 onChange={(e) => setForm(p => ({ ...p, phone: e.target.value }))}
                 className="w-full bg-dark-bg border border-white/10 rounded-2xl pl-11 pr-4 py-4 text-white focus:outline-none focus:border-blue-500/50 transition-all"
-                placeholder="Ej: 0990000000"
+                placeholder={t('client.phonePlaceholder')}
               />
             </div>
-            <p className="text-xs text-gray-500 ml-1">Los negocios usarán este número para contactarte sobre tus reservas.</p>
+            <p className="text-xs text-gray-500 ml-1">{t('client.phoneHelp')}</p>
           </div>
         </div>
 
@@ -148,7 +148,7 @@ export default function ClientProfilePage() {
           {success && (
             <div className="flex items-center gap-2 text-green-400 text-sm font-medium animate-in fade-in slide-in-from-right-4">
               <CheckCircle2 size={16} />
-              <span>Guardado correctamente</span>
+              <span>{t('client.savedSuccess')}</span>
             </div>
           )}
           <button

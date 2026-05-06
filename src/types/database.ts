@@ -129,6 +129,54 @@ export interface OrderItem {
   created_at: string;
 }
 
+// ─── Extended types (for joined queries) ──────────────────
+export interface BookingWithClient extends Booking {
+  client?: {
+    id: string;
+    full_name: string | null;
+    email: string;
+    phone: string | null;
+    avatar_url: string | null;
+  } | null;
+  services?: {
+    name: string;
+  } | null;
+  businesses?: {
+    name: string;
+  } | null;
+  professionals?: {
+    name: string;
+  } | null;
+}
+
+export interface OrderWithClient extends Order {
+  client?: {
+    avatar_url: string | null;
+    full_name: string | null;
+  } | null;
+  items?: {
+    product?: {
+      name: string;
+      image_url: string | null;
+    } | null;
+    quantity: number;
+    unit_price: number;
+  }[];
+}
+
+export interface ClientInfo {
+  id: string;
+  full_name: string | null;
+  email: string;
+  phone: string | null;
+  avatar_url: string | null;
+  booking_count: number;
+  order_count: number;
+  last_activity: string;
+}
+
+export type BusinessSettings = NonNullable<Business['settings']>;
+
 // ─── Insert types (omit auto-generated fields) ───────────
 export type ProfileInsert = Omit<Profile, 'created_at'>;
 export type BusinessInsert = Omit<Business, 'id' | 'created_at'>;

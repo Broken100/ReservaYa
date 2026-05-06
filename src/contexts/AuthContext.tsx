@@ -25,11 +25,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchProfile = async (userId: string): Promise<Profile | null> => {
     console.log('[Auth] Fetching profile for:', userId);
     try {
-      const { data, error } = await (supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single() as any);
+        .single();
 
       if (error) {
         console.warn('[Auth] Profile fetch error (expected if new user):', error.message);

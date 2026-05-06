@@ -5,6 +5,7 @@ import { useBusiness } from '../../hooks/useBusiness';
 import { useTheme } from '../../hooks/useTheme';
 import { Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home } from 'lucide-react';
 import { useState } from 'react';
+import { validateForm, businessSetupSchema } from '../../lib/validation';
 
 // Dynamic nav items are now built inside the component to respect conditional visibility
 
@@ -22,18 +23,18 @@ export default function DashboardLayout() {
   const [loading, setLoading] = useState(false);
   const [setupForm, setSetupForm] = useState({ name: '', category: 'Peluquería', customCategory: '', phone: '', city: '' });
 
-  const activeProducts = (business?.settings as any)?.enable_products;
+  const activeProducts = business?.settings?.enable_products;
 
   const fullNavItems = [
-    { to: '/dashboard', icon: Home, label: 'Inicio', end: true },
+    { to: '/dashboard', icon: Home, labelKey: 'dashboard.home', end: true },
     { to: '/dashboard/agenda', icon: Calendar, labelKey: 'dashboard.agenda' },
-    activeProducts ? { to: '/dashboard/pedidos', icon: () => <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>, label: 'Pedidos' } : null,
+    activeProducts ? { to: '/dashboard/pedidos', icon: () => <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>, labelKey: 'dashboard.orders' } : null,
     { to: '/dashboard/clientes', icon: Users, labelKey: 'dashboard.clients' },
     { to: '/dashboard/servicios', icon: LayoutList, labelKey: 'dashboard.services' },
-    activeProducts ? { to: '/dashboard/productos', icon: Package, label: 'Productos' } : null,
+    activeProducts ? { to: '/dashboard/productos', icon: Package, labelKey: 'dashboard.products' } : null,
     { to: '/dashboard/profesionales', icon: UserCheck, labelKey: 'dashboard.professionals' },
     { to: '/dashboard/configuracion', icon: Settings, labelKey: 'dashboard.settings' },
-  ].filter(Boolean) as any[];
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   const handleSignOut = async () => {
     try {
@@ -46,7 +47,12 @@ export default function DashboardLayout() {
   };
 
   const handleSetup = async () => {
-    if (!setupForm.name) return alert('El nombre es obligatorio');
+    const validation = validateForm(businessSetupSchema, setupForm);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors!)[0];
+      alert(firstError);
+      return;
+    }
     
     setLoading(true);
     const finalCategory = setupForm.category === 'Otro' ? setupForm.customCategory : setupForm.category;
@@ -70,7 +76,7 @@ export default function DashboardLayout() {
       <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Cargando datos del negocio...</p>
+          <p className="text-gray-400 text-sm">{t('layout.dashboard.loading')}</p>
         </div>
       </div>
     );
@@ -85,7 +91,7 @@ export default function DashboardLayout() {
             onClick={() => window.location.reload()}
             className="bg-white/5 text-white px-8 py-3 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
           >
-            Reintentar
+            {t('layout.dashboard.retry')}
           </button>
         </div>
       </div>
@@ -104,64 +110,64 @@ export default function DashboardLayout() {
           
           <div className="relative z-10">
             <h1 className="text-3xl lg:text-4xl font-bold text-white mb-4 tracking-tight">
-              Configura tu <span className="text-blue-500">negocio.</span>
+              {t('layout.dashboard.setupTitle')}
             </h1>
-            <p className="text-gray-400 mb-10 text-lg">Para comenzar a recibir reservas, necesitamos los datos básicos de tu negocio.</p>
+            <p className="text-gray-400 mb-10 text-lg">{t('layout.dashboard.setupSubtitle')}</p>
             
             <div className="grid md:grid-cols-2 gap-6 mb-10">
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Nombre Comercial</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('layout.dashboard.businessName')}</label>
                 <input 
                   type="text" 
                   value={setupForm.name}
                   onChange={e => setSetupForm(p => ({ ...p, name: e.target.value }))}
-                  placeholder="Ej: Salón Elegance" 
+                  placeholder={t('layout.dashboard.businessNamePlaceholder')} 
                   className="w-full bg-dark-bg border border-white/5 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Categoría</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('layout.dashboard.category')}</label>
                 <select 
                   value={setupForm.category}
                   onChange={e => setSetupForm(p => ({ ...p, category: e.target.value }))}
                   className="w-full bg-dark-bg border border-white/5 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all appearance-none"
                 >
-                  <option>Peluquería</option>
-                  <option>Consultorio</option>
-                  <option>Restaurante</option>
-                  <option>Gimnasio</option>
-                  <option value="Otro">Otro...</option>
+                  <option>{t('layout.dashboard.categories.0')}</option>
+                  <option>{t('layout.dashboard.categories.1')}</option>
+                  <option>{t('layout.dashboard.categories.2')}</option>
+                  <option>{t('layout.dashboard.categories.3')}</option>
+                  <option value="Otro">{t('layout.dashboard.otherCategory')}</option>
                 </select>
               </div>
 
               {setupForm.category === 'Otro' && (
                 <div className="space-y-2 md:col-span-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Especifica tu categoría</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('layout.dashboard.categoryCustom')}</label>
                   <input 
                     type="text" 
                     onChange={e => setSetupForm(p => ({ ...p, customCategory: e.target.value }))}
-                    placeholder="Ej: Spa, Taller Mecánico, etc." 
+                    placeholder={t('layout.dashboard.categoryCustomPlaceholder')} 
                     className="w-full bg-dark-bg border border-white/5 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
                   />
                 </div>
               )}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Teléfono</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('layout.dashboard.phone')}</label>
                 <input 
                   type="tel" 
                   value={setupForm.phone}
                   onChange={e => setSetupForm(p => ({ ...p, phone: e.target.value }))}
-                  placeholder="099-000-0000" 
+                  placeholder={t('layout.dashboard.phonePlaceholder')} 
                   className="w-full bg-dark-bg border border-white/5 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Ciudad</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">{t('layout.dashboard.city')}</label>
                 <input 
                   type="text" 
                   value={setupForm.city}
                   onChange={e => setSetupForm(p => ({ ...p, city: e.target.value }))}
-                  placeholder="Quito" 
+                  placeholder={t('layout.dashboard.cityPlaceholder')} 
                   className="w-full bg-dark-bg border border-white/5 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
                 />
               </div>
@@ -172,13 +178,13 @@ export default function DashboardLayout() {
                 onClick={handleSetup}
                 className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98]"
               >
-                Comenzar ahora
+                {t('layout.dashboard.startNow')}
               </button>
               <button 
                 onClick={handleSignOut}
                 className="px-8 py-5 rounded-2xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition-all"
               >
-                Cerrar Sesión
+                {t('layout.dashboard.signOut')}
               </button>
             </div>
           </div>

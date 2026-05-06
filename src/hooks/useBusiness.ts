@@ -47,15 +47,28 @@ export function useBusiness() {
     return () => window.removeEventListener('business_updated', handleBusinessUpdate);
   }, [fetchBusiness]);
 
+const generateSlug = (name: string): string => {
+    const slug = name
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return slug || 'negocio';
+  };
+
   const createBusiness = async (businessData: Omit<Business, 'id' | 'owner_id' | 'created_at'>) => {
     if (!user) return null;
-    const slug = businessData.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    const slug = generateSlug(businessData.name);
     
     const { data, error: err } = await supabase
       .from('businesses')
       .insert({ ...businessData, owner_id: user.id, slug } as never)
       .select()
-      .single() as { data: Business | null; error: { message: string } | null };
+      .single() as { data: Business | null; error: { message: string } | null }; 
 
     if (err) { setError(err.message); return null; }
     setBusiness(data);

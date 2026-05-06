@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useId } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import type { Booking, BookingInsert, BookingUpdate } from '../types/database';
+import type { Booking, BookingInsert, BookingUpdate, BookingWithClient } from '../types/database';
 
 interface UseBookingsOptions {
   businessId?: string | null;
@@ -13,7 +13,7 @@ interface UseBookingsOptions {
 
 export function useBookings({ businessId, clientId, date, dateFrom, dateTo, status }: UseBookingsOptions = {}) {
   const hookId = useId();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingWithClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,15 +30,14 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
     if (status) query = query.eq('status', status);
 
     const { data, error: err } = await query.order('booking_date').order('start_time') as {
-      data: Booking[] | null;
+      data: BookingWithClient[] | null;
       error: { message: string } | null;
     };
 
     if (err) setError(err.message);
     else {
-      // Filter out cancelled bookings older than 24 hours
       const now = new Date().getTime();
-      const filtered = (data as Booking[]).filter(b => {
+      const filtered = (data as BookingWithClient[]).filter(b => {
         if (b.status === 'cancelled') {
           const bookingTime = new Date(b.created_at).getTime();
           if (now - bookingTime > 24 * 60 * 60 * 1000) return false;

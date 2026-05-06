@@ -30,7 +30,7 @@ export default function ClientsPage() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar cliente..."
+            placeholder={t('clients.searchPlaceholder')}
             className="bg-dark-card border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 w-64"
           />
         </div>
@@ -38,20 +38,20 @@ export default function ClientsPage() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-gray-500">{search ? 'No se encontraron resultados' : 'Aún no tienes clientes'}</p>
+          <p className="text-gray-500">{search ? t('clients.noResults') : t('clients.empty')}</p>
         </div>
       ) : (
         <div className="bg-dark-card rounded-2xl border border-white/5 overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">Cliente</th>
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">Contacto</th>
-                <th className="text-center px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">Reservas</th>
-                {(business?.settings as any)?.enable_products && (
-                  <th className="text-center px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">Pedidos</th>
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">{t('clients.tableHeaders.client')}</th>
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">{t('clients.tableHeaders.contact')}</th>
+                <th className="text-center px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">{t('clients.tableHeaders.bookings')}</th>
+                {business?.settings?.enable_products && (
+                  <th className="text-center px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">{t('clients.tableHeaders.orders')}</th>
                 )}
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">Última actividad</th>
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-600">{t('clients.tableHeaders.lastActivity')}</th>
               </tr>
             </thead>
             <tbody>
@@ -70,7 +70,7 @@ export default function ClientsPage() {
                           {(client.full_name || '?')[0]}
                         </div>
                       )}
-                      <span className="text-white text-sm font-medium">{client.full_name || 'Sin nombre'}</span>
+                      <span className="text-white text-sm font-medium">{client.full_name || t('clients.unnamed')}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -82,7 +82,7 @@ export default function ClientsPage() {
                   <td className="px-6 py-4 text-center">
                     <span className="text-gray-300 text-sm font-medium bg-white/5 px-3 py-1 rounded-lg">{client.booking_count}</span>
                   </td>
-                  {(business?.settings as any)?.enable_products && (
+                  {business?.settings?.enable_products && (
                     <td className="px-6 py-4 text-center">
                       <span className="text-gray-300 text-sm font-medium bg-white/5 px-3 py-1 rounded-lg">{client.order_count}</span>
                     </td>
@@ -111,10 +111,10 @@ export default function ClientsPage() {
 
 // ═══════════════════════════════════════════════════════════════
 // ── Client Details Panel ───────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════
-function ClientDetailsPanel({ client, businessId, onClose }: { client: any, businessId: string, onClose: () => void }) {
+function ClientDetailsPanel({ client, businessId, onClose }: { client: ClientInfo, businessId: string, onClose: () => void }) {
+  const { t } = useTranslation();
   const { business } = useBusiness();
-  const activeProducts = (business?.settings as any)?.enable_products;
+  const activeProducts = business?.settings?.enable_products;
   const { bookings, loading: bookingsLoading } = useBookings({ businessId, clientId: client.id });
   const { orders, loading: ordersLoading } = useOrders({ businessId, clientId: client.id });
   const [activeTab, setActiveTab] = useState<'bookings' | 'orders'>('bookings');
@@ -129,10 +129,10 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
   };
 
   const STATUS_LABELS: Record<string, string> = {
-    pending: 'Pendiente',
-    confirmed: 'Confirmada',
-    cancelled: 'Cancelada',
-    completed: 'Completada',
+    pending: t('agenda.status.pending'),
+    confirmed: t('agenda.status.confirmed'),
+    cancelled: t('agenda.status.cancelled'),
+    completed: t('agenda.status.completed'),
   };
 
   const filteredBookings = bookings.filter(b => bookingFilter === 'all' || b.status === bookingFilter);
@@ -154,7 +154,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
               </div>
             )}
             <div>
-              <h2 className="text-xl font-bold text-white">{client.full_name || 'Sin nombre'}</h2>
+              <h2 className="text-xl font-bold text-white">{client.full_name || t('clients.unnamed')}</h2>
               <div className="flex flex-col gap-1 mt-1">
                 <span className="flex items-center gap-1.5 text-gray-400 text-sm"><Mail size={14} />{client.email}</span>
                 {client.phone && <span className="flex items-center gap-1.5 text-gray-400 text-sm"><Phone size={14} />{client.phone}</span>}
@@ -192,7 +192,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
           </div>
         ) : (
           <div className="px-6 mt-6">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Historial de Reservas</h3>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">              {t('clients.historyTitle')}</h3>
           </div>
         )}
 
@@ -209,7 +209,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
                     : 'bg-dark-card text-gray-500 border-white/5 hover:border-white/20'
                 }`}
               >
-                {s === 'all' ? 'Todas' : STATUS_LABELS[s]}
+                {s === 'all' ? t('clients.filter.allBookings') : STATUS_LABELS[s]}
               </button>
             ))}
           </div>
@@ -226,7 +226,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
                     : 'bg-dark-card text-gray-500 border-white/5 hover:border-white/20'
                 }`}
               >
-                {s === 'all' ? 'Todos' : STATUS_LABELS[s]}
+                {s === 'all' ? t('clients.filter.allOrders') : STATUS_LABELS[s]}
               </button>
             ))}
           </div>
@@ -239,7 +239,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
             bookingsLoading ? (
               <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>
             ) : filteredBookings.length === 0 ? (
-              <p className="text-center text-gray-500 py-10">{bookingFilter !== 'all' ? 'No hay reservas con este estado.' : 'Este cliente no tiene reservas.'}</p>
+              <p className="text-center text-gray-500 py-10">{bookingFilter !== 'all' ? t('clients.noBookingsWithStatus') : t('clients.clientNoBookings')}</p>
             ) : (
               <div className="space-y-4">
                 {filteredBookings.map(booking => (
@@ -251,7 +251,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
                     </div>
                     
                     <div>
-                      <p className="text-white font-medium">{booking.services?.name || 'Servicio'}</p>
+                      <p className="text-white font-medium">{booking.services?.name || t('agenda.service')}</p>
                       <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
                         <Clock size={14} />
                         {new Date(`${booking.booking_date}T12:00:00`).toLocaleDateString('es-EC', { weekday: 'short', day: 'numeric', month: 'short' })} • {booking.start_time.slice(0, 5)}
@@ -273,7 +273,7 @@ function ClientDetailsPanel({ client, businessId, onClose }: { client: any, busi
             ordersLoading ? (
               <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>
             ) : filteredOrders.length === 0 ? (
-              <p className="text-center text-gray-500 py-10">{orderFilter !== 'all' ? 'No hay pedidos con este estado.' : 'Este cliente no ha realizado compras.'}</p>
+              <p className="text-center text-gray-500 py-10">{orderFilter !== 'all' ? t('clients.noOrdersWithStatus') : t('clients.clientNoOrders')}</p>
             ) : (
               <div className="space-y-4">
                 {filteredOrders.map(o => (

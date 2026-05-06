@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ShoppingBag, Loader2, CheckCircle, XCircle, Search, Package, Calendar, Archive } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { useBusiness } from '../../hooks/useBusiness';
 
 export default function OrdersPage() {
+  const { t } = useTranslation();
   const { business } = useBusiness();
   const { orders, loading, updateOrderStatus, archiveOrder } = useOrders({ businessId: business?.id ?? null });
   const [search, setSearch] = useState('');
@@ -13,7 +15,7 @@ export default function OrdersPage() {
     try {
       await updateOrderStatus(id, status);
     } catch (err: any) {
-      alert(`Error al actualizar estado: ${err.message || 'Inténtelo de nuevo'}`);
+      alert(t('orders.errorUpdate', { message: err.message || 'Inténtelo de nuevo' }));
     }
   };
 
@@ -31,9 +33,9 @@ export default function OrdersPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <ShoppingBag size={24} className="text-blue-500" />
-            Pedidos de Tienda
+            {t('orders.title')}
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Gestiona las compras realizadas por tus clientes.</p>
+          <p className="text-gray-400 text-sm mt-1">{t('orders.subtitle')}</p>
         </div>
       </div>
 
@@ -42,7 +44,7 @@ export default function OrdersPage() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
           <input
             type="text"
-            placeholder="Buscar por cliente o ID de orden..."
+            placeholder={t('orders.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-dark-card border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-all"
@@ -50,20 +52,20 @@ export default function OrdersPage() {
         </div>
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as any)}
+          onChange={(e) => setStatusFilter(e.target.value)}
           className="bg-dark-card border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-all"
         >
-          <option value="all">Todos los estados</option>
-          <option value="pending">Pendientes</option>
-          <option value="completed">Completados</option>
-          <option value="cancelled">Cancelados</option>
+          <option value="all">{t('orders.filter.all')}</option>
+          <option value="pending">{t('orders.filter.pending')}</option>
+          <option value="completed">{t('orders.filter.completed')}</option>
+          <option value="cancelled">{t('orders.filter.cancelled')}</option>
         </select>
       </div>
 
       {filtered.length === 0 ? (
         <div className="bg-dark-card rounded-3xl border border-white/5 p-12 text-center">
           <ShoppingBag className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400">No hay pedidos disponibles.</p>
+          <p className="text-gray-400">{t('orders.empty')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -72,11 +74,11 @@ export default function OrdersPage() {
               <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    {order.status === 'pending' && <span className="bg-yellow-500/20 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full border border-yellow-500/20">Pendiente</span>}
-                    {order.status === 'completed' && <span className="bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full border border-green-500/20">Completado</span>}
-                    {order.status === 'cancelled' && <span className="bg-red-500/20 text-red-400 text-xs font-bold px-3 py-1 rounded-full border border-red-500/20">Cancelado</span>}
+                    {order.status === 'pending' && <span className="bg-yellow-500/20 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full border border-yellow-500/20">{t('orders.status.pending')}</span>}
+                    {order.status === 'completed' && <span className="bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full border border-green-500/20">{t('orders.status.completed')}</span>}
+                    {order.status === 'cancelled' && <span className="bg-red-500/20 text-red-400 text-xs font-bold px-3 py-1 rounded-full border border-red-500/20">{t('orders.status.cancelled')}</span>}
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-1">{order.client?.full_name || 'Cliente'}</h3>
+                  <h3 className="text-lg font-bold text-white mb-1">{order.client?.full_name || t('orders.client')}</h3>
                   <p className="text-gray-500 text-sm flex items-center gap-4">
                     <span>{order.client?.email}</span>
                     <span>{order.client?.phone}</span>
@@ -85,11 +87,11 @@ export default function OrdersPage() {
 
                 <div className="flex flex-col items-start md:items-end gap-2">
                   <div className="text-right">
-                    <p className="text-gray-400 text-sm mb-1">Total a cobrar</p>
+                    <p className="text-gray-400 text-sm mb-1">{t('orders.totalToCharge')}</p>
                     <p className="text-2xl font-bold text-blue-400">${order.total_amount.toFixed(2)}</p>
                   </div>
                   <span className="bg-white/5 text-gray-400 text-xs px-3 py-1.5 rounded-lg border border-white/5">
-                    Pago: {order.payment_method === 'cash' ? 'Efectivo' : 'Transferencia'}
+                    {t('orders.paymentLabel')}: {order.payment_method === 'cash' ? t('orders.payment.cash') : t('orders.payment.transfer')}
                   </span>
                   <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                     <Calendar size={12} /> {new Date(order.created_at).toLocaleString()}
@@ -109,7 +111,7 @@ export default function OrdersPage() {
                         )}
                       </div>
                       <div>
-                        <p className="text-white text-sm font-medium">{item.product?.name || 'Producto Desconocido'}</p>
+                        <p className="text-white text-sm font-medium">{item.product?.name || t('orders.unknownProduct')}</p>
                         <p className="text-gray-500 text-xs">{item.quantity} x ${item.unit_price.toFixed(2)}</p>
                       </div>
                     </div>
@@ -120,20 +122,20 @@ export default function OrdersPage() {
 
               <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
                 <button onClick={async () => {
-                  if (window.confirm('¿Archivar este pedido? Ya no aparecerá en esta lista.')) {
+                  if (window.confirm(t('orders.archiveConfirm'))) {
                     try { await archiveOrder(order.id); } 
                     catch (err: any) { alert(err.message); }
                   }
                 }} className="px-4 py-2 bg-gray-500/10 hover:bg-gray-500/20 text-gray-400 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
-                  <Archive size={16} /> Archivar
+                  <Archive size={16} /> {t('orders.archive')}
                 </button>
                 {order.status === 'pending' && (
                   <>
                     <button onClick={() => handleUpdateStatus(order.id, 'cancelled')} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-sm font-bold transition-colors">
-                      Cancelar
+                      {t('orders.cancel')}
                     </button>
                     <button onClick={() => handleUpdateStatus(order.id, 'completed')} className="px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
-                      <CheckCircle size={16} /> Marcar como Pagado
+                      <CheckCircle size={16} /> {t('orders.markAsPaid')}
                     </button>
                   </>
                 )}

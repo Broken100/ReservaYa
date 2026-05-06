@@ -1,15 +1,16 @@
 import { useTranslation } from 'react-i18next';
-import { Calendar, Package, Users, TrendingUp, Clock, ChevronRight, ShoppingBag, Loader2 } from 'lucide-react';
+import { Calendar, Package, Users, TrendingUp, Clock, ChevronRight, ShoppingBag } from 'lucide-react';
 import { useBusiness } from '../../hooks/useBusiness';
 import { useBookings } from '../../hooks/useBookings';
 import { useOrders } from '../../hooks/useOrders';
 import { useClients } from '../../hooks/useClients';
 import { Link } from 'react-router-dom';
+import { Card, SkeletonCard } from '../../components/ui';
 
 export default function OverviewPage() {
   const { t } = useTranslation();
   const { business } = useBusiness();
-  const activeProducts = (business?.settings as any)?.enable_products;
+  const activeProducts = business?.settings?.enable_products;
 
   // Data fetching
   const { bookings, loading: bookingsLoading } = useBookings({ businessId: business?.id ?? null });
@@ -17,7 +18,16 @@ export default function OverviewPage() {
   const { clients, loading: clientsLoading } = useClients(business?.id ?? null);
 
   if (bookingsLoading || (activeProducts && ordersLoading) || clientsLoading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 text-blue-500 animate-spin" /></div>;
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: activeProducts ? 5 : 3 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+        <SkeletonCard />
+      </div>
+    );
   }
 
   const pendingBookings = bookings.filter(b => b.status === 'pending');
@@ -29,41 +39,41 @@ export default function OverviewPage() {
 
   const stats = [
     { 
-      label: 'Reservas Totales', 
+      label: t('overview.stats.totalBookings'), 
       value: bookings.length, 
-      sub: `${pendingBookings.length} pendientes`,
+      sub: `${pendingBookings.length} ${t('overview.pending')}`,
       icon: Calendar, 
       color: 'blue',
       link: '/dashboard/agenda'
     },
     activeProducts ? { 
-      label: 'Pedidos Totales', 
+      label: t('overview.stats.totalOrders'), 
       value: orders.length, 
-      sub: `${pendingOrders.length} por cobrar`,
+      sub: `${pendingOrders.length} ${t('overview.pendingPayment')}`,
       icon: ShoppingBag, 
       color: 'emerald',
       link: '/dashboard/pedidos'
     } : null,
     { 
-      label: 'Clientes', 
+      label: t('overview.stats.clients'), 
       value: clients.length, 
-      sub: 'Base de datos',
+      sub: t('overview.stats.clientDatabase'),
       icon: Users, 
       color: 'purple',
       link: '/dashboard/clientes'
     },
     activeProducts ? { 
-      label: 'Ingresos (Tienda)', 
+      label: t('overview.stats.storeRevenue'), 
       value: `$${totalRevenue.toFixed(2)}`, 
-      sub: 'Ventas completadas',
+      sub: t('overview.stats.completedSales'),
       icon: TrendingUp, 
       color: 'amber',
       link: '/dashboard/pedidos'
     } : null,
     { 
-      label: 'Ingresos por Servicios', 
+      label: t('overview.stats.serviceRevenue'), 
       value: `$${bookings.filter(b => b.status === 'completed' || b.status === 'confirmed').reduce((sum, b) => sum + (b.services?.price || 0), 0).toFixed(2)}`, 
-      sub: 'Reservas completadas/confirmadas',
+      sub: t('overview.stats.completedBookings'),
       icon: TrendingUp, 
       color: 'emerald',
       link: '/dashboard/agenda'
@@ -82,7 +92,7 @@ export default function OverviewPage() {
         <h1 className="text-3xl font-bold text-white tracking-tight">
           ¡Hola, {business?.name}!
         </h1>
-        <p className="text-gray-400">Aquí tienes un resumen de lo que está pasando en tu negocio hoy.</p>
+        <p className="text-gray-400">{t('overview.subtitle')}</p>
       </div>
 
       {/* Stats Grid */}
@@ -112,9 +122,9 @@ export default function OverviewPage() {
         {/* Recent Activity */}
         <div className="bg-dark-card border border-white/5 rounded-[2.5rem] overflow-hidden">
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">Actividad Reciente</h2>
+            <h2 className="text-lg font-bold text-white">{t('overview.recentActivity')}</h2>
             <Link to={activeProducts ? "/dashboard/pedidos" : "/dashboard/agenda"} className="text-blue-400 text-sm font-medium hover:underline flex items-center gap-1">
-              Ver todo <ChevronRight size={14} />
+              {t('overview.viewAll')} <ChevronRight size={14} />
             </Link>
           </div>
           <div className="divide-y divide-white/5">
@@ -127,10 +137,10 @@ export default function OverviewPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-white font-medium truncate">
-                    {act.type === 'booking' ? `Reserva: ${act.services?.name}` : `Pedido`}
+                    {act.type === 'booking' ? `${t('overview.bookingPrefix')} ${act.services?.name}` : t('overview.orderLabel')}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
-                    {act.profiles?.full_name || act.client?.full_name || 'Cliente desconocido'} • {act.date.toLocaleDateString('es-EC')}
+                    {act.profiles?.full_name || act.client?.full_name || t('overview.unknownClient')} • {act.date.toLocaleDateString('es-EC')}
                   </p>
                 </div>
                 <div className="text-right">
@@ -145,7 +155,7 @@ export default function OverviewPage() {
               </div>
             ))}
             {recentActivity.length === 0 && (
-              <p className="p-10 text-center text-gray-500 italic">No hay actividad reciente.</p>
+              <p className="p-10 text-center text-gray-500 italic">{t('overview.noRecentActivity')}</p>
             )}
           </div>
         </div>
@@ -154,17 +164,17 @@ export default function OverviewPage() {
         <div className="space-y-6">
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2.5rem] text-white shadow-xl shadow-blue-900/20 relative overflow-hidden">
             <div className="relative z-10">
-              <h3 className="text-xl font-bold mb-2">Acceso Rápido</h3>
-              <p className="text-blue-100/80 text-sm mb-6">Gestiona tus servicios y productos fácilmente.</p>
+              <h3 className="text-xl font-bold mb-2">{t('overview.quickAccess')}</h3>
+              <p className="text-blue-100/80 text-sm mb-6">{t('overview.quickAccessDesc')}</p>
               <div className="grid grid-cols-2 gap-4">
                 <Link to="/dashboard/servicios" className="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all flex flex-col gap-2">
                   <Clock size={20} />
-                  <span className="text-xs font-bold uppercase tracking-widest">Servicios</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">{t('dashboard.services')}</span>
                 </Link>
                 {activeProducts && (
                   <Link to="/dashboard/productos" className="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all flex flex-col gap-2">
                     <Package size={20} />
-                    <span className="text-xs font-bold uppercase tracking-widest">Productos</span>
+                    <span className="text-xs font-bold uppercase tracking-widest">{t('overview.products')}</span>
                   </Link>
                 )}
               </div>
@@ -173,12 +183,12 @@ export default function OverviewPage() {
           </div>
 
           <div className="bg-dark-card border border-white/5 p-8 rounded-[2.5rem]">
-            <h2 className="text-lg font-bold text-white mb-6">Pendientes de Hoy</h2>
+            <h2 className="text-lg font-bold text-white mb-6">{t('overview.pendingToday')}</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-dark-bg rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                  <span className="text-sm text-gray-300">Reservas por confirmar</span>
+                  <span className="text-sm text-gray-300">{t('overview.pendingBookings')}</span>
                 </div>
                 <span className="text-sm font-bold text-white">{pendingBookings.length}</span>
               </div>
@@ -186,7 +196,7 @@ export default function OverviewPage() {
                 <div className="flex items-center justify-between p-4 bg-dark-bg rounded-2xl border border-white/5">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="text-sm text-gray-300">Pedidos pendientes</span>
+                    <span className="text-sm text-gray-300">{t('overview.pendingOrders')}</span>
                   </div>
                   <span className="text-sm font-bold text-white">{pendingOrders.length}</span>
                 </div>

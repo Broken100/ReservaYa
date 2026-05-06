@@ -61,18 +61,18 @@ export default function ProductsPage() {
       }
       setIsModalOpen(false);
     } catch (err) {
-      alert('Error al guardar el producto');
+      alert(t('products.errorSave'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('¿Estás seguro de eliminar este producto?')) {
+    if (confirm(t('products.deleteConfirm'))) {
       try {
         await deleteProduct(id);
       } catch (err) {
-        alert('Error al eliminar');
+        alert(t('products.errorDelete'));
       }
     }
   };
@@ -89,16 +89,16 @@ export default function ProductsPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Package size={24} className={tColor.text} />
-            Inventario de Productos
+            {t('products.title')}
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Gestiona los productos que ofreces en tu tienda.</p>
+          <p className="text-gray-400 text-sm mt-1">{t('products.subtitle')}</p>
         </div>
         <button
           onClick={openNew}
           className={`flex items-center gap-2 ${tColor.bg} text-white px-5 py-2.5 rounded-xl font-bold ${tColor.bgHover} transition-colors shadow-lg ${tColor.shadow}`}
         >
           <Plus size={20} />
-          Nuevo Producto
+          {t('products.create')}
         </button>
       </div>
 
@@ -106,7 +106,7 @@ export default function ProductsPage() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
         <input
           type="text"
-          placeholder="Buscar productos..."
+          placeholder={t('products.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full bg-dark-card border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-all shadow-inner"
@@ -116,7 +116,7 @@ export default function ProductsPage() {
       {filtered.length === 0 ? (
         <div className="bg-dark-card rounded-3xl border border-white/5 p-12 text-center">
           <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400">No se encontraron productos.</p>
+          <p className="text-gray-400">{t('products.notFound')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -132,7 +132,7 @@ export default function ProductsPage() {
                 )}
                 {!p.is_active && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Agotado / Inactivo</span>
+                    <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{t('products.soldOut')}</span>
                   </div>
                 )}
               </div>
@@ -141,10 +141,10 @@ export default function ProductsPage() {
                   <h3 className="text-lg font-bold text-white truncate pr-2">{p.name}</h3>
                   <p className={`${tColor.text} font-bold`}>${p.price.toFixed(2)}</p>
                 </div>
-                <p className="text-sm text-gray-500 line-clamp-2 min-h-[40px]">{p.description || 'Sin descripción'}</p>
+                <p className="text-sm text-gray-500 line-clamp-2 min-h-[40px]">{p.description || t('products.noDescription')}</p>
                 
                 <div className="mt-4 flex items-center justify-between pt-4 border-t border-white/5">
-                  <span className="text-xs font-bold text-gray-400">Stock: {p.stock}</span>
+                  <span className="text-xs font-bold text-gray-400">{t('products.stock')}: {p.stock}</span>
                   <div className="flex gap-2">
                     <button onClick={() => openEdit(p)} className={`p-2 bg-white/5 ${tColor.bgSubtleHover} text-gray-400 hover:${tColor.text} rounded-lg transition-colors`}>
                       <Edit2 size={16} />
@@ -166,7 +166,7 @@ export default function ProductsPage() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" onClick={() => setIsModalOpen(false)} />
           <div className="fixed inset-y-0 right-0 w-full max-w-md bg-dark-bg border-l border-white/10 z-50 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             <div className="p-6 border-b border-white/10 flex justify-between items-center bg-dark-card">
-              <h2 className="text-xl font-bold text-white">{editingId ? 'Editar Producto' : 'Nuevo Producto'}</h2>
+              <h2 className="text-xl font-bold text-white">{editingId ? t('products.editTitle') : t('products.createTitle')}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
                 <XCircle size={24} />
               </button>
@@ -191,33 +191,33 @@ export default function ProductsPage() {
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
                   </label>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Formatos: JPG, PNG. Cuadrada 1:1.</p>
+                <p className="text-xs text-gray-500 mt-2">{t('products.form.imageHint')}</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('products.form.name')}</label>
                   <input type="text" value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} className="w-full bg-dark-card border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Descripción</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('products.form.description')}</label>
                   <textarea value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))} rows={3} className="w-full bg-dark-card border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 resize-none" />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio ($)</label>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('products.form.price')}</label>
                     <input type="number" step="0.01" value={form.price} onChange={e => setForm(f => ({...f, price: parseFloat(e.target.value)}))} className="w-full bg-dark-card border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Stock</label>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('products.form.stock')}</label>
                     <input type="number" value={form.stock} onChange={e => setForm(f => ({...f, stock: parseInt(e.target.value, 10)}))} className="w-full bg-dark-card border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50" />
                   </div>
                 </div>
                 <label className="flex items-center gap-3 bg-dark-card p-4 rounded-xl border border-white/5 cursor-pointer">
                   <input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({...f, is_active: e.target.checked}))} className="w-5 h-5 accent-blue-600 rounded" />
                   <div>
-                    <p className="text-white font-medium">Producto Activo</p>
-                    <p className="text-gray-500 text-xs">Desactiva para ocultarlo sin eliminarlo.</p>
+                    <p className="text-white font-medium">{t('products.form.active')}</p>
+                    <p className="text-gray-500 text-xs">{t('products.form.activeHelp')}</p>
                   </div>
                 </label>
               </div>
@@ -230,7 +230,7 @@ export default function ProductsPage() {
                 className={`w-full flex items-center justify-center gap-2 ${tColor.bg} text-white py-4 rounded-xl font-bold ${tColor.bgHover} transition-colors disabled:opacity-50`}
               >
                 {saving ? <Loader2 className="animate-spin" /> : <CheckCircle size={20} />}
-                {editingId ? 'Guardar Cambios' : 'Crear Producto'}
+                {editingId ? t('products.saveChanges') : t('products.createButton')}
               </button>
             </div>
           </div>

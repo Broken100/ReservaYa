@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { FloatingChatButton } from './components/floating';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -82,6 +83,7 @@ export default function App() {
             <Route path="perfil" element={<ClientProfilePage />} />
           </Route>
         </Routes>
+        <FloatingChatButton />
       </AuthProvider>
     </BrowserRouter>
   );

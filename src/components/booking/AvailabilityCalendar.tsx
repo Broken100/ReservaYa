@@ -75,7 +75,7 @@ export default function AvailabilityCalendar({
     return day === selectedDate.getDate();
   };
 
-  const monthNames = [
+  const monthNames = (t('agenda.months', { returnObjects: true }) as unknown as string[]) || [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
@@ -86,7 +86,7 @@ export default function AvailabilityCalendar({
         <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-gray-400">
           <ChevronLeft size={20} />
         </button>
-        <h2 className="text-xl font-bold text-white">Selecciona fecha y hora</h2>
+        <h2 className="text-xl font-bold text-white">{t('booking.selectDateTime')}</h2>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -105,7 +105,7 @@ export default function AvailabilityCalendar({
           </div>
           
           <div className="grid grid-cols-7 gap-2 text-center mb-2">
-            {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'].map(d => (
+            {((t('agenda.daysShort', { returnObjects: true }) as unknown as string[]) || ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']).map(d => (
               <div key={d} className="text-xs text-gray-500 font-medium py-2">{d}</div>
             ))}
           </div>
@@ -136,21 +136,21 @@ export default function AvailabilityCalendar({
         <div>
           <h3 className="text-white font-medium mb-4 flex items-center gap-2">
             <Clock size={16} className={tColor.text} />
-            Horarios disponibles
+            {t('booking.availableTimes')}
           </h3>
           
           {loading ? (
             <div className="flex flex-col items-center justify-center h-48 text-gray-500">
               <Loader2 className={`w-6 h-6 animate-spin ${tColor.text} mb-2`} />
-              <p className="text-sm">Buscando disponibilidad...</p>
+              <p className="text-sm">{t('booking.searchingAvailability')}</p>
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-48 text-red-400 bg-red-500/10 rounded-xl p-4 text-center">
-              <p className="text-sm">No se pudo cargar la disponibilidad.</p>
+              <p className="text-sm">{t('booking.loadError')}</p>
             </div>
           ) : slots.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 text-gray-500 text-center px-4">
-              <p className="text-sm">No hay horarios disponibles para esta fecha.</p>
+              <p className="text-sm">{t('booking.noAvailabilityForDate')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">

@@ -29,7 +29,7 @@ export function useAvailability(businessId: string | null, serviceId: string | n
           .select('open_time, close_time, is_closed')
           .eq('business_id', businessId)
           .eq('day_of_week', dayOfWeek)
-          .maybeSingle() as any;
+          .maybeSingle();
 
         if (hoursError) throw hoursError;
 
@@ -43,7 +43,7 @@ export function useAvailability(businessId: string | null, serviceId: string | n
           .from('services')
           .select('duration_minutes')
           .eq('id', serviceId)
-          .single() as any;
+          .single();
 
         if (serviceError) throw serviceError;
         const duration = serviceData?.duration_minutes || 30;
@@ -60,7 +60,7 @@ export function useAvailability(businessId: string | null, serviceId: string | n
           bookingsQuery = bookingsQuery.eq('professional_id', professionalId);
         }
 
-        const { data: bookingsData, error: bookingsError } = await (bookingsQuery as any);
+        const { data: bookingsData, error: bookingsError } = await bookingsQuery;
 
         if (bookingsError) throw bookingsError;
 

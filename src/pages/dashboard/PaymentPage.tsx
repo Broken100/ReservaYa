@@ -1,35 +1,48 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import { CreditCard, CheckCircle2, ShieldCheck, Zap, Star, Crown } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const PLANS = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: '25',
-    features: ['Hasta 100 reservas/mes', '1 Profesional', 'Soporte por email', 'Panel básico'],
-    icon: Zap,
-    color: 'blue'
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: '45',
-    features: ['Reservas ilimitadas', 'Profesionales ilimitados', 'Soporte prioritario', 'Panel avanzado', 'Reportes IA'],
-    icon: Crown,
-    color: 'purple',
-    recommended: true
-  }
-];
-
 export default function PaymentPage() {
+  const { t } = useTranslation();
   const { profile, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('premium');
   const navigate = useNavigate();
+
+  const PLANS = [
+    {
+      id: 'starter',
+      name: t('payment.plans.starter'),
+      price: '25',
+      features: [
+        t('payment.features.upTo100'),
+        t('payment.features.1Professional'),
+        t('payment.features.emailSupport'),
+        t('payment.features.basicPanel'),
+      ],
+      icon: Zap,
+      color: 'blue'
+    },
+    {
+      id: 'premium',
+      name: t('payment.plans.premium'),
+      price: '45',
+      features: [
+        t('payment.features.unlimited'),
+        t('payment.features.unlimitedProfessionals'),
+        t('payment.features.prioritySupport'),
+        t('payment.features.advancedPanel'),
+        t('payment.features.aiReports'),
+      ],
+      icon: Crown,
+      color: 'purple',
+      recommended: true
+    }
+  ];
 
   const handlePayment = async () => {
     if (!user) return;
@@ -53,7 +66,7 @@ export default function PaymentPage() {
       window.location.href = '/dashboard';
     } catch (err) {
       console.error('Payment failed:', err);
-      alert('Error al procesar el pago. Inténtalo de nuevo.');
+      alert(t('payment.errorPayment'));
     } finally {
       setLoading(false);
     }
@@ -69,13 +82,13 @@ export default function PaymentPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-6"
           >
             <ShieldCheck size={16} />
-            Acceso Administrativo Seguro
+            {t('payment.secureAccess')}
           </motion.div>
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
-            Activa tu cuenta de <span className="text-blue-500">ReservaYa</span>
+            {t('payment.title')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Estás a un paso de digitalizar tu negocio. Elige el plan que mejor se adapte a tus necesidades y comienza hoy mismo.
+            {t('payment.subtitle')}
           </p>
         </header>
 
@@ -93,7 +106,7 @@ export default function PaymentPage() {
             >
               {plan.recommended && (
                 <div className="absolute -top-4 right-8 px-4 py-1 rounded-full bg-blue-600 text-white text-xs font-bold">
-                  RECOMENDADO
+                  {t('payment.recommended')}
                 </div>
               )}
 
@@ -103,7 +116,7 @@ export default function PaymentPage() {
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-bold text-white">${plan.price}</span>
-                  <span className="text-gray-500 ml-1">/mes</span>
+                  <span className="text-gray-500 ml-1">{t('payment.perMonth')}</span>
                 </div>
               </div>
 
@@ -136,7 +149,7 @@ export default function PaymentPage() {
                 ))}
               </div>
               <p className="text-sm text-gray-500">
-                Más de <span className="text-white font-bold">500 negocios</span> ya confían en nosotros
+                {t('payment.trustBadge')}
               </p>
             </div>
 
@@ -152,17 +165,17 @@ export default function PaymentPage() {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Procesando...
+                  {t('payment.processing')}
                 </>
               ) : (
                 <>
                   <CreditCard size={22} />
-                  Confirmar Suscripción
+                  {t('payment.confirmSubscription')}
                 </>
               )}
             </button>
             <p className="mt-6 text-gray-500 text-sm">
-              Pago seguro encriptado. Cancela en cualquier momento.
+              {t('payment.secureNote')}
             </p>
           </div>
         </div>

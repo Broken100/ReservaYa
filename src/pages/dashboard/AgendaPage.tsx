@@ -1,9 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X, User, Phone, Archive } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, Loader2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useBookings } from '../../hooks/useBookings';
 import { useBusiness } from '../../hooks/useBusiness';
-import type { Booking } from '../../types/database';
+import DayView from './agenda/DayView';
+import MonthView from './agenda/MonthView';
+import YearView from './agenda/YearView';
+import PendingAlerts from './agenda/PendingAlerts';
+import type { BookingWithClient } from '../../types/database';
 
 type ViewMode = 'day' | 'month' | 'year';
 
@@ -102,10 +106,9 @@ export default function AgendaPage() {
     try {
       setActionedBookings(prev => ({ ...prev, [id]: 'confirmed' }));
       await confirmPending(id);
-      // Card stays visible with green state for 1.5s then fades
       setTimeout(() => setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; }), 1500);
     } catch (err) {
-      alert('Error al confirmar reserva. Por favor intente nuevamente.');
+      alert(t('agenda.errorConfirm'));
       setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; });
     }
   };
@@ -116,7 +119,7 @@ export default function AgendaPage() {
       await cancelPending(id);
       setTimeout(() => setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; }), 1500);
     } catch (err) {
-      alert('Error al rechazar reserva. Por favor intente nuevamente.');
+      alert(t('agenda.errorReject'));
       setActionedBookings(prev => { const n = { ...prev }; delete n[id]; return n; });
     }
   };
@@ -165,11 +168,6 @@ export default function AgendaPage() {
     return `${selectedYear}`;
   }, [view, selectedDate, selectedMonth, selectedYear]);
 
-  // ── Pending bookings from other dates ────────────────────
-  const visiblePendingBookings = pendingBookings.filter(b => 
-    b.booking_date !== selectedDate && (b.status === 'pending' || actionedBookings[b.id])
-  );
-
   // ── Loading state ────────────────────────────────────────
   if (loading && bookings.length === 0 && pendingBookings.length === 0) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 text-blue-500 animate-spin" /></div>;
@@ -178,59 +176,13 @@ export default function AgendaPage() {
   return (
     <div className="space-y-8">
       {/* ── Pending Alerts ──────────────────────────────── */}
-      {visiblePendingBookings.length > 0 && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-6">
-          <h2 className="text-yellow-400 font-bold mb-4 flex items-center gap-2">
-            <Clock size={20} />
-            Citas pendientes de confirmación ({visiblePendingBookings.filter(b => b.status === 'pending' && !actionedBookings[b.id]).length})
-          </h2>
-          <div className="space-y-3">
-            {visiblePendingBookings.map((booking) => {
-              const action = actionedBookings[booking.id];
-              return (
-                <div
-                  key={booking.id}
-                  className={`rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border transition-all duration-500 ${
-                    action === 'confirmed'
-                      ? 'bg-green-600/10 border-green-500/30 scale-[0.98] opacity-80'
-                      : action === 'cancelled'
-                      ? 'bg-red-600/10 border-red-500/30 scale-[0.98] opacity-80'
-                      : 'bg-dark-card border-white/5'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {action && (
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                        action === 'confirmed' ? 'bg-green-500/20' : 'bg-red-500/20'
-                      }`}>
-                        {action === 'confirmed'
-                          ? <CheckCircle size={18} className="text-green-400" />
-                          : <XCircle size={18} className="text-red-400" />
-                        }
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-white font-semibold">
-                        {action
-                          ? action === 'confirmed' ? '✓ Cita confirmada' : '✗ Cita rechazada'
-                          : `${toLocalDate(booking.booking_date).toLocaleDateString('es-EC', { weekday: 'long', month: 'long', day: 'numeric' })} a las ${booking.start_time.slice(0, 5)}`
-                        }
-                      </p>
-                      <p className="text-gray-400 text-sm">{booking.services?.name || 'Servicio'}</p>
-                    </div>
-                  </div>
-                  {!action && (
-                    <div className="flex gap-2">
-                      <button onClick={() => handleConfirmPending(booking.id)} className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-bold rounded-lg transition-colors">Confirmar</button>
-                      <button onClick={() => handleCancelPending(booking.id)} className="px-4 py-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 text-sm font-bold rounded-lg transition-colors">Rechazar</button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <PendingAlerts
+        pendingBookings={pendingBookings}
+        selectedDate={selectedDate}
+        actionedBookings={actionedBookings}
+        onConfirm={handleConfirmPending}
+        onCancel={handleCancelPending}
+      />
 
       {/* ── Header: Title + View Tabs + Navigation ────── */}
       <div className="space-y-4">
@@ -245,7 +197,7 @@ export default function AgendaPage() {
                   view === v ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                {v === 'day' ? 'Día' : v === 'month' ? 'Mes' : 'Año'}
+                {v === 'day' ? t('agenda.view.day') : v === 'month' ? t('agenda.view.month') : t('agenda.view.year')}
               </button>
             ))}
           </div>
@@ -261,12 +213,12 @@ export default function AgendaPage() {
               <ChevronRight size={20} />
             </button>
             <button onClick={handleToday} className="ml-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-blue-400 hover:bg-blue-600/10 rounded-lg transition-colors border border-blue-500/20">
-              Hoy
+              {t('agenda.today')}
             </button>
           </div>
           <div className="hidden sm:flex items-center gap-2 bg-blue-600/10 px-4 py-2 rounded-xl border border-blue-500/20">
             <Calendar size={16} className="text-blue-400" />
-            <span className="text-blue-400 text-sm font-medium">{bookings.length} citas</span>
+            <span className="text-blue-400 text-sm font-medium">{t('agenda.bookingsCount', { count: bookings.length })}</span>
           </div>
         </div>
       </div>
@@ -319,279 +271,6 @@ export default function AgendaPage() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ── Day View ─────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════
-function DayView({ bookings, confirmBooking, cancelBooking, completeBooking }: {
-  bookings: Booking[];
-  confirmBooking: (id: string) => void;
-  cancelBooking: (id: string) => void;
-  completeBooking: (id: string) => void;
-  archiveBooking: (id: string) => void;
-}) {
-  if (bookings.length === 0) {
-    return (
-      <div className="text-center py-20 bg-dark-card rounded-3xl border border-white/5">
-        <Calendar size={48} className="text-gray-700 mx-auto mb-4" />
-        <p className="text-gray-500">No hay reservas para esta fecha</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {bookings.map((booking) => (
-        <div
-          key={booking.id}
-          className="bg-dark-card rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-        >
-          <div className="flex items-start gap-5">
-            <div className="bg-white/5 p-3 rounded-xl shrink-0 mt-1">
-              <Clock size={18} className="text-blue-400" />
-            </div>
-            <div>
-              <p className="text-white font-semibold mb-1">{booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}</p>
-              
-              {/* Client Info */}
-              <div className="flex items-center gap-3 mb-2">
-                {(booking as any).client?.avatar_url ? (
-                  <img src={(booking as any).client.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover" />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 text-[10px] font-bold">
-                    {((booking as any).client?.full_name || '?')[0]}
-                  </div>
-                )}
-                <span className="text-sm font-medium text-gray-300">{(booking as any).client?.full_name || 'Cliente'}</span>
-                {(booking as any).client?.phone && (
-                  <span className="text-xs text-gray-500 flex items-center gap-1"><Phone size={10}/> {(booking as any).client.phone}</span>
-                )}
-              </div>
-
-              <p className="text-gray-500 text-sm flex gap-2 items-center">
-                <span className="text-blue-400/80">{booking.services?.name || 'Servicio'}</span>
-              </p>
-              {booking.notes && (
-                <p className="text-xs text-gray-400 italic mt-2">"{booking.notes}"</p>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-            <span className={`px-3 py-1 rounded-lg text-xs font-medium border ${STATUS_STYLES[booking.status] || ''}`}>
-              {STATUS_LABELS[booking.status] || booking.status}
-            </span>
-            <div className="flex gap-1">
-              <button onClick={async () => {
-                if (window.confirm('¿Archivar esta cita?')) {
-                  try { await archiveBooking(booking.id); } catch(e) {}
-                }
-              }} className="p-2 rounded-lg hover:bg-gray-600/10 text-gray-500 hover:text-gray-400 transition-colors" title="Archivar">
-                <Archive size={18} />
-              </button>
-              {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                <>
-                  {booking.status === 'pending' && (
-                    <button onClick={() => confirmBooking(booking.id)} className="p-2 rounded-lg hover:bg-green-600/10 text-gray-500 hover:text-green-400 transition-colors" title="Confirmar">
-                      <CheckCircle size={18} />
-                    </button>
-                  )}
-                  {booking.status === 'confirmed' && (
-                    <button onClick={() => completeBooking(booking.id)} className="p-2 rounded-lg hover:bg-blue-600/10 text-gray-500 hover:text-blue-400 transition-colors" title="Completar">
-                      <CheckCircle size={18} />
-                    </button>
-                  )}
-                  <button onClick={() => cancelBooking(booking.id)} className="p-2 rounded-lg hover:bg-red-600/10 text-gray-500 hover:text-red-400 transition-colors" title="Cancelar">
-                    <XCircle size={18} />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ── Month View (Calendar Grid) ───────────────────────────────
-// ═══════════════════════════════════════════════════════════════
-function MonthView({ bookings, year, month, selectedDate, onOpenDetails }: {
-  bookings: Booking[];
-  year: number;
-  month: number;
-  selectedDate: string;
-  onOpenDetails: (date: string) => void;
-}) {
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const todayStr = toLocalDateString(new Date());
-
-  // Group bookings by day
-  const bookingsByDay = useMemo(() => {
-    const map: Record<number, Booking[]> = {};
-    for (const b of bookings) {
-      const day = parseInt(b.booking_date.split('-')[2], 10);
-      if (!map[day]) map[day] = [];
-      map[day].push(b);
-    }
-    return map;
-  }, [bookings]);
-
-  const cells: (number | null)[] = [];
-  for (let i = 0; i < firstDay; i++) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-
-  return (
-    <div className="bg-dark-card rounded-3xl border border-white/5 overflow-hidden">
-      {/* Day headers */}
-      <div className="grid grid-cols-7 border-b border-white/5">
-        {DAY_HEADERS.map(d => (
-          <div key={d} className="py-3 text-center text-xs font-bold uppercase tracking-widest text-gray-600">{d}</div>
-        ))}
-      </div>
-      {/* Calendar cells */}
-      <div className="grid grid-cols-7">
-        {cells.map((day, i) => {
-          if (day === null) return <div key={`empty-${i}`} className="border-b border-r border-white/[0.03] min-h-[100px]" />;
-
-          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-          const dayBookings = bookingsByDay[day] || [];
-          const isToday = dateStr === todayStr;
-          const isSelected = dateStr === selectedDate;
-          const pendingCount = dayBookings.filter(b => b.status === 'pending').length;
-          const confirmedCount = dayBookings.filter(b => b.status === 'confirmed').length;
-
-          return (
-            <button
-              key={day}
-              onClick={() => onOpenDetails(dateStr)}
-              className={`min-h-[100px] border-b border-r border-white/[0.03] p-2 text-left transition-all hover:bg-white/[0.03] group ${isSelected ? 'bg-blue-600/10' : ''}`}
-            >
-              <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-semibold mb-1 ${
-                isToday ? 'bg-blue-600 text-white' : 'text-gray-300 group-hover:text-white'
-              }`}>
-                {day}
-              </span>
-              {dayBookings.length > 0 && (
-                <div className="space-y-1">
-                  {pendingCount > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-                      <span className="text-[10px] text-yellow-400 font-medium truncate">{pendingCount} pendiente{pendingCount > 1 ? 's' : ''}</span>
-                    </div>
-                  )}
-                  {confirmedCount > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
-                      <span className="text-[10px] text-green-400 font-medium truncate">{confirmedCount} confirmada{confirmedCount > 1 ? 's' : ''}</span>
-                    </div>
-                  )}
-                  {dayBookings.length > pendingCount + confirmedCount && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-gray-500 shrink-0" />
-                      <span className="text-[10px] text-gray-500 font-medium truncate">{dayBookings.length - pendingCount - confirmedCount} otra{dayBookings.length - pendingCount - confirmedCount > 1 ? 's' : ''}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ── Year View (12 Month Summary Cards) ───────────────────────
-// ═══════════════════════════════════════════════════════════════
-function YearView({ bookings, year, onOpenDetails }: {
-  bookings: Booking[];
-  year: number;
-  onOpenDetails: (month: number) => void;
-}) {
-  const todayMonth = new Date().getMonth();
-  const todayYear = new Date().getFullYear();
-
-  // Group bookings by month
-  const bookingsByMonth = useMemo(() => {
-    const map: Record<number, { total: number; pending: number; confirmed: number; completed: number; cancelled: number }> = {};
-    for (let m = 0; m < 12; m++) map[m] = { total: 0, pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
-    for (const b of bookings) {
-      const m = parseInt(b.booking_date.split('-')[1], 10) - 1;
-      if (map[m]) {
-        map[m].total++;
-        if (b.status === 'pending') map[m].pending++;
-        else if (b.status === 'confirmed') map[m].confirmed++;
-        else if (b.status === 'completed') map[m].completed++;
-        else if (b.status === 'cancelled') map[m].cancelled++;
-      }
-    }
-    return map;
-  }, [bookings]);
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {MONTH_NAMES.map((name, i) => {
-        const data = bookingsByMonth[i];
-        const isCurrent = i === todayMonth && year === todayYear;
-        const maxCount = Math.max(...Object.values(bookingsByMonth).map(d => d.total), 1);
-        const barWidth = data.total > 0 ? Math.max((data.total / maxCount) * 100, 8) : 0;
-
-        return (
-          <button
-            key={name}
-            onClick={() => onOpenDetails(i)}
-            className={`bg-dark-card rounded-2xl p-5 border transition-all hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 text-left group ${
-              isCurrent ? 'border-blue-500/30 ring-1 ring-blue-500/10' : 'border-white/5'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className={`text-sm font-bold ${isCurrent ? 'text-blue-400' : 'text-gray-300 group-hover:text-white'} transition-colors`}>
-                {name}
-              </span>
-              <span className="text-2xl font-bold text-white">{data.total}</span>
-            </div>
-
-            {/* Activity bar */}
-            <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-4">
-              <div
-                className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500"
-                style={{ width: `${barWidth}%` }}
-              />
-            </div>
-
-            {/* Status breakdown */}
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {data.confirmed > 0 && (
-                <span className="flex items-center gap-1.5 text-[10px] text-green-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400" />{data.confirmed}
-                </span>
-              )}
-              {data.pending > 0 && (
-                <span className="flex items-center gap-1.5 text-[10px] text-yellow-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />{data.pending}
-                </span>
-              )}
-              {data.completed > 0 && (
-                <span className="flex items-center gap-1.5 text-[10px] text-blue-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />{data.completed}
-                </span>
-              )}
-              {data.cancelled > 0 && (
-                <span className="flex items-center gap-1.5 text-[10px] text-red-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />{data.cancelled}
-                </span>
-              )}
-              {data.total === 0 && <span className="text-[10px] text-gray-600">Sin citas</span>}
-            </div>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
 // ── Period Details Panel (Slide-over) ────────────────────────
 // ═══════════════════════════════════════════════════════════════
 function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: { 
@@ -600,6 +279,8 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
   onClose: () => void;
   onNavigate: () => void;
 }) {
+  const { t } = useTranslation();
+  const MONTH_NAMES = t('agenda.months', { returnObjects: true }) as string[];
   const isDay = period.type === 'day';
   
   let dateFrom: string | undefined;
@@ -625,13 +306,13 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
     dateTo
   });
 
-  const { archiveBooking } = useBookings({ businessId }); // for the archive function
+  const { archiveBooking } = useBookings({ businessId });
 
-  const handleAction = async (action: () => Promise<any>, successMsg: string) => {
+  const handleAction = async (action: () => Promise<unknown>, successMsg: string) => {
     try {
       await action();
-    } catch (err: any) {
-      alert(`Error: ${err.message || 'No se pudo realizar la acción'}`);
+    } catch (err: unknown) {
+      alert(`Error: ${err instanceof Error ? err.message : t('agenda.errorAction')}`);
     }
   };
 
@@ -653,7 +334,7 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
             className="flex items-center justify-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/20 text-blue-400 w-full py-3 rounded-xl text-sm font-bold transition-colors"
           >
             <Calendar size={16} />
-            {isDay ? 'Ir a la vista de Día' : 'Ir a la vista de Mes'}
+            {isDay ? t('agenda.goToDayView') : t('agenda.goToMonthView')}
           </button>
         </div>
 
@@ -662,7 +343,7 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
           {loading ? (
             <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>
           ) : bookings.length === 0 ? (
-            <p className="text-center text-gray-500 py-10">No hay reservas para este periodo.</p>
+            <p className="text-center text-gray-500 py-10">{t('agenda.noBookingsForPeriod')}</p>
           ) : (
             <div className="space-y-4">
               {bookings.map(booking => (
@@ -676,17 +357,17 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
                   <div>
                     {/* Client Info */}
                     <div className="flex items-center gap-2 mb-2">
-                      {(booking as any).client?.avatar_url ? (
-                        <img src={(booking as any).client.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                      {booking.client?.avatar_url ? (
+                        <img src={booking.client.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
                       ) : (
                         <div className="w-5 h-5 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 text-[9px] font-bold">
-                          {((booking as any).client?.full_name || '?')[0]}
+                          {(booking.client?.full_name || '?')[0]}
                         </div>
                       )}
-                      <span className="text-sm font-medium text-gray-300">{(booking as any).client?.full_name || 'Cliente'}</span>
+                      <span className="text-sm font-medium text-gray-300">{booking.client?.full_name || t('agenda.client')}</span>
                     </div>
 
-                    <p className="text-white font-medium text-sm">{booking.services?.name || 'Servicio'}</p>
+                    <p className="text-white font-medium text-sm">{booking.services?.name || t('agenda.service')}</p>
                     <p className="text-gray-400 text-xs mt-1 flex items-center gap-1.5">
                       <Clock size={12} />
                       {!isDay && `${new Date(`${booking.booking_date}T${booking.start_time}`).toLocaleDateString('es-EC', { day: 'numeric', month: 'short' })} • `}
@@ -696,18 +377,18 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
 
                   <div className="flex gap-2 mt-2 pt-3 border-t border-white/5">
                     <button onClick={() => handleAction(() => archiveBooking(booking.id), 'archivada')} className="flex-1 py-2 bg-gray-600/20 hover:bg-gray-600/40 text-gray-400 text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
-                      <Archive size={14} /> Archivar
+                      <ArchiveIcon size={14} /> {t('agenda.archive')}
                     </button>
                     {(booking.status === 'pending' || booking.status === 'confirmed') && (
                       <>
                         {booking.status === 'pending' && (
                           <button onClick={() => handleAction(() => confirmBooking(booking.id), 'confirmada')} className="flex-1 py-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
-                            <CheckCircle size={14} /> Confirmar
+                            <CheckCircle size={14} /> {t('agenda.confirm')}
                           </button>
                         )}
                         {booking.status === 'confirmed' && (
                           <button onClick={() => handleAction(() => completeBooking(booking.id), 'completada')} className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
-                            <CheckCircle size={14} /> Completar
+                            <CheckCircle size={14} /> {t('agenda.complete')}
                           </button>
                         )}
                         <button onClick={() => handleAction(() => cancelBooking(booking.id), 'cancelada')} className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-1">
@@ -723,5 +404,15 @@ function PeriodDetailsPanel({ period, businessId, onClose, onNavigate }: {
         </div>
       </div>
     </>
+  );
+}
+
+function ArchiveIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+      <line x1="9" y1="21" x2="9" y2="9"/>
+    </svg>
   );
 }

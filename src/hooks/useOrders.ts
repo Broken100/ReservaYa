@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import type { Order, OrderItem } from '../types/database';
+import type { OrderWithClient } from '../types/database';
 
 export function useOrders({ businessId, clientId }: { businessId?: string | null, clientId?: string | null } = {}) {
-  const [orders, setOrders] = useState<(Order & { items: (OrderItem & { product: any })[], client: any, business: any })[]>([]);
+  const [orders, setOrders] = useState<OrderWithClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,9 +35,9 @@ export function useOrders({ businessId, clientId }: { businessId?: string | null
     else {
       // Filter out cancelled orders older than 24 hours
       const now = new Date().getTime();
-      const filtered = (data as any[]).filter(o => {
-        if (o.status === 'cancelled') {
-          const orderTime = new Date(o.created_at).getTime();
+      const filtered = data.filter(o => {
+        if ((o as OrderWithClient).status === 'cancelled') {
+          const orderTime = new Date((o as OrderWithClient).created_at).getTime();
           if (now - orderTime > 24 * 60 * 60 * 1000) return false;
         }
         return true;
