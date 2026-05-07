@@ -166,6 +166,8 @@ export interface BookingWithClient extends Booking {
     name: string;
     price: number;
     image_url: string | null;
+    description: string | null;
+    duration_minutes: number;
   } | null;
   businesses?: {
     id: string;
@@ -175,6 +177,7 @@ export interface BookingWithClient extends Booking {
   professionals?: {
     name: string;
     avatar_url: string | null;
+    specialty: string | null;
   } | null;
 }
 

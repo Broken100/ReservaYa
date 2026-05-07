@@ -507,6 +507,7 @@
     "cancellationHours": "Anticipación de Cancelación",
     "cancellationHoursDesc": "Horas mínimas antes de la cita para cancelar",
     "days": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+    "hoursTitle": "Configuración de Horarios",
     "closed": "Cerrado",
     "closedLabel": "CERRADO",
     "dangerZone": "Zona de Peligro",
@@ -535,7 +536,9 @@
     "products": "Productos",
     "added": "Agregado a favoritos",
     "removed": "Eliminado de favoritos",
-    "loginRequired": "Inicia sesión para guardar favoritos"
+    "loginRequired": "Inicia sesión para guardar favoritos",
+    "goToReserve": "Ir a Reservar",
+    "leaveReview": "Dejar Reseña"
   },
   "explore": {
     "title": "Explorar Negocios",
@@ -731,6 +734,8 @@
     "professional": "Profesional",
     "unassigned": "No asignado",
     "schedule": "Horario",
+    "serviceInfo": "Información del Servicio",
+    "professionalInfo": "Información del Profesional",
     "cancelBooking": "Cancelar Reserva",
     "leaveReview": "Dejar Reseña",
     "store": "Tienda",

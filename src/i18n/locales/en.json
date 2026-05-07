@@ -476,6 +476,7 @@
     "cancellationHours": "Cancellation Notice",
     "cancellationHoursDesc": "Minimum hours before the appointment to cancel",
     "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "hoursTitle": "Schedule Settings",
     "closed": "Closed",
     "closedLabel": "CLOSED",
     "dangerZone": "Danger Zone",
@@ -504,7 +505,9 @@
     "products": "Products",
     "added": "Added to favorites",
     "removed": "Removed from favorites",
-    "loginRequired": "Sign in to save favorites"
+    "loginRequired": "Sign in to save favorites",
+    "goToReserve": "Book Now",
+    "leaveReview": "Leave Review"
   },
   "explore": {
     "title": "Explore Businesses",
@@ -692,6 +695,8 @@
     "professional": "Professional",
     "unassigned": "Unassigned",
     "schedule": "Schedule",
+    "serviceInfo": "Service Information",
+    "professionalInfo": "Professional Information",
     "cancelBooking": "Cancel Booking",
     "leaveReview": "Leave a Review",
     "store": "Store",

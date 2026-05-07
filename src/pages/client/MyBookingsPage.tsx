@@ -82,15 +82,34 @@ export default function MyBookingsPage() {
   };
 
   const submitFeedback = async () => {
-    if (!feedbackTarget || feedbackRating === 0) return;
+    if (!feedbackTarget || feedbackRating === 0 || !user) return;
     setFeedbackSaving(true);
     try {
-      const table = feedbackTarget.type === 'booking' ? 'bookings' : 'orders';
-      const { error } = await supabase
-        .from(table)
-        .update({ rating: feedbackRating, review: feedbackText || null })
-        .eq('id', feedbackTarget.id);
-      if (error) throw error;
+      if (feedbackTarget.type === 'booking') {
+        const booking = bookings.find(b => b.id === feedbackTarget.id);
+        if (!booking) return;
+        const { error } = await supabase.from('reviews').insert({
+          business_id: booking.business_id,
+          client_id: user.id,
+          target_type: 'service',
+          target_id: booking.service_id,
+          rating: feedbackRating,
+          comment: feedbackText || null,
+        });
+        if (error) throw error;
+      } else {
+        const order = orders.find(o => o.id === feedbackTarget.id);
+        if (!order) return;
+        const { error } = await supabase.from('reviews').insert({
+          business_id: order.business_id,
+          client_id: user.id,
+          target_type: 'business',
+          target_id: order.business_id,
+          rating: feedbackRating,
+          comment: feedbackText || null,
+        });
+        if (error) throw error;
+      }
       toast.success(t('myBookings.feedback.thanks'));
       setFeedbackTarget(null);
       refresh();
@@ -215,12 +234,7 @@ export default function MyBookingsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      {b.rating && (
-                        <span className="flex items-center gap-1 text-yellow-400 text-xs font-bold">
-                          <Star size={12} fill="currentColor" />{b.rating}
-                        </span>
-                      )}
-                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide uppercase border ${statusStyles[b.status]}`}>
+<span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide uppercase border ${statusStyles[b.status]}`}>
                         {statusLabels[b.status]}
                       </span>
                       {isExpanded ? <ChevronUp size={16} className="text-gray-500" /> : <ChevronDown size={16} className="text-gray-500" />}
@@ -230,20 +244,49 @@ export default function MyBookingsPage() {
                   {/* Expanded detail */}
                   {isExpanded && (
                     <div className="px-5 pb-5 pt-0 space-y-4 border-t border-white/5 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="grid grid-cols-2 gap-3 mt-4">
-                        <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('myBookings.service')}</p>
-                          <p className="text-white text-sm font-medium">{b.services?.name || '—'}</p>
+<div className="space-y-3 mt-4">
+                          {/* Service info */}
+                          <div className="flex gap-3 bg-dark-bg rounded-xl p-3 border border-white/5">
+                            {b.services?.image_url ? (
+                              <img src={b.services.image_url} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                            ) : (
+                              <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center shrink-0">
+                                <Clock size={16} className="text-blue-400" />
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-0.5">{t('myBookings.service')}</p>
+                              <p className="text-white text-sm font-medium">{b.services?.name || '—'}</p>
+                              {b.services?.description && <p className="text-gray-500 text-xs line-clamp-2 mt-0.5">{b.services.description}</p>}
+                            </div>
+                            <div className="text-right shrink-0">
+                              {b.services?.price != null && <p className="text-blue-400 font-bold text-sm">${b.services.price.toFixed(2)}</p>}
+                              {b.services?.duration_minutes != null && <p className="text-gray-500 text-xs">{b.services.duration_minutes} min</p>}
+                            </div>
+                          </div>
+
+                          {/* Professional info */}
+                          <div className="flex gap-3 bg-dark-bg rounded-xl p-3 border border-white/5">
+                            {b.professionals?.avatar_url ? (
+                              <img src={b.professionals.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                            ) : (
+                              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center shrink-0 text-blue-400 text-sm font-bold">
+                                {(b.professionals?.name || '?')[0]}
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-0.5">{t('myBookings.professional')}</p>
+                              <p className="text-white text-sm font-medium">{b.professionals?.name || t('myBookings.unassigned')}</p>
+                              {b.professionals?.specialty && <p className="text-gray-500 text-xs">{b.professionals.specialty}</p>}
+                            </div>
+                          </div>
+
+                          {/* Schedule */}
+                          <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
+                            <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-0.5">{t('myBookings.schedule')}</p>
+                            <p className="text-white text-sm font-medium">{b.start_time?.substring(0, 5)} — {b.end_time?.substring(0, 5)}</p>
+                          </div>
                         </div>
-                        <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('myBookings.professional')}</p>
-                          <p className="text-white text-sm font-medium">{b.professionals?.name || t('myBookings.unassigned')}</p>
-                        </div>
-                        <div className="bg-dark-bg rounded-xl p-3 border border-white/5">
-                          <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">{t('myBookings.schedule')}</p>
-                          <p className="text-white text-sm font-medium">{b.start_time?.substring(0, 5)} — {b.end_time?.substring(0, 5)}</p>
-                        </div>
-                      </div>
 
                       {b.notes && (
                         <div className="bg-white/5 p-3 rounded-xl">
@@ -251,19 +294,7 @@ export default function MyBookingsPage() {
                         </div>
                       )}
 
-                      {/* Existing review */}
-                      {b.rating && (
-                        <div className="bg-yellow-500/5 border border-yellow-500/10 p-3 rounded-xl">
-                          <div className="flex items-center gap-1 mb-1">
-                            {[1,2,3,4,5].map(s => (
-                              <Star key={s} size={14} className={s <= b.rating ? 'text-yellow-400' : 'text-gray-600'} fill={s <= b.rating ? 'currentColor' : 'none'} />
-                            ))}
-                          </div>
-                          {b.review && <p className="text-gray-400 text-xs mt-1">"{b.review}"</p>}
-                        </div>
-                      )}
-
-                      {/* Action buttons */}
+{/* Action buttons */}
                       <div className="flex gap-2 flex-wrap">
                         {(b.status === 'pending' || b.status === 'confirmed') && (
                           <button
@@ -273,7 +304,7 @@ export default function MyBookingsPage() {
                             <X size={14} /> {t('myBookings.cancelBooking')}
                           </button>
                         )}
-                        {b.status === 'completed' && !b.rating && (
+                        {b.status === 'completed' && (
                           <button
                             onClick={() => openFeedback(b.id, 'booking', b.rating, b.review)}
                             className="px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
@@ -331,12 +362,7 @@ export default function MyBookingsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      {o.rating && (
-                        <span className="flex items-center gap-1 text-yellow-400 text-xs font-bold">
-                          <Star size={12} fill="currentColor" />{o.rating}
-                        </span>
-                      )}
-                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide uppercase border ${statusStyles[o.status]}`}>
+<span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide uppercase border ${statusStyles[o.status]}`}>
                         {statusLabels[o.status]}
                       </span>
                       {isExpanded ? <ChevronUp size={16} className="text-gray-500" /> : <ChevronDown size={16} className="text-gray-500" />}
@@ -376,19 +402,7 @@ export default function MyBookingsPage() {
                         </div>
                       </div>
 
-                      {/* Existing review */}
-                      {o.rating && (
-                        <div className="bg-yellow-500/5 border border-yellow-500/10 p-3 rounded-xl">
-                          <div className="flex items-center gap-1 mb-1">
-                            {[1,2,3,4,5].map(s => (
-                              <Star key={s} size={14} className={s <= o.rating! ? 'text-yellow-400' : 'text-gray-600'} fill={s <= o.rating! ? 'currentColor' : 'none'} />
-                            ))}
-                          </div>
-                          {o.review && <p className="text-gray-400 text-xs mt-1">"{o.review}"</p>}
-                        </div>
-                      )}
-
-                      {/* Actions */}
+{/* Actions */}
                       <div className="flex gap-2 flex-wrap">
                         {o.status === 'pending' && (
                           <button
@@ -398,7 +412,7 @@ export default function MyBookingsPage() {
                             <X size={14} /> {t('myBookings.cancelOrder')}
                           </button>
                         )}
-                        {o.status === 'completed' && !o.rating && (
+                        {o.status === 'completed' && (
                           <button
                             onClick={() => openFeedback(o.id, 'order', o.rating, o.review)}
                             className="px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
