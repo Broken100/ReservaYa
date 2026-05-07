@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { Clock, ChevronDown, ChevronUp, Lock, Scissors, Sparkles, Flower2, LayoutList } from 'lucide-react';
 import type { Service } from '../../../types/database';
 
 interface ThemeColor {
@@ -27,6 +27,25 @@ interface ServiceStepProps {
   onSelect: (service: Service) => void;
 }
 
+const categoryIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  cabello: Scissors,
+  hair: Scissors,
+  uñas: Sparkles,
+  nails: Sparkles,
+  spa: Flower2,
+  maquillaje: Sparkles,
+  makeup: Sparkles,
+  barbería: Scissors,
+  barber: Scissors,
+  beauty: Sparkles,
+  belleza: Sparkles,
+};
+
+function getCategoryIcon(category: string | null) {
+  if (!category) return LayoutList;
+  return categoryIcons[category.toLowerCase().trim()] || LayoutList;
+}
+
 export default function ServiceStep({ services, textClass, textMutedClass, cardClass, isMinimal, tColor, isBusinessPro, onSelect }: ServiceStepProps) {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -43,6 +62,7 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
             const locked = svc.requires_pro && !isBusinessPro;
             const includedItems = svc.whats_included ? svc.whats_included.split(',').map(s => s.trim()).filter(Boolean) : [];
             const recommendationItems = svc.recommendations ? svc.recommendations.split(',').map(s => s.trim()).filter(Boolean) : [];
+            const Icon = getCategoryIcon(svc.category);
 
             return (
               <div
@@ -51,8 +71,17 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
               >
                 <button
                   onClick={() => !locked && setExpandedId(isExpanded ? null : svc.id)}
-                  className="w-full flex items-center justify-between p-5 text-left"
+                  className="w-full flex items-center gap-4 p-5 text-left"
                 >
+                  <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                    {svc.image_url ? (
+                      <img src={svc.image_url} alt={svc.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className={`w-full h-full flex items-center justify-center ${isMinimal ? 'bg-gray-100' : 'bg-white/5'}`}>
+                        <Icon size={22} className={isMinimal ? 'text-gray-400' : 'text-white/20'} />
+                      </div>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className={`font-semibold ${textClass}`}>{svc.name}</p>
@@ -71,7 +100,7 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
                       <Clock size={12} /> {svc.duration_display || `${svc.duration_minutes}${t('booking.minutes')}`}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 ml-4 shrink-0">
+                  <div className="flex items-center gap-3 shrink-0">
                     <span className={`${tColor.text} font-bold`}>${svc.price}</span>
                     {isExpanded ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
                   </div>
@@ -79,7 +108,11 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
 
                 {isExpanded && (
                   <div className="px-5 pb-5">
-                    <div className={`border-t ${isMinimal ? 'border-gray-100' : 'border-white/5'} mb-3`} />
+                    {svc.image_url && (
+                      <div className="relative rounded-2xl overflow-hidden mb-4 aspect-video">
+                        <img src={svc.image_url} alt={svc.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
 
                     {svc.description && (
                       <p className={`${textMutedClass} text-sm mb-3`}>{svc.description}</p>
