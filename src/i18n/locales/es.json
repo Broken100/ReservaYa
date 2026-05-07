@@ -148,6 +148,12 @@
     "averageRating": "{{rating}} de 5",
     "reviewCount": "{{count}} reseñas",
     "ownerReply": "Respuesta del negocio",
+    "attachProof": "Adjuntar comprobante",
+    "proofAttached": "Comprobante adjuntado",
+    "uploadError": "Error al subir comprobante",
+    "reviewForService": "Servicio",
+    "reviewForProfessional": "Profesional",
+    "reviewForProduct": "Producto",
     "orderSuccess": {
       "title": "¡Pedido Realizado!",
       "detail": "Te contactaremos pronto para confirmar.",

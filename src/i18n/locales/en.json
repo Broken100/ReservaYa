@@ -148,6 +148,12 @@
     "averageRating": "{{rating}} out of 5",
     "reviewCount": "{{count}} reviews",
     "ownerReply": "Business reply",
+    "attachProof": "Attach payment proof",
+    "proofAttached": "Payment proof attached",
+    "uploadError": "Error uploading proof",
+    "reviewForService": "Service",
+    "reviewForProfessional": "Professional",
+    "reviewForProduct": "Product",
     "orderSuccess": {
       "title": "Order Placed!",
       "detail": "We'll contact you soon to confirm.",

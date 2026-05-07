@@ -47,6 +47,7 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
 
   // Cart state
   const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
@@ -177,6 +178,7 @@ export default function BookingPage() {
       });
 
       if (!success) return;
+      setBookingId(success.id);
       setStep('success');
 
       if (paymentMethod === 'transfer' && business.whatsapp_direct && business.whatsapp_number) {
@@ -426,17 +428,20 @@ export default function BookingPage() {
               </div>
             )}
 
-            {step === 'success' && selectedService && selectedDate && selectedTime && (
-              <SuccessStep
-                serviceName={selectedService.name}
-                dateStr={selectedDate.toLocaleDateString('es-EC')}
-                time={selectedTime}
-                textClass={textClass}
-                textMutedClass={textMutedClass}
-                cardClass={cardClass}
-                onViewReservations={() => navigate('/mis-reservas')}
-              />
-            )}
+{step === 'success' && selectedService && selectedDate && selectedTime && (
+               <SuccessStep
+                 serviceName={selectedService.name}
+                 dateStr={selectedDate.toLocaleDateString('es-EC')}
+                 time={selectedTime}
+                 textClass={textClass}
+                 textMutedClass={textMutedClass}
+                 cardClass={cardClass}
+                 paymentMethod={paymentMethod}
+                 onViewReservations={() => navigate('/mis-reservas')}
+                 bookingId={bookingId}
+                 businessSlug={businessSlug}
+               />
+             )}
           </div>
         )}
 

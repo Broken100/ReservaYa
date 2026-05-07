@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Sparkles, User, Package } from 'lucide-react';
 import { useReviews, type ReviewRow } from '../../../hooks/useReviews';
 
 interface PublicReviewListProps {
@@ -98,7 +98,7 @@ export default function PublicReviewList({ businessId, textClass, textMutedClass
       {review && (
         <div className={`p-6 rounded-2xl ${isMinimal ? 'bg-gray-50' : 'bg-white/5'} transition-all duration-300`}>
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               {review.client?.avatar_url ? (
                 <img src={review.client.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
               ) : (
@@ -107,6 +107,18 @@ export default function PublicReviewList({ businessId, textClass, textMutedClass
                 </div>
               )}
               <span className={`font-medium ${textClass}`}>{review.client?.full_name || 'Cliente'}</span>
+              {review.target_type !== 'business' && (
+                <span className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
+                  review.target_type === 'service' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                  review.target_type === 'professional' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+                  'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                }`}>
+                  {review.target_type === 'service' && <Sparkles size={10} />}
+                  {review.target_type === 'professional' && <User size={10} />}
+                  {review.target_type === 'product' && <Package size={10} />}
+                  {review.targetName || (review.target_type === 'service' ? t('booking.reviewForService') : review.target_type === 'professional' ? t('booking.reviewForProfessional') : t('booking.reviewForProduct'))}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (

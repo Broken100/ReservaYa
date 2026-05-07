@@ -14,6 +14,8 @@ export interface ReviewRow {
   featured: boolean;
   created_at: string;
   client?: { full_name: string | null; avatar_url: string | null } | null;
+  targetName?: string | null;
+  targetImage?: string | null;
 }
 
 export interface ReviewStats {
@@ -48,8 +50,22 @@ export function useReviews(businessId: string | null, targetType?: string, targe
 
       const { data, error } = await query;
       if (!error && data) {
-        setReviews(data as ReviewRow[]);
-        const ratings = (data as ReviewRow[]).map(r => r.rating);
+        const reviewsWithTargets = await Promise.all((data as ReviewRow[]).map(async (review) => {
+          if (review.target_type === 'service' && review.target_id) {
+            const { data: svc } = await supabase.from('services').select('name, image_url').eq('id', review.target_id).single();
+            return { ...review, targetName: svc?.name || null, targetImage: svc?.image_url || null };
+          } else if (review.target_type === 'professional' && review.target_id) {
+            const { data: prof } = await supabase.from('professionals').select('name, avatar_url').eq('id', review.target_id).single();
+            return { ...review, targetName: prof?.name || null, targetImage: prof?.avatar_url || null };
+          } else if (review.target_type === 'product' && review.target_id) {
+            const { data: prod } = await supabase.from('products').select('name, image_url').eq('id', review.target_id).single();
+            return { ...review, targetName: prod?.name || null, targetImage: prod?.image_url || null };
+          }
+          return review;
+        }));
+
+        setReviews(reviewsWithTargets as ReviewRow[]);
+        const ratings = reviewsWithTargets.map(r => r.rating);
         const avg = ratings.length > 0 ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10 : 0;
         const dist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
         ratings.forEach(r => { dist[r] = (dist[r] || 0) + 1; });
