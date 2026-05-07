@@ -44,17 +44,23 @@ export default function AuthCallback() {
           const pendingRole = localStorage.getItem('pendingRole') as UserRole | null;
           let finalRole = role;
 
-          if (pendingRole && pendingRole !== role) {
-            console.log(`[AuthCallback] Updating role from ${role} to ${pendingRole}`);
-            const { error: updateError } = await supabase
-              .from('profiles')
-              .update({ role: pendingRole })
-              .eq('id', session.user.id);
-            
-            if (updateError) {
-              console.error("[AuthCallback] Error updating role:", updateError.message);
+          if (pendingRole) {
+            if (pendingRole !== role) {
+              const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ role: pendingRole, chosen_role: pendingRole })
+                .eq('id', session.user.id);
+              
+              if (updateError) {
+                console.error("[AuthCallback] Error updating role:", updateError.message);
+              } else {
+                finalRole = pendingRole;
+              }
             } else {
-              finalRole = pendingRole;
+              await supabase
+                .from('profiles')
+                .update({ chosen_role: pendingRole })
+                .eq('id', session.user.id);
             }
           }
           

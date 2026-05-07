@@ -29,7 +29,7 @@ export default function PaymentPage() {
 
   useEffect(() => {
     fetchPlans();
-  }, []);
+  }, [user?.id]);
 
   const fetchPlans = async () => {
     try {
@@ -43,8 +43,22 @@ export default function PaymentPage() {
       const plansData = (data || []) as Plan[];
       setPlans(plansData);
       if (plansData.length > 0) {
-        const recommended = plansData.find((p) => p.is_recommended);
-        setSelectedPlan(recommended ? recommended.id : plansData[0].id);
+        if (user?.id) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('selected_plan_id')
+            .eq('id', user.id)
+            .maybeSingle();
+          if (profile?.selected_plan_id && plansData.find(p => p.id === profile.selected_plan_id)) {
+            setSelectedPlan(profile.selected_plan_id);
+          } else {
+            const recommended = plansData.find((p) => p.is_recommended);
+            setSelectedPlan(recommended ? recommended.id : plansData[0].id);
+          }
+        } else {
+          const recommended = plansData.find((p) => p.is_recommended);
+          setSelectedPlan(recommended ? recommended.id : plansData[0].id);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch plans:', err);
@@ -192,7 +206,12 @@ export default function PaymentPage() {
               <motion.div
                 key={plan.id}
                 whileHover={{ y: -8 }}
-                onClick={() => setSelectedPlan(plan.id)}
+                onClick={async () => {
+                      setSelectedPlan(plan.id);
+                      if (user?.id) {
+                        await supabase.from('profiles').update({ selected_plan_id: plan.id }).eq('id', user.id);
+                      }
+                    }}
                 className={`relative p-8 rounded-3xl border transition-all cursor-pointer ${
                   selectedPlan === plan.id
                     ? 'bg-dark-card border-blue-500 shadow-[0_0_40px_-10px_rgba(59,130,246,0.3)]'

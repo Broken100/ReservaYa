@@ -12,6 +12,8 @@ export interface Profile {
   phone: string | null;
   avatar_url: string | null;
   role: UserRole;
+  chosen_role: UserRole | null;
+  selected_plan_id: string | null;
   payment_status: 'pending' | 'active' | 'inactive';
   created_at: string;
 }

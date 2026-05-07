@@ -120,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           prompt: 'consent',
         },
         ...(role && {
-          data: { role },
+          data: { role, chosen_role: role },
         }),
       },
     });
