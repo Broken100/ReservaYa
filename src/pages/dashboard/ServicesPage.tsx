@@ -12,12 +12,12 @@ export default function ServicesPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '', category: '', duration_display: '', whats_included: '', recommendations: '' });
+  const [form, setForm] = useState({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '', category: '', duration_display: '', whats_included: '', recommendations: '', requires_pro: false });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [serviceFilter, setServiceFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const resetForm = () => {
-    setForm({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '', category: '', duration_display: '', whats_included: '', recommendations: '' });
+    setForm({ name: '', description: '', duration_minutes: 30, price: 0, currency: 'USD', is_active: true, image_url: '', category: '', duration_display: '', whats_included: '', recommendations: '', requires_pro: false });
     setShowForm(false);
     setEditingId(null);
   };
@@ -33,7 +33,7 @@ export default function ServicesPage() {
   };
 
   const handleEdit = (svc: typeof services[0]) => {
-    setForm({ name: svc.name, description: svc.description || '', duration_minutes: svc.duration_minutes, price: svc.price, currency: svc.currency, is_active: svc.is_active, image_url: svc.image_url || '', category: svc.category || '', duration_display: svc.duration_display || '', whats_included: svc.whats_included || '', recommendations: svc.recommendations || '' });
+    setForm({ name: svc.name, description: svc.description || '', duration_minutes: svc.duration_minutes, price: svc.price, currency: svc.currency, is_active: svc.is_active, image_url: svc.image_url || '', category: svc.category || '', duration_display: svc.duration_display || '', whats_included: svc.whats_included || '', recommendations: svc.recommendations || '', requires_pro: svc.requires_pro ?? false });
     setEditingId(svc.id);
     setShowForm(true);
   };
@@ -118,11 +118,18 @@ export default function ServicesPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-white mb-1 line-clamp-1">{service.name}</h3>
-                    {service.category && (
-                      <span className="inline-block text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20 mb-1">
-                        {service.category}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {service.category && (
+                        <span className="inline-block text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">
+                          {service.category}
+                        </span>
+                      )}
+                      {service.requires_pro && (
+                        <span className="inline-block text-[10px] uppercase tracking-wider font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                          PRO
+                        </span>
+                      )}
+                    </div>
                     <p className="text-gray-400 text-sm line-clamp-2 h-10">{service.description || t('services.noDescription')}</p>
                     {service.whats_included && (
                       <p className="text-gray-500 text-xs line-clamp-1 mt-1">{service.whats_included}</p>
@@ -238,6 +245,14 @@ export default function ServicesPage() {
                   <div>
                     <p className="text-white font-medium text-sm">{t('services.form.active')}</p>
                     <p className="text-gray-500 text-xs mt-0.5">{t('services.form.activeHelp')}</p>
+                  </div>
+                </label>
+
+                <label className="flex items-center gap-3 bg-purple-500/5 p-5 rounded-2xl border border-purple-500/20 cursor-pointer hover:border-purple-500/30 transition-colors">
+                  <input type="checkbox" checked={form.requires_pro} onChange={e => setForm(f => ({...f, requires_pro: e.target.checked}))} className="w-5 h-5 accent-purple-600 rounded" />
+                  <div>
+                    <p className="text-white font-medium text-sm">{t('services.form.requiresPro')}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t('services.form.requiresProHelp')}</p>
                   </div>
                 </label>
               </div>

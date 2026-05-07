@@ -3,7 +3,7 @@
     "features": "Características",
     "pricing": "Precios",
     "contact": "Contacto",
-    "freeTrial": "Prueba Gratis",
+    "freeTrial": "Comenzar",
     "login": "Iniciar Sesión",
     "dashboard": "Panel",
     "myBookings": "Mis Reservas",
@@ -20,7 +20,7 @@
   "cta": {
     "title": "Transforma la gestión de tu negocio hoy.",
     "subtitle": "Únete a cientos de emprendedores en Ecuador que ya optimizaron su tiempo.",
-    "button": "Prueba 14 Días Gratis"
+    "button": "Comenzar Ahora"
   },
   "features": {
     "title": "Diseñado para la eficiencia",
@@ -131,6 +131,7 @@
     "errorProcessOrder": "Error al procesar el pedido",
     "backToHome": "Volver al inicio",
     "select": "Seleccionar",
+    "proOnly": "Solo Plan Pro",
     "includes": "Incluye",
     "recommendationsTitle": "Recomendaciones",
     "experience": "Experiencia",
@@ -231,15 +232,20 @@
       "legacyDesc": "No tienes un plan asignado. Elige uno para activar el contador y límites de tu cuenta.",
       "choosePlan": "Elegir plan",
       "upgradeProfessional": "Actualiza a Pro para agregar más profesionales",
-      "upgradeBookings": "Has alcanzado el límite de citas mensuales. Actualiza a Pro para citas ilimitadas."
+      "upgradeBookings": "Has alcanzado el límite de citas mensuales. Actualiza a Pro para citas ilimitadas.",
+      "starterDesc": "Plan Básico — Citas ilimitadas con funciones esenciales.",
+      "featureUnlimitedBookings": "Citas ilimitadas",
+      "featureOneProfessional": "1 Profesional",
+      "featureStore": "Tienda y productos",
+      "featureArchive": "Archivado y exportación"
     },
     "planGating": {
       "professionalLimit": "Límite de profesionales alcanzado",
-      "professionalLimitDesc": "Tu plan actual permite {{max}} profesional. Actualiza para agregar más.",
-      "bookingLimit": "Límite de citas alcanzado",
-      "bookingLimitDesc": "Tu plan permite {{max}} citas al mes. Actualiza a Pro para citas ilimitadas.",
+      "professionalLimitDesc": "Tu plan actual permite 1 profesional. Actualiza a Pro para agregar más.",
       "upgradeToPro": "Actualizar a Pro",
-      "proFeature": "Pro"
+      "proFeature": "Pro",
+      "storeUpgrade": "La tienda está disponible en el Plan Pro",
+      "archiveUpgrade": "El archivado y exportación están disponibles en el Plan Pro"
     }
   },
   "agenda": {
@@ -303,6 +309,8 @@
       "price": "Precio ($)",
       "active": "Servicio Activo",
       "activeHelp": "Si está inactivo, los clientes no podrán reservarlo.",
+      "requiresPro": "Solo Plan Pro",
+      "requiresProHelp": "Este servicio solo estará disponible para negocios con Plan Pro.",
       "imageHint": "Recomendado: 16:9 (JPG, PNG)",
       "category": "Categoría",
       "categoryPlaceholder": "Ej: Cabello, Uñas, Spa...",

@@ -5,6 +5,7 @@ import { useBookings } from '../../hooks/useBookings';
 import { useOrders } from '../../hooks/useOrders';
 import { useClients } from '../../hooks/useClients';
 import { useActiveSubscription } from '../../hooks/usePlans';
+import { usePlanGating } from '../../hooks/usePlanGating';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Card, SkeletonCard } from '../../components/ui';
@@ -19,6 +20,7 @@ export default function OverviewPage() {
   const { orders, loading: ordersLoading } = useOrders({ businessId: business?.id ?? null });
   const { clients, loading: clientsLoading } = useClients(business?.id ?? null);
   const { plan, loading: planLoading } = useActiveSubscription(user?.id ?? null);
+  const { isPro, isStarter } = usePlanGating(user?.id ?? null);
   const isLegacyAdmin = profile?.role === 'admin' && profile?.payment_status === 'active' && !plan;
 
   if (bookingsLoading || (activeProducts && ordersLoading) || clientsLoading) {
@@ -247,6 +249,27 @@ export default function OverviewPage() {
             </div>
             <Link to="/dashboard/pago" className="flex items-center gap-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shrink-0">
               {t('overview.plan.choosePlan')} <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Starter plan upgrade prompt */}
+      {isStarter && (
+        <div className="rounded-2xl border bg-dark-card border-white/5 p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-white font-bold text-lg">{plan?.name}</h3>
+              <p className="text-gray-400 text-sm mt-1">{t('overview.plan.starterDesc')}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{t('overview.plan.featureUnlimitedBookings')}</span>
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{t('overview.plan.featureOneProfessional')}</span>
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/5 text-gray-500 border border-white/5 line-through">{t('overview.plan.featureStore')}</span>
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/5 text-gray-500 border border-white/5 line-through">{t('overview.plan.featureArchive')}</span>
+              </div>
+            </div>
+            <Link to="/dashboard/pago" className="flex items-center gap-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shrink-0 whitespace-nowrap">
+              {t('overview.plan.changePlan')} <ArrowRight size={14} />
             </Link>
           </div>
         </div>

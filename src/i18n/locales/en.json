@@ -3,7 +3,7 @@
     "features": "Features",
     "pricing": "Pricing",
     "contact": "Contact",
-    "freeTrial": "Free Trial",
+    "freeTrial": "Get Started",
     "login": "Sign In",
     "dashboard": "Dashboard",
     "myBookings": "My Bookings",
@@ -20,7 +20,7 @@
   "cta": {
     "title": "Transform your business management today.",
     "subtitle": "Join hundreds of entrepreneurs in Ecuador who already optimized their time.",
-    "button": "Try 14 Days Free"
+    "button": "Start Now"
   },
   "features": {
     "title": "Designed for efficiency",
@@ -131,6 +131,7 @@
     "errorProcessOrder": "Error processing order",
     "backToHome": "Back to home",
     "select": "Select",
+    "proOnly": "Pro Plan Only",
     "includes": "Includes",
     "recommendationsTitle": "Recommendations",
     "experience": "Experience",
@@ -231,15 +232,20 @@
       "legacyDesc": "You don't have a plan assigned. Choose one to activate your booking counter and account limits.",
       "choosePlan": "Choose plan",
       "upgradeProfessional": "Upgrade to Pro to add more professionals",
-      "upgradeBookings": "You've reached the monthly booking limit. Upgrade to Pro for unlimited bookings."
+      "upgradeBookings": "You've reached the monthly booking limit. Upgrade to Pro for unlimited bookings.",
+      "starterDesc": "Basic Plan — Unlimited bookings with essential features.",
+      "featureUnlimitedBookings": "Unlimited bookings",
+      "featureOneProfessional": "1 Professional",
+      "featureStore": "Store & products",
+      "featureArchive": "Archive & export"
     },
     "planGating": {
       "professionalLimit": "Professional limit reached",
-      "professionalLimitDesc": "Your current plan allows {{max}} professional. Upgrade to add more.",
-      "bookingLimit": "Booking limit reached",
-      "bookingLimitDesc": "Your plan allows {{max}} bookings per month. Upgrade to Pro for unlimited bookings.",
+      "professionalLimitDesc": "Your current plan allows 1 professional. Upgrade to Pro to add more.",
       "upgradeToPro": "Upgrade to Pro",
-      "proFeature": "Pro"
+      "proFeature": "Pro",
+      "storeUpgrade": "Store and products are available on the Pro plan",
+      "archiveUpgrade": "Archive and export are available on the Pro plan"
     }
   },
   "agenda": {
@@ -298,6 +304,8 @@
       "price": "Price ($)",
       "active": "Active Service",
       "activeHelp": "If inactive, clients won't be able to book it.",
+      "requiresPro": "Pro Plan Only",
+      "requiresProHelp": "This service will only be available for businesses on the Pro plan.",
       "imageHint": "Recommended: 16:9 (JPG, PNG)",
       "category": "Category",
       "categoryPlaceholder": "E.g.: Hair, Nails, Spa...",

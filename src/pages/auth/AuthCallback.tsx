@@ -61,7 +61,7 @@ export default function AuthCallback() {
           localStorage.removeItem('pendingRole');
 
           if (finalRole === 'admin') {
-            window.location.replace('/dashboard');
+            window.location.replace('/dashboard/pago');
           } else {
             window.location.replace('/cliente');
           }

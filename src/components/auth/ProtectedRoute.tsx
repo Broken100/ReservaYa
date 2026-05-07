@@ -38,18 +38,12 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to={fallback} replace />;
   }
 
-  // Payment check for admins: if admin hasn't paid yet, redirect to payment page
+  // Payment check for admins without active subscription: redirect to payment page
   if (role === 'admin' && profile?.payment_status !== 'active') {
     if (!isAtPaymentPage) {
       console.log('[ProtectedRoute] Admin has not paid, redirecting to payment');
       return <Navigate to="/dashboard/pago" replace />;
     }
-  }
-
-  // If admin already paid, don't let them visit payment page again
-  if (role === 'admin' && profile?.payment_status === 'active' && isAtPaymentPage) {
-    console.log('[ProtectedRoute] Admin already paid, redirecting to dashboard');
-    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

@@ -77,6 +77,7 @@ export interface Service {
   duration_display: string | null;
   whats_included: string | null;
   recommendations: string | null;
+  requires_pro: boolean;
 }
 
 export interface Professional {

@@ -8,7 +8,6 @@ import { useTheme } from '../../hooks/useTheme';
 import { Archive, Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home } from 'lucide-react';
 import { useState } from 'react';
 import { validateForm, businessSetupSchema } from '../../lib/validation';
-import { Archive } from 'lucide-react';
 
 // Dynamic nav items are now built inside the component to respect conditional visibility
 
@@ -32,14 +31,14 @@ export default function DashboardLayout() {
   const fullNavItems = [
     { to: '/dashboard', icon: Home, labelKey: 'dashboard.home', end: true },
     { to: '/dashboard/agenda', icon: Calendar, labelKey: 'dashboard.agenda' },
-    activeProducts ? { to: '/dashboard/pedidos', icon: () => <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>, labelKey: 'dashboard.orders' } : null,
+    { to: '/dashboard/pedidos', icon: ({ size = 18, ...props }: { size?: number }) => <svg width={size} height={size} fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>, labelKey: 'dashboard.orders', proOnly: true },
     { to: '/dashboard/clientes', icon: Users, labelKey: 'dashboard.clients' },
-    { to: '/dashboard/archivados', icon: Archive, labelKey: 'dashboard.archive' },
+    { to: '/dashboard/archivados', icon: Archive, labelKey: 'dashboard.archive', proOnly: true },
     { to: '/dashboard/servicios', icon: LayoutList, labelKey: 'dashboard.services' },
-    activeProducts ? { to: '/dashboard/productos', icon: Package, labelKey: 'dashboard.products' } : null,
+    { to: '/dashboard/productos', icon: Package, labelKey: 'dashboard.products', proOnly: true },
     { to: '/dashboard/profesionales', icon: UserCheck, labelKey: 'dashboard.professionals' },
     { to: '/dashboard/configuracion', icon: Settings, labelKey: 'dashboard.settings' },
-  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
+  ];
 
   const handleSignOut = async () => {
     try {
@@ -228,8 +227,8 @@ export default function DashboardLayout() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {fullNavItems.map(({ to, icon: Icon, labelKey, label, end }) => {
-            const isProOnly = to === '/dashboard/productos' || to === '/dashboard/pedidos';
+          {fullNavItems.map(({ to, icon: Icon, labelKey, label, end, proOnly }) => {
+            const locked = proOnly && !isPro;
             return (
               <NavLink
                 key={to}
@@ -238,15 +237,18 @@ export default function DashboardLayout() {
                 onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    isActive
+                    locked ? 'opacity-40 cursor-not-allowed' : ''
+                  } ${
+                    isActive && !locked
                       ? `${tColor.bgSubtle} ${tColor.text} border ${tColor.borderSubtle}`
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`
                 }
+                onClickCapture={(e) => { if (locked) { e.preventDefault(); toast.info(t('planGating.storeUpgrade')); }}}
               >
                 <Icon size={18} />
-                {label || t(labelKey)}
-                {isProOnly && !isPro && (
+                {t(labelKey)}
+                {proOnly && (
                   <span className="text-[10px] uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded-full ml-auto">
                     {t('planGating.proFeature')}
                   </span>

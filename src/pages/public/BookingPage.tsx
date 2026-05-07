@@ -29,6 +29,7 @@ export default function BookingPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [isBusinessPro, setIsBusinessPro] = useState(false);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,6 +66,15 @@ export default function BookingPage() {
            
         if (bError || !bData) throw new Error('Negocio no encontrado');
         setBusiness(bData as Business);
+
+        // Check owner's plan for Pro-gating
+        const { data: subData } = await supabase
+          .from('subscriptions')
+          .select('plan_id')
+          .eq('user_id', bData.owner_id)
+          .eq('status', 'active')
+          .single();
+        setIsBusinessPro(subData?.plan_id === 'premium');
 
         // 2. Fetch services
         const { data: sData } = await supabase
@@ -361,6 +371,7 @@ export default function BookingPage() {
                 cardClass={cardClass}
                 isMinimal={isMinimal}
                 tColor={tColor}
+                isBusinessPro={isBusinessPro}
                 onSelect={handleServiceSelect}
               />
             )}

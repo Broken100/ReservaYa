@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, ChevronDown, ChevronUp, Lock } from 'lucide-react';
 import type { Service } from '../../../types/database';
 
 interface ThemeColor {
@@ -23,10 +23,11 @@ interface ServiceStepProps {
   cardClass: string;
   isMinimal: boolean;
   tColor: ThemeColor;
+  isBusinessPro: boolean;
   onSelect: (service: Service) => void;
 }
 
-export default function ServiceStep({ services, textClass, textMutedClass, cardClass, isMinimal, tColor, onSelect }: ServiceStepProps) {
+export default function ServiceStep({ services, textClass, textMutedClass, cardClass, isMinimal, tColor, isBusinessPro, onSelect }: ServiceStepProps) {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -39,16 +40,17 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
         <div className="space-y-3">
           {services.map((svc) => {
             const isExpanded = expandedId === svc.id;
+            const locked = svc.requires_pro && !isBusinessPro;
             const includedItems = svc.whats_included ? svc.whats_included.split(',').map(s => s.trim()).filter(Boolean) : [];
             const recommendationItems = svc.recommendations ? svc.recommendations.split(',').map(s => s.trim()).filter(Boolean) : [];
 
             return (
               <div
                 key={svc.id}
-                className={`rounded-2xl border transition-all overflow-hidden ${isMinimal ? 'border-gray-200' : 'border-white/5'} ${isExpanded ? (isMinimal ? 'bg-gray-50' : 'bg-white/5') : ''}`}
+                className={`rounded-2xl border transition-all overflow-hidden ${locked ? 'opacity-50' : ''} ${isMinimal ? 'border-gray-200' : 'border-white/5'} ${isExpanded ? (isMinimal ? 'bg-gray-50' : 'bg-white/5') : ''}`}
               >
                 <button
-                  onClick={() => setExpandedId(isExpanded ? null : svc.id)}
+                  onClick={() => !locked && setExpandedId(isExpanded ? null : svc.id)}
                   className="w-full flex items-center justify-between p-5 text-left"
                 >
                   <div className="flex-1 min-w-0">
@@ -57,6 +59,11 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
                       {svc.category && (
                         <span className={`text-xs px-2 py-0.5 rounded-full ${isMinimal ? 'bg-gray-100 text-gray-600' : 'bg-white/10 text-gray-400'}`}>
                           {svc.category}
+                        </span>
+                      )}
+                      {locked && (
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20 flex items-center gap-1">
+                          <Lock size={10} /> PRO
                         </span>
                       )}
                     </div>
@@ -107,10 +114,15 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
                     )}
 
                     <button
-                      onClick={() => onSelect(svc)}
-                      className={`w-full py-3 ${tColor.bg} ${tColor.bgHover} text-white rounded-xl font-bold transition-colors mt-2`}
+                      onClick={() => !locked && onSelect(svc)}
+                      disabled={locked}
+                      className={`w-full py-3 rounded-xl font-bold transition-colors mt-2 ${
+                        locked
+                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                          : `${tColor.bg} ${tColor.bgHover} text-white`
+                      }`}
                     >
-                      {t('booking.select')}
+                      {locked ? t('booking.proOnly') : t('booking.select')}
                     </button>
                   </div>
                 )}

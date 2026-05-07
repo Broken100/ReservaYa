@@ -72,15 +72,6 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
   const createBooking = async (booking: BookingInsert) => {
     setError(null);
     try {
-      const { data: limitCheck, error: limitErr } = await supabase
-        .rpc('check_booking_limit', { p_business_id: booking.business_id });
-
-      if (limitErr) {
-        console.warn('[useBookings] Limit check error, proceeding:', limitErr.message);
-      } else if (limitCheck && !limitCheck.can_book) {
-        throw new Error('PLAN_BOOKING_LIMIT');
-      }
-
       // 1. Basic validation: cannot book in the past
       const bookingStart = new Date(`${booking.booking_date}T${booking.start_time}`);
       if (bookingStart < new Date()) {
