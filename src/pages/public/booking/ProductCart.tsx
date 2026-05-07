@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Package, ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
+import { Loader2, Package, ShoppingCart, Plus, Minus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Business, Product } from '../../../types/database';
 
 interface ThemeColor {
@@ -40,6 +40,112 @@ interface ProductCartProps {
   business: Pick<Business, 'qr_code_url' | 'whatsapp_direct' | 'whatsapp_number'>;
 }
 
+function ProductCard({ prod, cartItem, textClass, textMutedClass, isMinimal, tColor, onAddToCart, onUpdateQuantity }: {
+  prod: Product;
+  cartItem: CartItem | undefined;
+  textClass: string;
+  textMutedClass: string;
+  isMinimal: boolean;
+  tColor: ThemeColor;
+  onAddToCart: (product: Product) => void;
+  onUpdateQuantity: (productId: string, delta: number) => void;
+}) {
+  const { t } = useTranslation();
+  const [showInstructions, setShowInstructions] = useState(false);
+  const features = prod.key_features?.filter(Boolean) ?? [];
+
+  return (
+    <div className={`rounded-2xl overflow-hidden group flex flex-col border transition-all ${isMinimal ? 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg' : 'border-white/5 bg-dark-card hover:border-white/10'}`}>
+      <div className={`aspect-[4/3] relative w-full border-b ${isMinimal ? 'border-gray-100 bg-gray-50' : 'border-white/5 bg-black/20'}`}>
+        {prod.image_url ? (
+          <img src={prod.image_url} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Package size={40} className="text-gray-500 opacity-50" />
+          </div>
+        )}
+        {!prod.stock && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+            <span className="bg-red-500 text-white font-bold px-4 py-2 rounded-full uppercase text-sm tracking-wider">{t('booking.stockOut')}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-5 flex-1 flex flex-col">
+        <h3 className={`font-bold ${textClass} mb-1 line-clamp-2 text-lg leading-snug`}>{prod.name}</h3>
+
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          {prod.category && (
+            <span className={`text-xs px-2 py-0.5 rounded-full ${isMinimal ? 'bg-gray-100 text-gray-600' : 'bg-white/10 text-gray-400'}`}>
+              {prod.category}
+            </span>
+          )}
+          {prod.stock > 0 ? (
+            <span className={`text-xs ${isMinimal ? 'text-gray-500' : 'text-gray-500'}`}>
+              {t('booking.stockAvailable', { count: prod.stock })}
+            </span>
+          ) : (
+            <span className="text-xs text-red-400 font-medium">{t('booking.stockOut')}</span>
+          )}
+        </div>
+
+        {prod.description && (
+          <p className={`${textMutedClass} text-sm line-clamp-2 mb-3`}>{prod.description}</p>
+        )}
+
+        {features.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {features.slice(0, 2).map((feat, i) => (
+              <span key={i} className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${isMinimal ? 'bg-gray-100 text-gray-600' : 'bg-white/5 text-gray-400 border border-white/5'}`}>
+                {feat}
+              </span>
+            ))}
+            {features.length > 2 && (
+              <span className="text-[10px] text-gray-500">{t('booking.moreFeatures', { count: features.length - 2 })}</span>
+            )}
+          </div>
+        )}
+
+        {prod.instructions && (
+          <div className="mb-3">
+            <button
+              onClick={() => setShowInstructions(!showInstructions)}
+              className={`flex items-center gap-1 text-xs font-medium ${isMinimal ? 'text-blue-600 hover:text-blue-700' : 'text-blue-400 hover:text-blue-300'} transition-colors`}
+            >
+              {showInstructions ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              {showInstructions ? t('booking.hideInstructions') : t('booking.viewInstructions')}
+            </button>
+            {showInstructions && (
+              <p className={`${textMutedClass} text-xs mt-1.5 leading-relaxed`}>{prod.instructions}</p>
+            )}
+          </div>
+        )}
+
+        <div className={`flex items-center justify-between mt-auto pt-3 border-t ${isMinimal ? 'border-gray-100' : 'border-white/5'}`}>
+          <span className={`${tColor.text} font-bold text-xl`}>${prod.price.toFixed(2)}</span>
+
+          {prod.stock > 0 ? (
+            cartItem ? (
+              <div className={`flex items-center gap-3 ${tColor.bgSubtle} border ${tColor.borderSubtle} rounded-lg p-1`}>
+                <button onClick={() => onUpdateQuantity(prod.id, -1)} className={`p-1 ${tColor.text} ${tColor.bgSubtleHover} rounded-md transition-colors`}><Minus size={16} /></button>
+                <span className={`font-bold ${tColor.text} w-4 text-center`}>{cartItem.quantity}</span>
+                <button onClick={() => onUpdateQuantity(prod.id, 1)} className={`p-1 ${tColor.text} ${tColor.bgSubtleHover} rounded-md transition-colors`} disabled={cartItem.quantity >= prod.stock}><Plus size={16} /></button>
+              </div>
+            ) : (
+              <button
+                onClick={() => onAddToCart(prod)}
+                className={`px-4 py-2 ${tColor.bg} ${tColor.bgHover} text-white rounded-lg font-bold text-sm transition-all shadow-lg ${tColor.shadow}`}
+              >
+                {t('booking.add')}
+              </button>
+            )
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProductCart({
   products, cart, textClass, textMutedClass, cardClass, isMinimal, tColor,
   onAddToCart, onUpdateQuantity, onRemoveFromCart, cartTotal, onCheckout,
@@ -50,53 +156,22 @@ export default function ProductCart({
 
   return (
     <>
-      {/* Product Grid */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((prod) => {
             const cartItem = cart.find(i => i.product.id === prod.id);
             return (
-              <div key={prod.id} className={`${cardClass} rounded-2xl overflow-hidden group flex flex-col`}>
-                <div className={`aspect-square relative w-full border-b ${isMinimal ? 'border-gray-100 bg-gray-50' : 'border-white/5 bg-black/20'}`}>
-                  {prod.image_url ? (
-                    <img src={prod.image_url} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Package size={40} className="text-gray-500 opacity-50" />
-                    </div>
-                  )}
-                  {!prod.stock && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                      <span className="bg-red-500 text-white font-bold px-4 py-2 rounded-full uppercase text-sm tracking-wider">{t('booking.soldOut')}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className={`font-bold ${textClass} mb-1 truncate text-lg`}>{prod.name}</h3>
-                  <p className={`${textMutedClass} text-sm line-clamp-2 mb-4 flex-1`}>{prod.description || t('services.noDescription')}</p>
-                  
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className={`${tColor.text} font-bold text-xl`}>${prod.price.toFixed(2)}</span>
-                    
-                    {prod.stock > 0 ? (
-                      cartItem ? (
-                        <div className={`flex items-center gap-3 ${tColor.bgSubtle} border ${tColor.borderSubtle} rounded-lg p-1`}>
-                          <button onClick={() => onUpdateQuantity(prod.id, -1)} className={`p-1 ${tColor.text} ${tColor.bgSubtleHover} rounded-md transition-colors`}><Minus size={16} /></button>
-                          <span className={`font-bold ${tColor.text} w-4 text-center`}>{cartItem.quantity}</span>
-                          <button onClick={() => onUpdateQuantity(prod.id, 1)} className={`p-1 ${tColor.text} ${tColor.bgSubtleHover} rounded-md transition-colors`} disabled={cartItem.quantity >= prod.stock}><Plus size={16} /></button>
-                        </div>
-                      ) : (
-                        <button 
-                          onClick={() => onAddToCart(prod)}
-                          className={`px-4 py-2 ${tColor.bg} ${tColor.bgHover} text-white rounded-lg font-bold text-sm transition-all shadow-lg ${tColor.shadow}`}
-                        >
-                          {t('booking.add')}
-                        </button>
-                      )
-                    ) : null}
-                  </div>
-                </div>
-              </div>
+              <ProductCard
+                key={prod.id}
+                prod={prod}
+                cartItem={cartItem}
+                textClass={textClass}
+                textMutedClass={textMutedClass}
+                isMinimal={isMinimal}
+                tColor={tColor}
+                onAddToCart={onAddToCart}
+                onUpdateQuantity={onUpdateQuantity}
+              />
             );
           })}
           {products.length === 0 && (
@@ -105,7 +180,6 @@ export default function ProductCart({
         </div>
       </div>
 
-      {/* FLOATING CART BUTTON */}
       {cart.length > 0 && (
         <button
           onClick={() => setIsCartOpen(true)}
@@ -121,7 +195,6 @@ export default function ProductCart({
         </button>
       )}
 
-      {/* CART SLIDE-OVER */}
       {isCartOpen && (
         <>
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity" onClick={() => setIsCartOpen(false)} />
