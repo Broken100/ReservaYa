@@ -147,6 +147,7 @@
     "noReviews": "No reviews yet",
     "averageRating": "{{rating}} out of 5",
     "reviewCount": "{{count}} reviews",
+    "ownerReply": "Business reply",
     "orderSuccess": {
       "title": "Order Placed!",
       "detail": "We'll contact you soon to confirm.",
@@ -471,7 +472,9 @@
       "facebook": "Facebook (URL)",
       "website": "Website URL"
     },
-    "hoursTitle": "Business Hours",
+    "hours": "hours",
+    "cancellationHours": "Cancellation Notice",
+    "cancellationHoursDesc": "Minimum hours before the appointment to cancel",
     "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     "closed": "Closed",
     "closedLabel": "CLOSED",
@@ -640,6 +643,36 @@
       "signOut": "Sign Out"
     }
   },
+  "reviews": {
+    "title": "Reviews",
+    "navLabel": "Reviews",
+    "averageRating": "Average",
+    "totalReviews": "Total reviews",
+    "hiddenCount": "Hidden",
+    "distribution": "Distribution",
+    "allRatings": "All",
+    "allTypes": "All",
+    "type_business": "Business",
+    "type_service": "Service",
+    "type_professional": "Professional",
+    "type_product": "Product",
+    "noReviews": "No reviews yet",
+    "reply": "Reply",
+    "replyPlaceholder": "Write your reply...",
+    "sendReply": "Send",
+    "replySuccess": "Reply sent",
+    "replyError": "Error sending reply",
+    "feature": "Feature",
+    "unfeature": "Unfeature",
+    "featureSuccess": "Review featured",
+    "unfeatureSuccess": "Review unfeatured",
+    "hide": "Hide",
+    "show": "Show",
+    "hideSuccess": "Review hidden",
+    "showSuccess": "Review visible",
+    "updateError": "Error updating",
+    "ownerReply": "Business reply"
+  },
   "myBookings": {
     "title": "My Bookings",
     "tabs": {
@@ -669,6 +702,7 @@
     "noOrdersWithStatus": "No orders with this status",
     "exploreStores": "Explore Stores",
     "errorCancel": "Error cancelling",
+    "cancelTooLate": "You must cancel at least {{hours}}h in advance",
     "cancelOrderConfirm": "Cancel this order?",
     "cancelOrderSuccess": "Order cancelled",
     "status": {

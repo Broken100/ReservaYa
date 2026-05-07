@@ -16,6 +16,7 @@ import SettingsPage from './pages/dashboard/SettingsPage';
 import ProductsPage from './pages/dashboard/ProductsPage';
 import OrdersPage from './pages/dashboard/OrdersPage';
 import ArchivePage from './pages/dashboard/ArchivePage';
+import ReviewsPage from './pages/dashboard/ReviewsPage';
 import PaymentPage from './pages/dashboard/PaymentPage';
 import BookingPage from './pages/public/BookingPage';
 import ContactPage from './pages/public/ContactPage';
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="productos" element={<ProductsPage />} />
             <Route path="pedidos" element={<OrdersPage />} />
             <Route path="archivados" element={<ArchivePage />} />
+            <Route path="resenas" element={<ReviewsPage />} />
           </Route>
 
           {/* Legacy route redirection */}

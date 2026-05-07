@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useBusiness } from '../../hooks/useBusiness';
 import { usePlanGating } from '../../hooks/usePlanGating';
 import { useTheme } from '../../hooks/useTheme';
-import { Archive, Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home } from 'lucide-react';
+import { Archive, Calendar, LayoutList, Users, UserCheck, Settings, LogOut, Menu, X, Package, Home, Star } from 'lucide-react';
 import { useState } from 'react';
 import { validateForm, businessSetupSchema } from '../../lib/validation';
 
@@ -34,6 +34,7 @@ export default function DashboardLayout() {
     { to: '/dashboard/pedidos', icon: ({ size = 18, ...props }: { size?: number }) => <svg width={size} height={size} fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>, labelKey: 'dashboard.orders', proOnly: true },
     { to: '/dashboard/clientes', icon: Users, labelKey: 'dashboard.clients' },
     { to: '/dashboard/archivados', icon: Archive, labelKey: 'dashboard.archive', proOnly: true },
+    { to: '/dashboard/resenas', icon: Star, labelKey: 'reviews.navLabel', proOnly: false },
     { to: '/dashboard/servicios', icon: LayoutList, labelKey: 'dashboard.services' },
     { to: '/dashboard/productos', icon: Package, labelKey: 'dashboard.products', proOnly: true },
     { to: '/dashboard/profesionales', icon: UserCheck, labelKey: 'dashboard.professionals' },

@@ -1,13 +1,15 @@
 import { useTranslation } from 'react-i18next';
-import { Clock } from 'lucide-react';
+import { Clock, Timer } from 'lucide-react';
 import type { BusinessHours } from '../../../types/database';
 
 interface HoursSectionProps {
   localHours: Pick<BusinessHours, 'day_of_week' | 'open_time' | 'close_time' | 'is_closed'>[];
   onUpdateDay: (dayIndex: number, field: string, value: string | boolean) => void;
+  cancellationHours: number;
+  onCancellationHoursChange: (hours: number) => void;
 }
 
-export default function HoursSection({ localHours, onUpdateDay }: HoursSectionProps) {
+export default function HoursSection({ localHours, onUpdateDay, cancellationHours, onCancellationHoursChange }: HoursSectionProps) {
   const { t } = useTranslation();
   const days = t('settings.days', { returnObjects: true }) as unknown as string[];
 
@@ -61,6 +63,29 @@ export default function HoursSection({ localHours, onUpdateDay }: HoursSectionPr
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-white/5">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-8 h-8 bg-orange-600/10 rounded-lg flex items-center justify-center">
+            <Timer size={16} className="text-orange-400" />
+          </div>
+          <div>
+            <h3 className="text-white font-medium text-sm">{t('settings.cancellationHours')}</h3>
+            <p className="text-gray-500 text-xs">{t('settings.cancellationHoursDesc')}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <input 
+            type="number" 
+            min={0} 
+            max={72}
+            value={cancellationHours} 
+            onChange={e => onCancellationHoursChange(Math.max(0, parseInt(e.target.value) || 0))}
+            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm w-24 focus:border-blue-500/50 outline-none" 
+          />
+          <span className="text-gray-400 text-sm">{t('settings.hours')}</span>
+        </div>
       </div>
     </section>
   );

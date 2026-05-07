@@ -20,7 +20,7 @@ export function useBookings({ businessId, clientId, date, dateFrom, dateTo, stat
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
-    let query = supabase.from('bookings').select('*, services(name, price), businesses(name), professionals(name), client:profiles!bookings_client_id_fkey(id, full_name, email, phone, avatar_url)')
+    let query = supabase.from('bookings').select('*, services(name, price, image_url), businesses(id, name, settings), professionals(name, avatar_url), client:profiles!bookings_client_id_fkey(id, full_name, email, phone, avatar_url)')
       .eq('is_archived', archived ? true : false);
 
     if (businessId) query = query.eq('business_id', businessId);

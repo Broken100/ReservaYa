@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock, ChevronDown, ChevronUp, Lock, Scissors, Sparkles, Flower2, LayoutList } from 'lucide-react';
 import type { Service } from '../../../types/database';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface ThemeColor {
   bg: string;
@@ -25,6 +26,8 @@ interface ServiceStepProps {
   tColor: ThemeColor;
   isBusinessPro: boolean;
   onSelect: (service: Service) => void;
+  isFavorited: (params: { serviceId?: string }) => boolean;
+  toggleFavorite: (params: { serviceId?: string }) => void;
 }
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -46,9 +49,15 @@ function getCategoryIcon(category: string | null) {
   return categoryIcons[category.toLowerCase().trim()] || LayoutList;
 }
 
-export default function ServiceStep({ services, textClass, textMutedClass, cardClass, isMinimal, tColor, isBusinessPro, onSelect }: ServiceStepProps) {
+export default function ServiceStep({ services, textClass, textMutedClass, cardClass, isMinimal, tColor, isBusinessPro, onSelect, isFavorited, toggleFavorite }: ServiceStepProps) {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const sortedServices = [...services].sort((a, b) => {
+    const aFav = isFavorited({ serviceId: a.id }) ? 0 : 1;
+    const bFav = isFavorited({ serviceId: b.id }) ? 0 : 1;
+    return aFav - bFav;
+  });
 
   return (
     <div className={`${cardClass} rounded-3xl p-8`}>
@@ -57,7 +66,7 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
         <p className="text-gray-500 text-center py-8">{t('booking.noServices')}</p>
       ) : (
         <div className="space-y-3">
-          {services.map((svc) => {
+          {sortedServices.map((svc) => {
             const isExpanded = expandedId === svc.id;
             const locked = svc.requires_pro && !isBusinessPro;
             const includedItems = svc.whats_included ? svc.whats_included.split(',').map(s => s.trim()).filter(Boolean) : [];
@@ -67,7 +76,7 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
             return (
               <div
                 key={svc.id}
-                className={`rounded-2xl border transition-all overflow-hidden ${locked ? 'opacity-50' : ''} ${isMinimal ? 'border-gray-200' : 'border-white/5'} ${isExpanded ? (isMinimal ? 'bg-gray-50' : 'bg-white/5') : ''}`}
+                className={`relative rounded-2xl border transition-all overflow-hidden ${locked ? 'opacity-50' : ''} ${isMinimal ? 'border-gray-200' : 'border-white/5'} ${isExpanded ? (isMinimal ? 'bg-gray-50' : 'bg-white/5') : ''} ${isFavorited({ serviceId: svc.id }) ? 'ring-1 ring-yellow-500/30' : ''}`}
               >
                 <button
                   onClick={() => !locked && setExpandedId(isExpanded ? null : svc.id)}
@@ -101,6 +110,12 @@ export default function ServiceStep({ services, textClass, textMutedClass, cardC
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
+                    <FavoriteButton
+                      isFavorited={isFavorited({ serviceId: svc.id })}
+                      onToggle={() => toggleFavorite({ serviceId: svc.id })}
+                      size={16}
+                      className="opacity-60 hover:opacity-100"
+                    />
                     <span className={`${tColor.text} font-bold`}>${svc.price}</span>
                     {isExpanded ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
                   </div>

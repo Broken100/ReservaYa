@@ -165,12 +165,16 @@ export interface BookingWithClient extends Booking {
   services?: {
     name: string;
     price: number;
+    image_url: string | null;
   } | null;
   businesses?: {
+    id: string;
     name: string;
+    settings?: Record<string, any> | null;
   } | null;
   professionals?: {
     name: string;
+    avatar_url: string | null;
   } | null;
 }
 
@@ -231,6 +235,20 @@ export interface Favorite {
   service_id: string | null;
   professional_id: string | null;
   product_id: string | null;
+  created_at: string;
+}
+
+export interface Review {
+  id: string;
+  business_id: string;
+  client_id: string;
+  target_type: 'business' | 'service' | 'professional' | 'product';
+  target_id: string;
+  rating: number;
+  comment: string | null;
+  reply: string | null;
+  hidden: boolean;
+  featured: boolean;
   created_at: string;
 }
 
@@ -325,6 +343,11 @@ export interface Database {
         Row: Favorite;
         Insert: Omit<Favorite, 'id' | 'created_at'>;
         Update: Partial<Omit<Favorite, 'id' | 'profile_id' | 'created_at'>>;
+      };
+      reviews: {
+        Row: Review;
+        Insert: Omit<Review, 'id' | 'created_at'>;
+        Update: Partial<Omit<Review, 'id' | 'business_id' | 'client_id' | 'created_at'>>;
       };
     };
     Views: Record<string, never>;

@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBookings } from '../../hooks/useBookings';
+import { useFavorites } from '../../hooks/useFavorites';
+import FavoriteButton from '../../components/ui/FavoriteButton';
 import { useTheme, THEMES, THEME_COLORS } from '../../hooks/useTheme';
 import BusinessHeader from './booking/BusinessHeader';
 import ServiceStep from './booking/ServiceStep';
@@ -24,6 +26,7 @@ export default function BookingPage() {
   const { businessSlug } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isFavorited, toggleFavorite } = useFavorites(user?.id ?? null);
 
   const [business, setBusiness] = useState<Business | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -176,7 +179,7 @@ export default function BookingPage() {
       if (!success) return;
       setStep('success');
 
-      if (business.whatsapp_direct && business.whatsapp_number) {
+      if (paymentMethod === 'transfer' && business.whatsapp_direct && business.whatsapp_number) {
         const text = encodeURIComponent(`Hola, agendé una reserva para ${selectedService.name} el ${selectedDate.toLocaleDateString('es-EC')} a las ${selectedTime}. Adjunto el comprobante de pago.`);
         window.open(`https://wa.me/${business.whatsapp_number}?text=${text}`, '_blank');
       }
@@ -369,6 +372,8 @@ export default function BookingPage() {
                 tColor={tColor}
                 isBusinessPro={isBusinessPro}
                 onSelect={handleServiceSelect}
+                isFavorited={isFavorited}
+                toggleFavorite={toggleFavorite}
               />
             )}
 
@@ -382,6 +387,8 @@ export default function BookingPage() {
                 tColor={tColor}
                 onSelect={handleProfessionalSelect}
                 onBack={() => setStep('service')}
+                isFavorited={isFavorited}
+                toggleFavorite={toggleFavorite}
               />
             )}
 
@@ -452,6 +459,8 @@ export default function BookingPage() {
             paymentMethod={paymentMethod}
             onPaymentMethodChange={setPaymentMethod}
             business={business}
+            isFavorited={isFavorited}
+            toggleFavorite={toggleFavorite}
           />
         )}
       </div>

@@ -23,7 +23,7 @@ type StatusFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 export default function MyBookingsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { bookings, loading: bookingsLoading, cancelBooking } = useBookings({ clientId: user?.id });
+  const { bookings, loading: bookingsLoading, cancelBooking, refresh } = useBookings({ clientId: user?.id });
   const { orders, loading: ordersLoading, updateOrderStatus } = useOrders({ clientId: user?.id });
   const [activeTab, setActiveTab] = useState<'bookings' | 'orders'>('bookings');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -44,6 +44,16 @@ export default function MyBookingsPage() {
   const [feedbackSaving, setFeedbackSaving] = useState(false);
 
   const handleCancel = async (id: string) => {
+    const booking = bookings.find(b => b.id === id);
+    if (booking) {
+      const cancellationHours = booking.businesses?.settings?.cancellation_hours ?? 2;
+      const bookingTime = new Date(`${booking.booking_date}T${booking.start_time}`);
+      const hoursUntilBooking = (bookingTime.getTime() - Date.now()) / (1000 * 60 * 60);
+      if (hoursUntilBooking < cancellationHours) {
+        toast.error(t('myBookings.cancelTooLate', { hours: cancellationHours }));
+        return;
+      }
+    }
     if (window.confirm(t('client.cancelConfirm') || '¿Estás seguro de que deseas cancelar esta reserva?')) {
       try {
         await cancelBooking(id);
@@ -83,8 +93,7 @@ export default function MyBookingsPage() {
       if (error) throw error;
       toast.success(t('myBookings.feedback.thanks'));
       setFeedbackTarget(null);
-      // Force re-fetch by reloading — in production you'd update local state
-      window.location.reload();
+      refresh();
     } catch (err: any) {
       toast.error(t('myBookings.feedback.error') + ': ' + (err.message || 'Inténtelo de nuevo'));
     } finally {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { User, ChevronDown, ChevronUp, Instagram, Facebook, Twitter } from 'lucide-react';
 import type { Professional } from '../../../types/database';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface ThemeColor {
   bg: string;
@@ -25,11 +26,19 @@ interface ProfessionalStepProps {
   tColor: ThemeColor;
   onSelect: (professional: Professional | null) => void;
   onBack: () => void;
+  isFavorited: (params: { professionalId?: string }) => boolean;
+  toggleFavorite: (params: { professionalId?: string }) => void;
 }
 
-export default function ProfessionalStep({ professionals, textClass, textMutedClass, cardClass, isMinimal, tColor, onSelect, onBack }: ProfessionalStepProps) {
+export default function ProfessionalStep({ professionals, textClass, textMutedClass, cardClass, isMinimal, tColor, onSelect, onBack, isFavorited, toggleFavorite }: ProfessionalStepProps) {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const sortedProfessionals = [...professionals].sort((a, b) => {
+    const aFav = isFavorited({ professionalId: a.id }) ? 0 : 1;
+    const bFav = isFavorited({ professionalId: b.id }) ? 0 : 1;
+    return aFav - bFav;
+  });
 
   return (
     <div className={`${cardClass} rounded-3xl p-8`}>
@@ -54,7 +63,7 @@ export default function ProfessionalStep({ professionals, textClass, textMutedCl
           </div>
         </button>
 
-        {professionals.map((prof) => {
+        {sortedProfessionals.map((prof) => {
           const isExpanded = expandedId === prof.id;
           const socialLinks = prof.social_links;
           const hasSocials = socialLinks && (socialLinks.instagram || socialLinks.facebook || socialLinks.twitter);
@@ -62,13 +71,13 @@ export default function ProfessionalStep({ professionals, textClass, textMutedCl
           return (
             <div
               key={prof.id}
-              className={`rounded-2xl border transition-all overflow-hidden ${isMinimal ? 'border-gray-200' : 'border-white/5'} ${isExpanded ? (isMinimal ? 'bg-gray-50' : 'bg-white/5') : ''}`}
+              className={`relative rounded-2xl border transition-all overflow-hidden ${isMinimal ? 'border-gray-200' : 'border-white/5'} ${isExpanded ? (isMinimal ? 'bg-gray-50' : 'bg-white/5') : ''} ${isFavorited({ professionalId: prof.id }) ? 'ring-1 ring-yellow-500/30' : ''}`}
             >
-              <button
-                onClick={() => setExpandedId(isExpanded ? null : prof.id)}
-                className="w-full flex items-center justify-between p-4 text-left"
-              >
-                <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : prof.id)}
+                  className="flex-1 flex items-center gap-4 p-4 text-left"
+                >
                   {prof.avatar_url ? (
                     <img src={prof.avatar_url} alt={prof.name} className="w-12 h-12 rounded-full object-cover" />
                   ) : (
@@ -82,9 +91,17 @@ export default function ProfessionalStep({ professionals, textClass, textMutedCl
                       <p className="text-gray-500 text-xs">{prof.specialty || prof.position}</p>
                     )}
                   </div>
+                </button>
+                <div className="flex items-center gap-2 px-4">
+                  <FavoriteButton
+                    isFavorited={isFavorited({ professionalId: prof.id })}
+                    onToggle={() => toggleFavorite({ professionalId: prof.id })}
+                    size={16}
+                    className="opacity-60 hover:opacity-100"
+                  />
+                  {isExpanded ? <ChevronUp size={18} className="text-gray-400 shrink-0" /> : <ChevronDown size={18} className="text-gray-400 shrink-0" />}
                 </div>
-                {isExpanded ? <ChevronUp size={18} className="text-gray-400 shrink-0" /> : <ChevronDown size={18} className="text-gray-400 shrink-0" />}
-              </button>
+              </div>
 
               {isExpanded && (
                 <div className="px-5 pb-5">

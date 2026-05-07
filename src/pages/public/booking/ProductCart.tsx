@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, Package, ShoppingCart, Plus, Minus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Business, Product } from '../../../types/database';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface ThemeColor {
   bg: string;
@@ -38,9 +39,11 @@ interface ProductCartProps {
   paymentMethod: 'cash' | 'transfer';
   onPaymentMethodChange: (method: 'cash' | 'transfer') => void;
   business: Pick<Business, 'qr_code_url' | 'whatsapp_direct' | 'whatsapp_number'>;
+  isFavorited: (params: { productId?: string }) => boolean;
+  toggleFavorite: (params: { productId?: string }) => void;
 }
 
-function ProductCard({ prod, cartItem, textClass, textMutedClass, isMinimal, tColor, onAddToCart, onUpdateQuantity }: {
+function ProductCard({ prod, cartItem, textClass, textMutedClass, isMinimal, tColor, onAddToCart, onUpdateQuantity, isFavorited, toggleFavorite }: {
   prod: Product;
   cartItem: CartItem | undefined;
   textClass: string;
@@ -49,13 +52,23 @@ function ProductCard({ prod, cartItem, textClass, textMutedClass, isMinimal, tCo
   tColor: ThemeColor;
   onAddToCart: (product: Product) => void;
   onUpdateQuantity: (productId: string, delta: number) => void;
+  isFavorited: (params: { productId?: string }) => boolean;
+  toggleFavorite: (params: { productId?: string }) => void;
 }) {
   const { t } = useTranslation();
   const [showInstructions, setShowInstructions] = useState(false);
   const features = prod.key_features?.filter(Boolean) ?? [];
 
   return (
-    <div className={`rounded-2xl overflow-hidden group flex flex-col border transition-all ${isMinimal ? 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg' : 'border-white/5 bg-dark-card hover:border-white/10'}`}>
+    <div className={`relative rounded-2xl overflow-hidden group flex flex-col border transition-all ${isMinimal ? 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg' : 'border-white/5 bg-dark-card hover:border-white/10'} ${isFavorited({ productId: prod.id }) ? 'ring-1 ring-yellow-500/30' : ''}`}>
+      <div className="absolute top-3 right-3 z-10">
+        <FavoriteButton
+          isFavorited={isFavorited({ productId: prod.id })}
+          onToggle={() => toggleFavorite({ productId: prod.id })}
+          size={16}
+          className="opacity-70 hover:opacity-100"
+        />
+      </div>
       <div className={`aspect-[4/3] relative w-full border-b ${isMinimal ? 'border-gray-100 bg-gray-50' : 'border-white/5 bg-black/20'}`}>
         {prod.image_url ? (
           <img src={prod.image_url} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -149,16 +162,23 @@ function ProductCard({ prod, cartItem, textClass, textMutedClass, isMinimal, tCo
 export default function ProductCart({
   products, cart, textClass, textMutedClass, cardClass, isMinimal, tColor,
   onAddToCart, onUpdateQuantity, onRemoveFromCart, cartTotal, onCheckout,
-  checkoutLoading, paymentMethod, onPaymentMethodChange, business
+  checkoutLoading, paymentMethod, onPaymentMethodChange, business,
+  isFavorited, toggleFavorite
 }: ProductCartProps) {
   const { t } = useTranslation();
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const sortedProducts = [...products].sort((a, b) => {
+    const aFav = isFavorited({ productId: a.id }) ? 0 : 1;
+    const bFav = isFavorited({ productId: b.id }) ? 0 : 1;
+    return aFav - bFav;
+  });
 
   return (
     <>
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((prod) => {
+          {sortedProducts.map((prod) => {
             const cartItem = cart.find(i => i.product.id === prod.id);
             return (
               <ProductCard
@@ -171,6 +191,8 @@ export default function ProductCart({
                 tColor={tColor}
                 onAddToCart={onAddToCart}
                 onUpdateQuantity={onUpdateQuantity}
+                isFavorited={isFavorited}
+                toggleFavorite={toggleFavorite}
               />
             );
           })}

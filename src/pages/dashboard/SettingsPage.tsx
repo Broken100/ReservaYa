@@ -21,6 +21,7 @@ interface BusinessSettings {
   show_socials?: boolean;
   show_services?: boolean;
   show_products?: boolean;
+  cancellation_hours?: number;
   social_links?: {
     whatsapp?: string;
     instagram?: string;
@@ -82,6 +83,7 @@ export default function SettingsPage() {
         show_socials: true,
         show_services: true,
         show_products: true,
+        cancellation_hours: business.settings?.cancellation_hours ?? 2,
         social_links: { whatsapp: '', instagram: '', facebook: '', website: '' }
       });
     }
@@ -217,6 +219,8 @@ export default function SettingsPage() {
       <HoursSection
         localHours={localHours}
         onUpdateDay={updateDay}
+        cancellationHours={settings.cancellation_hours ?? 2}
+        onCancellationHoursChange={(hours) => setSettings(s => ({ ...s, cancellation_hours: hours }))}
       />
 
       <DangerZone onDelete={handleDeleteBusiness} />

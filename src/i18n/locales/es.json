@@ -147,6 +147,7 @@
     "noReviews": "Aún no hay reseñas",
     "averageRating": "{{rating}} de 5",
     "reviewCount": "{{count}} reseñas",
+    "ownerReply": "Respuesta del negocio",
     "orderSuccess": {
       "title": "¡Pedido Realizado!",
       "detail": "Te contactaremos pronto para confirmar.",
@@ -502,7 +503,9 @@
       "facebook": "Facebook (URL)",
       "website": "Sitio Web URL"
     },
-    "hoursTitle": "Horarios de Atención",
+    "hours": "horas",
+    "cancellationHours": "Anticipación de Cancelación",
+    "cancellationHoursDesc": "Horas mínimas antes de la cita para cancelar",
     "days": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
     "closed": "Cerrado",
     "closedLabel": "CERRADO",
@@ -679,6 +682,36 @@
       "signOut": "Cerrar Sesión"
     }
   },
+  "reviews": {
+    "title": "Reseñas",
+    "navLabel": "Reseñas",
+    "averageRating": "Promedio",
+    "totalReviews": "Total reseñas",
+    "hiddenCount": "Ocultas",
+    "distribution": "Distribución",
+    "allRatings": "Todas",
+    "allTypes": "Todos",
+    "type_business": "Negocio",
+    "type_service": "Servicio",
+    "type_professional": "Profesional",
+    "type_product": "Producto",
+    "noReviews": "Aún no hay reseñas",
+    "reply": "Responder",
+    "replyPlaceholder": "Escribe tu respuesta...",
+    "sendReply": "Enviar",
+    "replySuccess": "Respuesta enviada",
+    "replyError": "Error al enviar respuesta",
+    "feature": "Destacar",
+    "unfeature": "Quitar destacado",
+    "featureSuccess": "Reseña destacada",
+    "unfeatureSuccess": "Reseña quitada de destacados",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "hideSuccess": "Reseña oculta",
+    "showSuccess": "Reseña visible",
+    "updateError": "Error al actualizar",
+    "ownerReply": "Respuesta del negocio"
+  },
   "myBookings": {
     "title": "Mis Reservas",
     "tabs": {
@@ -708,6 +741,7 @@
     "noOrdersWithStatus": "No tienes pedidos en este estado",
     "exploreStores": "Explorar Tiendas",
     "errorCancel": "Error al cancelar",
+    "cancelTooLate": "Debes cancelar con al menos {{hours}}h de anticipación",
     "cancelOrderConfirm": "¿Cancelar este pedido?",
     "cancelOrderSuccess": "Pedido cancelado",
     "status": {

@@ -76,6 +76,14 @@ export default function ExplorePage() {
     return result;
   }, [businesses, search, selectedCategory, selectedCity, sortBy]);
 
+  const sortedBusinesses = useMemo(() => {
+    return [...filteredBusinesses].sort((a, b) => {
+      const aFav = isFavorited({ businessId: a.id }) ? 0 : 1;
+      const bFav = isFavorited({ businessId: b.id }) ? 0 : 1;
+      return aFav - bFav;
+    });
+  }, [filteredBusinesses, isFavorited]);
+
   const activeFilterCount = [selectedCategory, selectedCity].filter(Boolean).length;
 
   const clearFilters = () => {
@@ -200,7 +208,7 @@ export default function ExplorePage() {
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-gray-500 text-sm">
-          {filteredBusinesses.length} {filteredBusinesses.length === 1 ? t('explore.result') : t('explore.results')}
+          {sortedBusinesses.length} {sortedBusinesses.length === 1 ? t('explore.result') : t('explore.results')}
         </p>
         {activeFilterCount > 0 && (
           <button onClick={clearFilters} className="text-sm text-blue-400 hover:underline flex items-center gap-1">
@@ -214,7 +222,7 @@ export default function ExplorePage() {
         <div className="flex justify-center py-20">
           <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
         </div>
-      ) : filteredBusinesses.length === 0 ? (
+      ) : sortedBusinesses.length === 0 ? (
         <div className="bg-dark-card rounded-3xl p-12 border border-white/5 text-center">
           <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-500" />
@@ -223,11 +231,11 @@ export default function ExplorePage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBusinesses.map((business) => (
+          {sortedBusinesses.map((business) => (
             <Link 
               key={business.id} 
               to={`/reservar/${business.slug}`}
-              className="group bg-dark-card border border-white/5 hover:border-blue-500/50 rounded-3xl p-6 transition-all hover:shadow-xl hover:shadow-blue-500/10 flex flex-col h-full relative overflow-hidden"
+              className={`group bg-dark-card border border-white/5 hover:border-blue-500/50 rounded-3xl p-6 transition-all hover:shadow-xl hover:shadow-blue-500/10 flex flex-col h-full relative overflow-hidden ${isFavorited({ businessId: business.id }) ? 'ring-1 ring-yellow-500/30' : ''}`}
             >
               <div className="absolute top-0 right-0 p-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
                 <FavoriteButton
