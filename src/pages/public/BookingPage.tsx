@@ -182,11 +182,7 @@ export default function BookingPage() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error desconocido';
-      if (msg === 'PLAN_BOOKING_LIMIT') {
-        toast.error(t('planGating.bookingLimitDesc', { max: '?' }));
-      } else {
-        toast.error(t('booking.errorConfirmReserva') + ': ' + msg);
-      }
+      toast.error(t('booking.errorConfirmReserva') + ': ' + msg);
     } finally {
       setConfirming(false);
     }

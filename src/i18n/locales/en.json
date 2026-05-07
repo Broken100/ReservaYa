@@ -237,18 +237,18 @@
       "featureUnlimitedBookings": "Unlimited bookings",
       "featureOneProfessional": "1 Professional",
       "featureStore": "Store & products",
-      "featureArchive": "Archive & export"
-    },
-    "planGating": {
-      "professionalLimit": "Professional limit reached",
-      "professionalLimitDesc": "Your current plan allows 1 professional. Upgrade to Pro to add more.",
-      "upgradeToPro": "Upgrade to Pro",
-      "proFeature": "Pro",
-      "storeUpgrade": "Store and products are available on the Pro plan",
-      "archiveUpgrade": "Archive and export are available on the Pro plan"
-    }
-  },
-  "agenda": {
+"featureArchive": "Archive & export"
+     }
+   },
+   "planGating": {
+     "professionalLimit": "Professional limit reached",
+     "professionalLimitDesc": "Your current plan allows 1 professional. Upgrade to Pro to add more.",
+     "upgradeToPro": "Upgrade to Pro",
+     "proFeature": "Pro",
+     "storeUpgrade": "Store and products are available on the Pro plan",
+     "archiveUpgrade": "Archive and export are available on the Pro plan"
+   },
+   "agenda": {
     "status": { "pending": "Pending", "confirmed": "Confirmed", "cancelled": "Cancelled", "completed": "Completed" },
     "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],

@@ -1,8 +1,50 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit3, Trash2, ToggleLeft, ToggleRight, Loader2, XCircle, LayoutList, Camera, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit3, Trash2, ToggleLeft, ToggleRight, Loader2, XCircle, LayoutList, Camera, Image as ImageIcon, Scissors, Sparkles, Heart, Eye, Paintbrush, Dumbbell, Stethoscope, Utensils, Car, GraduationCap, Music, Dog, Flower2, Coffee } from 'lucide-react';
 import { useServices } from '../../hooks/useServices';
 import { useBusiness } from '../../hooks/useBusiness';
+
+const categoryIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  cabello: Scissors,
+  hair: Scissors,
+  uñas: Sparkles,
+  nails: Sparkles,
+  spa: Flower2,
+  maquillaje: Paintbrush,
+  makeup: Paintbrush,
+  cejas: Eye,
+  eyebrows: Eye,
+  pestañas: Eye,
+  lashes: Eye,
+  barbería: Scissors,
+  barber: Scissors,
+  fitness: Dumbbell,
+  gimnasio: Dumbbell,
+  gym: Dumbbell,
+  médico: Stethoscope,
+  medical: Stethoscope,
+  salud: Heart,
+  restaurante: Utensils,
+  restaurant: Utensils,
+  auto: Car,
+  automotive: Car,
+  educación: GraduationCap,
+  education: GraduationCap,
+  música: Music,
+  music: Music,
+  mascota: Dog,
+  pet: Dog,
+  café: Coffee,
+  coffee: Coffee,
+  beauty: Sparkles,
+  belleza: Sparkles,
+};
+
+function getServiceIcon(category: string | null) {
+  if (!category) return LayoutList;
+  const key = category.toLowerCase().trim();
+  return categoryIcons[key] || LayoutList;
+}
 import { uploadPublicAsset } from '../../lib/storage';
 
 export default function ServicesPage() {
@@ -110,7 +152,7 @@ export default function ServicesPage() {
                   <img src={service.image_url} alt={service.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/10 to-purple-500/10">
-                    <LayoutList size={40} className="text-white/10" />
+                    {(() => { const Icon = getServiceIcon(service.category); return <Icon size={40} className="text-white/10" />; })()}
                   </div>
                 )}
               </div>

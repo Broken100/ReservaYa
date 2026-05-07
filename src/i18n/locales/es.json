@@ -237,18 +237,18 @@
       "featureUnlimitedBookings": "Citas ilimitadas",
       "featureOneProfessional": "1 Profesional",
       "featureStore": "Tienda y productos",
-      "featureArchive": "Archivado y exportación"
-    },
-    "planGating": {
-      "professionalLimit": "Límite de profesionales alcanzado",
-      "professionalLimitDesc": "Tu plan actual permite 1 profesional. Actualiza a Pro para agregar más.",
-      "upgradeToPro": "Actualizar a Pro",
-      "proFeature": "Pro",
-      "storeUpgrade": "La tienda está disponible en el Plan Pro",
-      "archiveUpgrade": "El archivado y exportación están disponibles en el Plan Pro"
-    }
-  },
-  "agenda": {
+"featureArchive": "Archivado y exportación"
+     }
+   },
+   "planGating": {
+     "professionalLimit": "Límite de profesionales alcanzado",
+     "professionalLimitDesc": "Tu plan actual permite 1 profesional. Actualiza a Pro para agregar más.",
+     "upgradeToPro": "Actualizar a Pro",
+     "proFeature": "Pro",
+     "storeUpgrade": "La tienda está disponible en el Plan Pro",
+     "archiveUpgrade": "El archivado y exportación están disponibles en el Plan Pro"
+   },
+   "agenda": {
     "status": {
       "pending": "Pendiente",
       "confirmed": "Confirmada",
